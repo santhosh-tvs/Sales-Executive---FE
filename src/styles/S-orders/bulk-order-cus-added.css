@@ -1,0 +1,126 @@
+.bulk-order-cus-added-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 235px;
+  color: #424242;
+}
+.customer-row-btn{
+    background-color: transparent;
+    border: none;
+}
+
+.customer-row {
+  display: flex;
+  align-items: flex-start;
+  background-color: #ffffff;
+  padding: 16px 20px;
+  border-radius: 6px;
+}
+
+.customer-index {
+  font-weight: bold;
+  margin-right: 16px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.customer-details {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 16px;
+}
+
+.details-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 150px;
+}
+.details-center {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  max-width: 500px;
+}
+.com-name {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.email-phone {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.details-right {
+  min-width: 150px;
+  font-size: 14px;
+}
+
+.details-center {
+  flex: 1;
+}
+
+.company-name {
+color: #04156f;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.status-active {
+  color: #ED6A02;
+  font-weight: 600;
+}
+
+.bulk-button {
+  display: flex;
+  justify-content: flex-end;
+  padding: 39px 0 0 0;
+  border-top: 1px solid #E6E6E6;
+  margin: 0;
+}
+
+.submit-btn {
+  padding: 8px 20px;
+  font-size: 14px;
+  background-color: #ccc;
+  border: none;
+  border-radius: 4px;
+  cursor: not-allowed;
+}
+.customer-row-btn {
+  background-color: #fff;
+  border: 1px solid transparent;
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border 0.3s;
+}
+
+.customer-row-btn.selected {
+  border: 1px solid #ED6A02;
+}
+
+.submit-btn {
+  background-color: #ccc;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  font-weight: bold;
+  cursor: not-allowed;
+}
+
+.submit-btn.active {
+  background-color: #ED6A02;
+  cursor: pointer;
+}

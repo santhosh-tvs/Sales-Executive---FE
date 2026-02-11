@@ -1,0 +1,181 @@
+/* S_Dashboard Page Styles */
+.s-dashboard-container {
+  width: 100%;
+  /* min-height: 100vh; */
+  background-color: BFBFBF;
+  margin-top: 20px;
+}
+
+.s-dashboard-content {
+  padding: 90px 20px 20px 20px;
+  background-color: BFBFBF;
+  margin: 0 auto;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  margin-bottom: 10px;
+}
+
+.s-dashboard-container .dashboard-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  /* margin: 0; */
+  text-align: left;
+  /* background-color: black; */
+  
+}
+
+/* Dashboard Cards Grid */
+.s-dashboard-container .dashboard-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* Individual Dashboard Card */
+.dashboard-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  transition: box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Header */
+.s-dashboard-container .card-header {
+  margin-bottom: 15px;
+}
+
+.s-dashboard-container .card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+  text-align: left;
+}
+
+/* Card Content */
+.s-dashboard-container .card-content {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* Main Number */
+.main-number {
+  font-size: 36px;
+  font-weight: 700;
+  color: #007bff;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.main-number.claim-number {
+  color: #007bff;
+  font-size: 32px;
+}
+
+/* Target Section */
+.target-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+    padding: 10px 10px 10px 50px;
+      border-left: 1px solid #f0f0f0;
+}
+
+.target-label {
+  font-size: 12px;
+  color: #999;
+  font-weight: 400;
+}
+
+.target-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .s-dashboard-content {
+    padding: 90px 15px 15px 15px;
+  }
+  
+  .dashboard-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .dashboard-card {
+    padding: 15px;
+    min-height: 100px;
+  }
+  
+  .main-number {
+    font-size: 28px;
+  }
+  
+  .main-number.claim-number {
+    font-size: 24px;
+  }
+  
+  .card-title {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-title {
+    font-size: 20px;
+  }
+  
+  .dashboard-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .dashboard-card {
+    padding: 12px;
+    min-height: 90px;
+  }
+  
+  .main-number {
+    font-size: 24px;
+  }
+  
+  .main-number.claim-number {
+    font-size: 20px;
+  }
+  
+  .card-title {
+    font-size: 12px;
+  }
+  
+  .target-label {
+    font-size: 11px;
+  }
+  
+  .target-value {
+    font-size: 13px;
+  }
+}

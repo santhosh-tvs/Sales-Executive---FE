@@ -1,0 +1,14 @@
+
+.Login-page{
+display: flex;
+flex-direction: row;
+gap: 80px;
+}
+
+/* loginleft img */
+
+.login-left-img{
+    width: 730px;
+    height: 727px;
+}
+

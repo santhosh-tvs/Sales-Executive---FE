@@ -1,0 +1,386 @@
+/* Consolidate Report Page Styles */
+.consolidate-report-container {
+  width: 97%;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+.consolidate-report-content {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.consolidate-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.consolidate-report-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  flex-shrink: 0;
+}
+
+/* Group all controls on the right */
+.header-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.report-dropdown {
+  flex-shrink: 0;
+}
+
+.report-select {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: white;
+  min-width: 200px;
+  cursor: pointer;
+}
+
+.report-select:focus {
+  outline: none;
+  border-color: #FF6B35;
+}
+
+.date-control,
+.search-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.date-control label,
+.search-control label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin: 0;
+}
+
+.search-input {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 200px;
+  background-color: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #FF6B35;
+}
+
+/* Export Button - Same style as ViewPlan */
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 40px;
+  min-width: 100px;
+  background: white;
+  color: #4A4A4A;
+}
+
+.export-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.export-btn:hover {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+/* Table Section */
+.table-container {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Allow flex item to shrink */
+  max-width: 100%;
+  /* Stay within screen width */
+  width: 100%;
+  /* Take full available width */
+}
+
+.table-wrapper {
+  overflow: auto;
+  /* Show scrollbars when content exceeds container */
+  flex: 1;
+  min-height: 0;
+  /* Allow flex item to shrink */
+  max-height: 100%;
+  /* Don't exceed container height */
+  max-width: 100%;
+  /* Don't exceed container width */
+  width: 100%;
+  /* Take full container width */
+}
+
+.consolidate-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1400px;
+  /* Increased to force horizontal scroll */
+  table-layout: auto;
+  /* Force table to respect min-width */
+}
+
+.consolidate-report-table thead {
+  background-color: white;
+  position: sticky;
+  /* Keep header visible when scrolling vertically */
+  top: 0;
+  z-index: 10;
+}
+
+.consolidate-report-table th {
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #FF6B35;
+  font-size: 12px;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 120px;
+  /* Ensure minimum column width */
+}
+
+.consolidate-report-table th:last-child {
+  border-right: none;
+}
+
+.consolidate-report-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 12px;
+  color: #555;
+  white-space: nowrap;
+  min-width: 120px;
+  /* Ensure minimum column width */
+}
+
+.consolidate-report-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.consolidate-report-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Pagination Section */
+.pagination-container {
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.pagination-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.rows-per-page {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rows-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FF6B35;
+}
+
+.rows-select {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+  min-width: 60px;
+}
+
+.rows-select:focus {
+  outline: none;
+  border-color: #FF6B35;
+}
+
+.total-orders {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.total-orders span {
+  font-size: 14px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.total-input {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  width: 80px;
+  text-align: center;
+  cursor: default;
+}
+
+.pagination-right {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-btn {
+  border: 1px solid #ddd;
+  background-color: white;
+  color: #555;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  min-width: 40px;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f0f8ff;
+  border-color: #FF6B35;
+  color: #FF6B35;
+}
+
+.pagination-btn.active {
+  background-color: #FF6B35;
+  border-color: #FF6B35;
+  color: white;
+  font-weight: 600;
+}
+
+.pagination-btn:disabled {
+  background-color: #f8f9fa;
+  color: #ccc;
+  cursor: not-allowed;
+  border-color: #eee;
+}
+
+.prev-btn,
+.next-btn {
+  font-weight: 500;
+  min-width: 60px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .header-controls-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .header-controls-group>div {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .consolidate-report-content {
+    padding: 90px 0px 0px 0px;
+    height: calc(100vh - 90px);
+    overflow: hidden;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .pagination-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .header-controls-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .search-input {
+    width: 100%;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .consolidate-report-table th,
+  .consolidate-report-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .consolidate-report-content {
+    height: calc(100vh - 90px);
+    overflow: hidden;
+  }
+}

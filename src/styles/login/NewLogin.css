@@ -1,0 +1,339 @@
+/* NewLogin.css */
+
+/* Remove any inherited padding and margin from body/html for new login page */
+html.new-login-page,
+html.new-login-page body {
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+.new-login-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background-color: #f8f9fa;
+  padding: 0 !important;
+  margin: 0 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* Left side - 75% width with Man image */
+.new-login-left {
+  flex: 0 0 75%;
+  background: transparent;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background Layer */
+.background-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 110%;
+  height: 100%;
+  z-index: 1;
+}
+
+.background-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Man Image Layer */
+.man-image-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  position: relative;
+  z-index: 2;
+}
+
+.man-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 2;
+}
+
+/* Right side - 25% width with login form */
+.new-login-right {
+  flex: 0 0 25%;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  /* Remove all padding */
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 90%;
+  left: 58%;
+  z-index: 3;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  /* Keep internal padding for form */
+}
+
+/* Logo styling */
+.logo-container {
+  margin-bottom: 1rem;
+  text-align: center;
+  position: relative;
+  top: -0.5rem;
+}
+
+.mytvs-logo {
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Login card styling */
+.login-card {
+  width: 50%;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  padding: 2rem 3rem;
+  padding-top: 2.5rem;
+  border: 1px solid #e0e6ed;
+  position: relative;
+  z-index: 4;
+}
+
+.login-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Error message styling */
+.error-message {
+  background-color: #fed7d7;
+  color: #c53030;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  border: 1px solid #feb2b2;
+}
+
+/* Form styling */
+.login-form {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  /* Global input styling will apply */
+  transition: all 0.2s ease-in-out;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #f56500;
+  box-shadow: 0 0 0 3px rgba(245, 101, 0, 0.1);
+}
+
+.form-input::placeholder {
+  color: #a0aec0;
+}
+
+/* Login button styling */
+.login-button {
+  width: 100%;
+  background: linear-gradient(135deg, #f56500 0%, #ff8a00 100%);
+  color: white;
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin-top: 1rem;
+}
+
+.login-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e55a00 0%, #f57c00 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 101, 0, 0.3);
+}
+
+.login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Additional options */
+.additional-options {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.forgot-password-link {
+  color: #f56500;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+
+.forgot-password-link:hover {
+  color: #e55a00;
+  text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .new-login-container {
+    flex-direction: row;
+  }
+
+  .new-login-left {
+    flex: 0 0 50%;
+  }
+
+  .new-login-right {
+    flex: 0 0 50%;
+    padding: 1.5rem;
+    margin-left: -5%;
+  }
+
+  .mytvs-logo {
+    width: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .new-login-container {
+    flex-direction: row;
+  }
+
+  .new-login-left {
+    flex: 0 0 30%;
+    min-height: 100vh;
+  }
+
+  .new-login-right {
+    flex: 0 0 70%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: -3%;
+  }
+
+  .login-form-container {
+    max-width: 100%;
+  }
+
+  .mytvs-logo {
+    width: 140px;
+  }
+
+  .login-card {
+    padding: 1.5rem;
+  }
+
+  .login-title {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .new-login-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .new-login-left {
+    flex: 0 0 25%;
+    min-height: 200px;
+  }
+
+  .new-login-right {
+    flex: 0 0 75%;
+    padding: 1rem;
+    min-height: calc(100vh - 200px);
+    margin-left: 0;
+  }
+
+  .logo-container {
+    margin-bottom: 2rem;
+  }
+
+  .mytvs-logo {
+    width: 120px;
+  }
+
+  .login-card {
+    padding: 1rem;
+    margin: 0;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+  }
+
+  .login-title {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-input {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .login-button {
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+}

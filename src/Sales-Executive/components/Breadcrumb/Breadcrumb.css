@@ -1,0 +1,62 @@
+/* Breadcrumb Navigation Styles */
+.breadcrumb-navigation {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0;
+    font-family: Inter, sans-serif;
+}
+
+.breadcrumb-home {
+    color: #4A4A4A;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    text-decoration: none;
+}
+
+.breadcrumb-home:hover {
+    color: #20409A;
+    text-decoration: underline;
+}
+
+.breadcrumb-separator {
+    color: #4A4A4A;
+    font-size: 16px;
+    margin: 0 8px;
+    font-weight: 400;
+}
+
+.breadcrumb-current {
+    color: #20409A;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .breadcrumb-navigation {
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .breadcrumb-home,
+    .breadcrumb-separator,
+    .breadcrumb-current {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .breadcrumb-navigation {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    .breadcrumb-home,
+    .breadcrumb-separator,
+    .breadcrumb-current {
+        font-size: 13px;
+    }
+}

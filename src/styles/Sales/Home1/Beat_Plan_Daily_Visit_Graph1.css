@@ -1,0 +1,180 @@
+/* Beat Plan Daily Visit Graph Styles */
+.beat-plan-daily-visit-graph-container {
+  width: 100%;
+  background-color: #f5f5f5;
+  padding: 20px 0;
+}
+
+.beat-plan-daily-visit-graph-content {
+  padding: 0 20px;
+  /* max-width: 1400px; */
+  margin: 0 auto;
+}
+
+/* Graph Header */
+.graph-header {
+  margin-bottom: 20px;
+}
+
+.graph-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  text-align: left;
+}
+
+/* Graph Wrapper */
+.graph-wrapper {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Graph Area */
+.graph-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Graph SVG */
+.graph-svg {
+  width: 100%;
+  max-width: 1500px;
+  height: 300px;
+  background: white;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+}
+
+/* X-axis Labels */
+.beat-plan-daily-visit-graph-container .x-axis-labels {
+  position: relative;
+  width: 100%;
+  max-width: 1500px;
+  height: 30px;
+  margin-top: 10px;
+}
+
+.beat-plan-daily-visit-graph-container .x-axis-labels span {
+  position: absolute;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  transform: translateX(-50%);
+  bottom: 0;
+}
+
+/* Area Chart Specific Styles */
+.graph-svg path {
+  transition: opacity 0.3s ease;
+}
+
+.graph-svg:hover path[fill="url(#areaGradient)"] {
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .graph-wrapper {
+    padding: 20px;
+  }
+  
+  .graph-svg {
+    max-width: 600px;
+    height: 250px;
+  }
+  
+  .x-axis-labels {
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .beat-plan-daily-visit-graph-content {
+    padding: 0 15px;
+  }
+  
+  .graph-wrapper {
+    padding: 15px;
+  }
+  
+  .graph-svg {
+    max-width: 100%;
+    height: 200px;
+  }
+  
+  .x-axis-labels {
+    max-width: 100%;
+  }
+  
+  .x-axis-labels span {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .graph-title {
+    font-size: 20px;
+  }
+  
+  .graph-wrapper {
+    padding: 10px;
+  }
+  
+  .graph-svg {
+    height: 180px;
+  }
+  
+  .x-axis-labels span {
+    font-size: 9px;
+  }
+  
+  .x-axis-labels {
+    height: 25px;
+  }
+}
+
+/* Custom scrollbar for mobile if needed */
+@media (max-width: 480px) {
+  .graph-area {
+    overflow-x: auto;
+  }
+  
+  .graph-svg {
+    min-width: 400px;
+  }
+  
+  .x-axis-labels {
+    min-width: 400px;
+  }
+}
+
+/* Hover effects */
+.graph-wrapper:hover .graph-svg {
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+}
+
+/* Animation for line drawing (optional) */
+@keyframes drawLine {
+  from {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 0;
+  }
+}
+
+.graph-svg path[stroke="#3498db"] {
+  animation: drawLine 2s ease-in-out;
+}

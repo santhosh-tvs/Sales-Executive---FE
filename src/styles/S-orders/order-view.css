@@ -1,0 +1,150 @@
+.order-view-container {
+  padding: 0px 30px 0px;
+  overflow-x: auto;
+}
+.order-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  height: 50px;
+}
+.order-title h2 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30px;
+}
+.order-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.date-input,
+.search-input-order-view {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  width: 250px;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #3c8f11;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.export-btn:hover {
+  background-color: #d7531d;
+}
+
+.export-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-table thead {
+  background-color: #f4f4f4;
+}
+
+.order-table th,
+.order-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.order-table thead th {
+  color: #f97316;
+  font-weight: bold;
+}
+
+.status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.invoiced {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.dispatched {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.delivery {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.pagination-order-view {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.pagination-order-view button {
+  border: 1.5px solid #f97316;
+  background-color: white;
+  color: #f97316;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.pagination-order-view button:hover:not(.active):not(:disabled) {
+  background-color: #f97316;
+  color: white;
+}
+
+.pagination-order-view button.active {
+  background-color: #f97316;
+  color: white;
+  border: 1.5px solid #f97316;
+}
+
+.pagination-order-view button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-order-view span {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #666;
+}
+.pagination-order-view .pagination-page.active {
+  background-color: #f97316;
+  color: white;
+}

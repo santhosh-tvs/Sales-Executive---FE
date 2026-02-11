@@ -1,0 +1,41 @@
+.trash-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trash-icon-btn:hover {
+  background-color: #ffe6e1;
+  transform: scale(1.1);
+}
+
+.trash-icon-btn:active {
+  transform: scale(0.95);
+}
+
+.trash-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.trash-icon-btn.small .trash-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.trash-icon-btn.medium .trash-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.trash-icon-btn.large .trash-icon {
+  width: 22px;
+  height: 22px;
+}

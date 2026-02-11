@@ -1,0 +1,485 @@
+/* View Plan 2 Page Styles */
+.view-plan-2-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.view-plan-2-content {
+  padding: 100px 20px 20px 20px; /* Top padding for fixed header */
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.view-plan-2-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #FF6B35;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.header-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+}
+
+.header-btn.create-plan {
+  background-color: #FF6B35;
+  color: white;
+}
+
+.header-btn.create-plan:hover {
+  background-color: #e55a2b;
+}
+
+.header-btn.back-btn {
+  background-color: #6c757d;
+  color: white;
+  font-weight: 600;
+}
+
+.header-btn.back-btn:hover {
+  background-color: #5a6268;
+}
+
+.header-btn.apply-leave,
+.header-btn.import,
+.header-btn.import-template,
+.header-btn.export {
+  background-color: #f8f9fa;
+  color: #FF6B35;
+  border: 1px solid #FF6B35;
+}
+
+.header-btn.apply-leave:hover,
+.header-btn.import:hover,
+.header-btn.import-template:hover,
+.header-btn.export:hover {
+  background-color: #FF6B35;
+  color: white;
+}
+
+/* Form Section (matching ViewPlan1 style) */
+.form-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-controls {
+  width: 100%;
+}
+
+.control-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.control-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.date-input,
+.employee-select,
+.employee-input,
+.mobile-input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  outline: none;
+  transition: border-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.date-input:focus,
+.employee-select:focus,
+.employee-input:focus,
+.mobile-input:focus {
+  border-color: #FF6B35;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+}
+
+/* Readonly input styling */
+.employee-input.readonly,
+.mobile-input.readonly,
+.date-input.readonly {
+  background-color: #f8f9fa;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.employee-input.readonly:focus,
+.mobile-input.readonly:focus,
+.date-input.readonly:focus {
+  border-color: #ddd;
+  box-shadow: none;
+}
+
+/* Form Section 2 */
+.form-section-2 {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-controls-2 {
+  width: 100%;
+}
+
+.control-row-2 {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.control-item-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.control-item-2.button-group {
+  flex: 0 0 auto;
+  min-width: auto;
+}
+
+.control-label-2 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.beat-select,
+.location-select {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  outline: none;
+  transition: border-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.beat-select:focus,
+.location-select:focus {
+  border-color: #FF6B35;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+}
+
+.beat-select:hover,
+.location-select:hover {
+  border-color: #FF6B35;
+}
+
+.create-button {
+  background-color: #FF6B35;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 100px;
+}
+
+.create-button:hover {
+  background-color: #e55a2b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
+}
+
+/* Customer Selection Section */
+.customer-selection-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.customer-section-title {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.customer-table-container {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.customer-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.customer-table th {
+  background-color: #FF6B35;
+  color: white;
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #ddd;
+}
+
+.customer-table td {
+  padding: 10px 8px;
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+.customer-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.customer-table tbody tr:hover {
+  background-color: #e8f4f8;
+}
+
+.customer-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.target-type-select,
+.unit-select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.target-type-select:disabled,
+.unit-select:disabled {
+  background-color: #f8f9fa;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.target-type-select:focus,
+.unit-select:focus {
+  border-color: #FF6B35;
+  outline: none;
+}
+
+.customer-action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.cancel-btn,
+.add-plan-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #5a6268;
+}
+
+.add-plan-btn {
+  background-color: #FF6B35;
+  color: white;
+}
+
+.add-plan-btn:hover {
+  background-color: #e55a2b;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .control-item,
+  .control-item-2 {
+    min-width: 180px;
+  }
+  
+  .view-plan-2-content {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 992px) {
+  .view-plan-2-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-buttons {
+    justify-content: center;
+  }
+  
+  .control-row,
+  .control-row-2 {
+    gap: 15px;
+  }
+  
+  .control-item,
+  .control-item-2 {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .view-plan-2-content {
+    padding: 100px 15px 20px 15px;
+  }
+  
+  .form-section,
+  .form-section-2,
+  .customer-selection-section {
+    padding: 15px;
+  }
+  
+  .control-row,
+  .control-row-2 {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .control-item,
+  .control-item-2 {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .control-item-2.button-group {
+    align-self: flex-start;
+  }
+  
+  .create-button {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .header-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .header-btn {
+    width: 100%;
+  }
+  
+  .customer-table {
+    font-size: 12px;
+  }
+  
+  .customer-table th,
+  .customer-table td {
+    padding: 8px 4px;
+  }
+  
+  .target-type-select,
+  .unit-select {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+  
+  .customer-action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .cancel-btn,
+  .add-plan-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 20px;
+  }
+  
+  .control-label,
+  .control-label-2 {
+    font-size: 13px;
+  }
+  
+  .date-input,
+  .employee-input,
+  .mobile-input,
+  .beat-select,
+  .location-select {
+    font-size: 13px;
+    padding: 9px 10px;
+  }
+  
+  .create-button {
+    font-size: 13px;
+    padding: 10px 20px;
+  }
+}

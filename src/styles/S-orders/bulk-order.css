@@ -1,0 +1,45 @@
+.bulk-order-container {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
+}
+
+.bulk-order-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.bulk-order-empty-icon-container {
+  margin-bottom: 4%;
+}
+.bulk-order-empty-icon {
+  width: 50px;
+  height: 50px;
+}
+.bulk-order-empty-text h3 {
+  font-size: 26px;
+  margin: 0;
+}
+.bulk-button {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-right: 85px;
+}
+.clear-btn {
+  padding: 10px;
+  background-color: #f0f0f0;
+  color: rgb(110, 110, 110);
+  border: none;
+  cursor: pointer;
+}
+.submit-btn {
+  padding: 10px;
+  background-color: #d7d8d7;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 105px;
+}

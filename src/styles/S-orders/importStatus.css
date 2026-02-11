@@ -1,0 +1,341 @@
+/* Import Status Page Styles */
+.import-status-page {
+  height: 100vh;
+  background-color: #f5f5f5;
+  /* Light background like the screenshot */
+  font-family: Inter, sans-serif;
+  overflow: hidden;
+}
+
+.import-status-content {
+  padding-top: 125px;
+  position: relative;
+  height: calc(100vh - 100px);
+  /* Adjusted height for larger pagination */
+  overflow-x: auto;
+  /* Move horizontal scrolling back to content level */
+  overflow-y: hidden;
+  /* Prevent vertical scrolling */
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.import-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 25px 20px 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.import-status-title {
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: #333;
+  margin: 0;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-importStatus {
+  padding: 8px 12px 8px 35px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 200px;
+  background-color: white;
+}
+
+.search-input-importStatus:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.export-button {
+  background-color: #20409a;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+}
+
+.export-button:hover {
+  background-color: #218838;
+}
+
+/* Table Styles */
+.table-wrapper {
+  flex: 1;
+  margin: 0 25px 0 25px;
+  overflow: visible;
+  /* Remove scrolling from table wrapper */
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Allow flexbox to shrink */
+}
+
+.import-status-table {
+  width: 100%;
+  min-width: 1400px;
+  /* Ensure table is wide enough to show all columns */
+  border-collapse: collapse;
+  font-size: 14px;
+  flex: 1;
+}
+
+.import-status-table thead {
+  background-color: #f8f9fa;
+}
+
+.import-status-table th {
+  color: #333;
+  font-weight: 600;
+  padding: 15px 12px;
+  text-align: left;
+  border-bottom: 2px solid #e9ecef;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.total-records-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.records-icon {
+  font-size: 14px;
+  color: #007bff;
+}
+
+.action-column {
+  text-align: center;
+  font-size: 16px;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-badge.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.status-badge.completed {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.status-badge.pending {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.error-details {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.import-status-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  color: #333;
+  font-size: 13px;
+}
+
+.import-status-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.import-status-table tbody tr:nth-child(even) {
+  background-color: #fdfdfd;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  /* Move pagination to the right */
+  align-items: center;
+  gap: 10px;
+  /* Increased gap for better spacing */
+  padding: 8px 25px;
+  /* Increased padding to accommodate larger buttons */
+  background-color: white;
+  border-top: 1px solid #e9ecef;
+  flex-shrink: 0;
+  /* Prevent pagination from shrinking */
+  position: fixed;
+  /* Fix pagination at bottom */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.1);
+  /* Reduced shadow */
+  height: 40px;
+  /* Increased height to accommodate larger buttons */
+}
+
+.page-number {
+  padding: 6px 10px;
+  /* Increased padding for better visibility */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  /* Increased font size */
+  color: #333;
+  background-color: white;
+  transition: all 0.2s;
+}
+
+.page-number:hover {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.page-number.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.page-next,
+.page-prev {
+  padding: 6px 10px;
+  /* Increased padding for better visibility */
+  color: #007bff;
+  cursor: pointer;
+  font-size: 14px;
+  /* Increased font size */
+  font-weight: 500;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  background-color: white;
+  transition: all 0.2s;
+}
+
+.page-next:hover,
+.page-prev:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .table-wrapper {
+    margin: 0 0px;
+  }
+
+  .import-status-header {
+    margin: 15px 15px 20px 15px;
+  }
+
+  .pagination {
+    margin: 0 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .import-status-content {
+    padding-top: 100px;
+    height: calc(100vh - 95px);
+    /* Adjusted height for mobile with larger pagination */
+    overflow-x: auto;
+    /* Keep horizontal scrolling at content level for mobile */
+    overflow-y: hidden;
+  }
+
+  .import-status-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+    margin: 15px 10px 20px 10px;
+  }
+
+  .header-controls {
+    justify-content: space-between;
+  }
+
+  .search-input {
+    width: 150px;
+  }
+
+  .table-wrapper {
+    margin: 0 10px 0 10px;
+    /* No bottom margin */
+    overflow: visible;
+    /* Remove scrolling from table wrapper on mobile */
+    flex: 1;
+  }
+
+  .import-status-table {
+    min-width: 1200px;
+    /* Reduced min-width for mobile but still wide enough */
+  }
+
+  .import-status-table th,
+  .import-status-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+
+  .pagination {
+    padding: 6px 10px;
+    /* Increased padding for mobile */
+    justify-content: flex-end;
+    /* Keep pagination on right for mobile too */
+    flex-wrap: wrap;
+    height: 36px;
+    /* Increased height for mobile */
+  }
+
+  .page-number,
+  .page-next,
+  .page-prev {
+    padding: 5px 8px;
+    /* Increased padding for mobile */
+    font-size: 13px;
+    /* Increased font size for mobile */
+  }
+}

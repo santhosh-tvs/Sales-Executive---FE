@@ -1,0 +1,402 @@
+/* Overview Page Styles */
+.overview-container {
+  width: 100%;
+  /* height: 20vh; 
+  min-height: 200px;  */
+  /* background-color: #f8f9fa; */
+  display: flex;
+  align-items: center;
+  height: auto;
+  /* background-color: #e55a2b; */
+}
+
+.overview-content {
+  padding: 10px 20px;
+  /* max-width: 100vw; */
+  width: 100%;
+  /* margin: 0 auto; */
+  /* height: 100%; */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+  
+   background-color: #FFFFFF; 
+}
+
+.overview-dashboard {
+  width: 100%;
+  /* max-width: 1200px; */
+  margin: 0 auto;
+  height: 100%; /* Use full height of the 20vh container */
+  display: flex;
+  gap: 20px;
+}
+
+/* Main Overview Card */
+.overview-main-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.overview-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.month-selector {
+  background: #c5c5c5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+}
+
+.month-selector:hover {
+  background: #e55a2b;
+}
+
+.overview-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.currency {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ff6b35;
+}
+
+.amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ff6b35;
+}
+
+.growth {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.growth.positive {
+  color: #28a745;
+  background: #d4edda;
+}
+
+.overview-comparison {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.overview-last-month {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #e9ecef;
+}
+
+.overview-last-month .label {
+  font-size: 13px;
+  color: #666;
+}
+
+.overview-last-month .value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Stats Grid */
+.stats-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Stat Cards */
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.stat-header {
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.stat-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: #007bff;
+}
+
+.stat-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.stat-amount {
+  font-size: 28px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.stat-growth {
+  font-size: 20px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #28a745;
+  background: #d4edda;
+}
+
+/* Customer Metrics */
+.customer-metrics {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.customer-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.customer-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+
+.customer-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+}
+
+.customer-number {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FF6B35;
+  min-width: 24px;
+  text-align: center;
+}
+
+.customer-badge {
+  background: #FF6B35;
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.customer-badge.beat {
+  background: #FF6B35;
+}
+
+/* Claims Section */
+.claims-section {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  
+}
+
+.claim-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: #333;
+}
+
+.claim-label {
+  font-size: 13px;
+  color: #333;
+  flex: 1;
+}
+
+.claim-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.claim-number {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FF6B35;
+  min-width: 24px;
+  text-align: center;
+}
+
+.claim-badge {
+  background: #6c757d;
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .overview-container {
+    height: 22vh;
+    min-height: 180px;
+  }
+  
+  .overview-dashboard {
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .overview-main-card {
+    flex: none;
+    width: 100%;
+    height: auto;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .overview-container {
+    height: 25vh;
+    min-height: 160px;
+  }
+  
+  .overview-content {
+    padding: 5px 10px;
+  }
+  
+  .overview-dashboard {
+    gap: 15px;
+    height: 100%;
+  }
+  
+  .overview-main-card,
+  .stat-card,
+  .customer-metrics,
+  .claims-section {
+    padding: 12px;
+  }
+  
+  .overview-header h2 {
+    font-size: 16px;
+  }
+  
+  .amount {
+    font-size: 24px;
+  }
+  
+  .stat-number {
+    font-size: 28px;
+  }
+  
+  .customer-number,
+  .claim-number {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .overview-container {
+    height: 30vh;
+    min-height: 140px;
+  }
+  
+  .overview-content {
+    padding: 5px;
+  }
+  
+  .overview-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .month-selector {
+    align-self: flex-end;
+  }
+  
+  .overview-amount {
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+  
+  .stat-main {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .stat-details {
+    align-items: center;
+  }
+}

@@ -1,0 +1,44 @@
+/* ---- FILTER BREADCRUMB ---- */
+.filter-breadcrumb-container {
+  max-width: 1165px;
+  /* margin: 10px 0 10px 0;
+  padding-left: 20px; */
+}
+
+.breadcrumb-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: clamp(0px, 0.0vw, 10px);
+}
+
+/* Each filter breadcrumb box */
+.filter-crumb {
+  padding: 6px 24px;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: clamp(8px, 0vw, 10px);
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+
+  /* angled look */
+  clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  border-radius: 4px;
+
+  transition: 0.25s ease;
+}
+
+/* Hover effect for clickable crumbs */
+.filter-crumb:hover {
+  background: #e3ebff;
+  color: #20409a;
+}
+
+/* Active last tab */
+.filter-crumb.active {
+  background: #dbe7ff;
+  color: #20409a;
+  font-weight: 600;
+}

@@ -1,0 +1,165 @@
+/* S_Collection Page Styles */
+.s-collection-container {
+  width: 100%;
+  background-color: #f5f5f5;
+  padding: 20px 0;
+}
+
+.s-collection-content {
+  padding: 0 20px;
+  /* max-width: 1400px; */
+  margin: 0 auto;
+}
+
+/* Collection Header */
+.collection-header {
+  margin-bottom: 20px;
+}
+
+.collection-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  text-align: left;
+}
+
+/* Collection Cards Grid */
+.collection-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* Individual Collection Card */
+.collection-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  transition: box-shadow 0.3s ease;
+}
+
+.collection-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Header */
+.card-header {
+  margin-bottom: 15px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+  text-align: left;
+}
+
+/* Card Content */
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* Main Number */
+.main-number {
+  font-size: 36px;
+  font-weight: 700;
+  color: #007bff;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+/* Target Section */
+.target-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+    padding: 10px 10px 10px 50px;
+      border-left: 1px solid #d1d1d1;
+}
+
+.target-label {
+  font-size: 12px;
+  color: #999;
+  font-weight: 400;
+}
+
+.target-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .collection-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .s-collection-content {
+    padding: 0 15px;
+  }
+  
+  .collection-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .collection-card {
+    padding: 15px;
+    min-height: 100px;
+  }
+  
+  .main-number {
+    font-size: 28px;
+  }
+  
+  .card-title {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .collection-title {
+    font-size: 20px;
+  }
+  
+  .collection-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .collection-card {
+    padding: 12px;
+    min-height: 90px;
+  }
+  
+  .main-number {
+    font-size: 24px;
+  }
+  
+  .card-title {
+    font-size: 12px;
+  }
+  
+  .target-label {
+    font-size: 11px;
+  }
+  
+  .target-value {
+    font-size: 13px;
+  }
+}

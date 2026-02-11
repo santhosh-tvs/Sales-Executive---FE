@@ -1,0 +1,409 @@
+/* Sales Import Page Styles */
+.sales-import-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.sales-import-content {
+  padding: 100px 20px 20px 20px; /* Top padding for fixed header */
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.sales-import-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #FF6B35;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.header-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+}
+
+.header-btn.create-plan,
+.header-btn.apply-leave,
+.header-btn.import-template {
+  background-color: #f8f9fa;
+  color: #FF6B35;
+  border: 1px solid #FF6B35;
+}
+
+.header-btn.create-plan:hover,
+.header-btn.apply-leave:hover,
+.header-btn.import-template:hover {
+  background-color: #FF6B35;
+  color: white;
+}
+
+.header-btn.import {
+  background-color: #f8f9fa;
+  color: #FF6B35;
+  border: 1px solid #FF6B35;
+}
+
+.header-btn.import.active {
+  background-color: #FF6B35;
+  color: white;
+  font-weight: 600;
+}
+
+.header-btn.import:hover {
+  background-color: #FF6B35;
+  color: white;
+}
+
+/* Form Section */
+.form-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-controls {
+  width: 100%;
+}
+
+.control-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.control-item.submit-item {
+  flex: 0 0 auto;
+  min-width: auto;
+}
+
+.control-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.date-input,
+.employee-select,
+.employee-input,
+.mobile-input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  outline: none;
+  transition: border-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.date-input:focus,
+.employee-select:focus,
+.employee-input:focus,
+.mobile-input:focus {
+  border-color: #FF6B35;
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+}
+
+/* Readonly input styling */
+.employee-input.readonly,
+.mobile-input.readonly {
+  background-color: #f8f9fa;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.employee-input.readonly:focus,
+.mobile-input.readonly:focus {
+  border-color: #ddd;
+  box-shadow: none;
+}
+
+.employee-select {
+  cursor: pointer;
+}
+
+.submit-button {
+  background-color: #FF6B35;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 100px;
+}
+
+.submit-button:hover {
+  background-color: #e55a2b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
+}
+
+/* Selected Employee Section */
+.selected-employee-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  margin: 0 0 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.file-upload-area {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.file-selection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.file-selection:hover {
+  border-color: #FF6B35;
+  background-color: #fff8f5;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.file-icon {
+  font-size: 20px;
+  color: #28a745;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.file-actions {
+  display: flex;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.browse-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.browse-button:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.import-file-button {
+  background-color: #FF6B35;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.import-file-button:hover {
+  background-color: #e55a2b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .control-item {
+    min-width: 180px;
+  }
+  
+  .sales-import-content {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 992px) {
+  .sales-import-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-buttons {
+    justify-content: center;
+  }
+  
+  .control-row {
+    gap: 15px;
+  }
+  
+  .control-item {
+    min-width: 150px;
+  }
+  
+  .file-selection {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  
+  .file-info {
+    justify-content: center;
+  }
+  
+  .file-actions {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .sales-import-content {
+    padding: 100px 15px 20px 15px;
+  }
+  
+  .form-section,
+  .selected-employee-section {
+    padding: 15px;
+  }
+  
+  .control-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .control-item {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .control-item.submit-item {
+    align-self: flex-start;
+  }
+  
+  .submit-button {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .header-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .header-btn {
+    width: 100%;
+  }
+  
+  .file-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .browse-button,
+  .import-file-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 20px;
+  }
+  
+  .control-label {
+    font-size: 13px;
+  }
+  
+  .date-input,
+  .employee-select,
+  .employee-input,
+  .mobile-input {
+    font-size: 13px;
+    padding: 9px 10px;
+  }
+  
+  .submit-button,
+  .browse-button,
+  .import-file-button {
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+  }
+  
+  .file-name {
+    font-size: 13px;
+  }
+}

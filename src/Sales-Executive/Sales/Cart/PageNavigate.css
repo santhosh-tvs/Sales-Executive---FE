@@ -1,0 +1,29 @@
+.page-navigate {
+    margin-bottom: 20px;
+}
+
+.breadcrumb-container {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.breadcrumb-link {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+    color: #20409A;
+}
+
+.breadcrumb-separator {
+    color: #999;
+    margin: 0 4px;
+}
+
+.breadcrumb-current {
+    color: #20409A;
+    font-weight: 600;
+}

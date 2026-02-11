@@ -1,0 +1,50 @@
+.bulk-order-search-container {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
+}
+
+.bulk-order-search-search {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 300px;
+}
+
+.bulk-order-search-left {
+  width: 400px;
+  margin-top: 5px;
+}
+
+.bulk-order-search-left h2 {
+  width: 400px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  margin-top: 7px;
+}
+
+.bulk-order-search-right {
+  width: 623px;
+}
+
+.bulk-order-search-search-input {
+  position: relative;
+}
+
+.bulk-order-search-search {
+  width: 97%;
+  padding: 10px;
+}
+
+.bulk-order-search-search-icon-container {
+  position: relative;
+  left: 92%;
+  top: -30px;
+}
+
+.bulk-order-search-search-icon {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}

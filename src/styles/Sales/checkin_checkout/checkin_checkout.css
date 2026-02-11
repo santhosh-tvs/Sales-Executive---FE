@@ -1,0 +1,255 @@
+/* Check-in Checkout Page Styles */
+
+.checkin-checkout-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.checkin-checkout-content {
+  display: flex;
+  min-height: calc(100vh - 80px); /* Adjust based on header height */
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 20%;
+  background-color: white;
+  border-right: 1px solid #e9ecef;
+  padding: 20px 0;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h3 {
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  padding: 0 20px;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 15px;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-item {
+  padding: 12px 20px;
+  color: #495057;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.menu-item:hover {
+  background-color: #f8f9fa;
+  color: #FF6B35;
+}
+
+.menu-item.active {
+  background-color: #FF6B35;
+  color: white;
+  border-left-color: #e55a2b;
+  font-weight: 500;
+}
+
+/* Main Content Styles */
+.main-content {
+  width: 80%;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+/* Controls Container */
+.controls-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.controls-group {
+  display: flex;
+  gap: 30px;
+  align-items: flex-end;
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.employee-select {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 200px;
+  background: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.employee-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Table Container */
+.table-container {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.checkin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.checkin-table thead {
+  background-color: #FF6B35;
+}
+
+.checkin-table thead th {
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: white;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 13px;
+}
+
+.checkin-table thead th:last-child {
+  border-right: none;
+}
+
+.checkin-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.checkin-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.checkin-table tbody td {
+  padding: 12px;
+  color: #495057;
+  border-right: 1px solid #e9ecef;
+  vertical-align: top;
+  line-height: 1.4;
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+.checkin-table tbody td:last-child {
+  border-right: none;
+}
+
+/* Hide scrollbars */
+.table-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.table-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .checkin-checkout-content {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    order: 2;
+  }
+  
+  .main-content {
+    width: 100%;
+    order: 1;
+  }
+  
+  .controls-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .controls-group {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .action-buttons {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none; /* Hide sidebar on mobile */
+  }
+  
+  .main-content {
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .controls-container {
+    padding: 15px;
+  }
+  
+  .control-item {
+    width: 100%;
+  }
+  
+  .employee-select {
+    min-width: 100%;
+  }
+  
+  .action-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .checkin-table {
+    min-width: 800px;
+  }
+  
+  .checkin-table thead th,
+  .checkin-table tbody td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+}

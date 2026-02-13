@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiService } from "../../services/apiservice";
 import "./Login.css";
 import BackgroundImage from "../../assets/login/back.png";
 import MyTvsLogo from "../../assets/New_Login/myTvs_Logo.png";
@@ -8,8 +7,8 @@ import MyTvsLogo from "../../assets/New_Login/myTvs_Logo.png";
 const NewLogin = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "admin@partsmart.com",
+    password: "admin123",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,25 +33,30 @@ const NewLogin = () => {
     setLoading(true);
     setError("");
 
-    try {
-      const data = await apiService.post("/auth/login", {
-        username: formData.email,
-        password: formData.password,
-      });
+    // Simulate API delay
+    setTimeout(() => {
+      // Mock authentication - accept any credentials
+      if (formData.email && formData.password) {
+        // Mock user data
+        const mockUser = {
+          id: "1",
+          email: formData.email,
+          name: "Sales Executive",
+          role: 2 // Sales Executive role
+        };
 
-      if (data.success) {
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        redirectUser(data.role);
+        const mockToken = "mock-jwt-token-" + Date.now();
+
+        localStorage.setItem("authToken", mockToken);
+        localStorage.setItem("user", JSON.stringify(mockUser));
+        
+        setLoading(false);
+        redirectUser(mockUser.role);
       } else {
-        setError(data.message || "Login failed");
+        setError("Please enter email and password");
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("Network error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    }, 800);
   };
 
   return (

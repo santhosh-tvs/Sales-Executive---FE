@@ -361,7 +361,6 @@ const Create_Order = () => {
                       placeholder="Search Customer Name / Code"
                       className="search-input"
                     />
-                    <img src={searchIcon} alt="Search" className="search-icon" />
                   </div>
                 </div>
               </div>

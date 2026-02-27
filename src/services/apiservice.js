@@ -9,7 +9,7 @@ const PORTS = {
 };
 
 // const BASE_URL = "https://websprint.mytvspartsmart.in/backend-api/";
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "http://localhost:3000/api";
 // const BASE_URL = "https://uat-websprint.mytvspartsmart.in"; // Updated to use the new port
 
 

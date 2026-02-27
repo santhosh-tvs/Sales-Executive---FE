@@ -24,18 +24,48 @@
   flex-shrink: 0;
 }
 
+@media (max-width: 1200px) {
+  .cart-right {
+    width: 350px;
+  }
+}
+
 @media (max-width: 1024px) {
   .cart-content-wrapper {
     flex-direction: column;
+    gap: 20px;
   }
 
   .cart-right {
     width: 100%;
+    max-width: 600px;
   }
 }
 
 @media (max-width: 768px) {
   .cart-page {
     padding: 15px;
+  }
+  
+  .cart-content-wrapper {
+    gap: 16px;
+  }
+  
+  .cart-right {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-page {
+    padding: 12px;
+  }
+  
+  .cart-page>.page-navigate {
+    margin-bottom: 16px;
+  }
+  
+  .cart-content-wrapper {
+    gap: 12px;
   }
 }

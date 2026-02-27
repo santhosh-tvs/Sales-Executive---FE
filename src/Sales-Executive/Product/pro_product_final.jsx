@@ -7,7 +7,7 @@ import ProFilter from './pro_filter';
 import ProProduct from './pro_product';
 import '../../../styles/customer/productss/pro_product_final.css';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 console.log('==========================================');
 console.log('🎯 PRO_PRODUCT_FINAL.JSX LOADED');

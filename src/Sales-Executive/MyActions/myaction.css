@@ -18,6 +18,18 @@
   font-family: Inter, sans-serif;
 }
 
+@media (max-width: 768px) {
+  .actions-dashboard {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions-dashboard {
+    padding: 12px;
+  }
+}
+
 /* --- Card Structure --- */
 .action-card {
   background: white;
@@ -163,6 +175,12 @@ h4 {
   min-width: 180px;
 }
 
+@media (max-width: 768px) {
+  .item-action-group {
+    min-width: 100%;
+  }
+}
+
 .price-label {
   font-size: 12px;
   color: var(--text-muted);
@@ -227,21 +245,90 @@ h4 {
 }
 
 /* Mobile View */
+@media (max-width: 1024px) {
+  .card-top h3 {
+    font-size: 17px;
+  }
+  
+  .item-action-group {
+    min-width: 160px;
+  }
+}
+
 @media (max-width: 768px) {
+  .card-top {
+    padding: 16px 18px;
+  }
+  
+  .card-top h3 {
+    font-size: 16px;
+  }
+  
+  .sub-header {
+    padding: 10px 18px;
+  }
+  
   .list-item {
     flex-direction: column;
     gap: 15px;
+    padding: 16px 18px;
   }
 
   .item-action-group {
     text-align: left;
     align-items: flex-start;
     width: 100%;
+    min-width: 100%;
   }
 
   .primary-btn,
   .dark-btn {
     width: 100%;
     justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-top {
+    padding: 14px 16px;
+  }
+  
+  .card-top h3 {
+    font-size: 15px;
+  }
+  
+  .subtitle {
+    font-size: 12px;
+  }
+  
+  .sub-header {
+    padding: 10px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .sub-header span {
+    font-size: 12px;
+  }
+  
+  .list-item {
+    padding: 14px 16px;
+  }
+  
+  h4 {
+    font-size: 14px;
+  }
+  
+  .id-text,
+  .address-text,
+  .meta-text {
+    font-size: 12px;
+  }
+  
+  .primary-btn,
+  .dark-btn {
+    padding: 10px 16px;
+    font-size: 12px;
   }
 }

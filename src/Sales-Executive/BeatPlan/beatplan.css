@@ -719,3 +719,127 @@
 .import-cancel-btn:hover {
   opacity: 0.9 !important;
 }
+
+/* Responsive Design for Beat Plan */
+@media (max-width: 1024px) {
+  .beat-plan-content {
+    padding: 16px;
+  }
+  
+  .top-action-buttons {
+    gap: 12px;
+  }
+  
+  .action-btn {
+    width: 130px;
+    padding: 10px 14px;
+    font-size: 11px;
+  }
+  
+  .search-bar {
+    width: 220px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .beat-plan-content {
+    padding: 12px;
+  }
+  
+  .breadcrumb-actions-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .top-action-buttons {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+  
+  .action-btn {
+    width: auto;
+    min-width: 120px;
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+  
+  .search-wrapper {
+    width: 100%;
+  }
+  
+  .search-bar {
+    width: 100% !important;
+    max-width: 100%;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .action-bar {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .beat-table {
+    min-width: 750px;
+  }
+  
+  .beat-table th,
+  .beat-table td {
+    padding: 12px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .beat-plan-content {
+    padding: 10px;
+  }
+  
+  .white-card {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .top-action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .search-wrapper {
+    order: -1;
+  }
+  
+  .beat-table {
+    min-width: 650px;
+  }
+  
+  .beat-table th,
+  .beat-table td {
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+  
+  .text-action,
+  .export-bordered {
+    padding: 6px 12px;
+    font-size: 11px;
+    height: 32px;
+  }
+  
+  .btn-icon {
+    width: 14px;
+    height: 14px;
+  }
+}

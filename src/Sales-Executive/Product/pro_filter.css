@@ -1,7 +1,6 @@
 .pro-filter-container {
   width: 100%;
-  max-width: 86%;
-  /* max-height: calc(100vh - 120px); */
+  max-width: 100%;
   background-color: #ffffff;
   border-radius: 8px;
   padding: 20px;
@@ -278,6 +277,12 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .pro-filter-container {
+    padding: 18px;
+  }
+}
+
 @media (max-width: 768px) {
   .pro-filter-container {
     max-width: 100%;
@@ -296,6 +301,38 @@
 
   .categories-title {
     font-size: 14px;
+  }
+  
+  .price-inputs {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .price-input-group {
+    width: 100%;
+  }
+  
+  .price-separator {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .pro-filter-container {
+    padding: 12px;
+  }
+  
+  .filter-header h2 {
+    font-size: 18px;
+  }
+  
+  .filter-section-header {
+    font-size: 14px;
+    padding: 10px 6px;
+  }
+  
+  .filter-option label {
+    font-size: 13px;
   }
 }
 
@@ -337,7 +374,7 @@
   border-radius: 8px;
   width: 90%;
   max-width: 700px;
-  max-height: 70vh;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -389,7 +426,7 @@
   padding: 20px;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 12px;
   max-height: calc(80vh - 100px);
 }
@@ -448,16 +485,60 @@
 @media (max-width: 768px) {
   .filter-modal-content {
     width: 95%;
+    max-width: 95%;
     max-height: 90vh;
   }
 
+  .filter-modal-header {
+    padding: 16px;
+  }
+
   .filter-modal-options {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 8px;
+    padding: 16px;
   }
 
   .filter-modal-option {
     padding: 10px 12px;
     font-size: 13px;
+    min-height: 44px;
+    line-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-modal-content {
+    width: 98%;
+    max-height: 95vh;
+  }
+  
+  .filter-modal-header {
+    padding: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .filter-modal-search {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  
+  .filter-modal-close {
+    width: 36px;
+    height: 36px;
+    font-size: 28px;
+  }
+  
+  .filter-modal-options {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    padding: 12px;
+  }
+  
+  .filter-modal-option {
+    padding: 8px 10px;
+    font-size: 12px;
+    min-height: 40px;
+    line-height: 40px;
   }
 }

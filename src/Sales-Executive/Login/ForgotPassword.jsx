@@ -1,34 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import "./NewLogin.css";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./ForgotPassword.css";
 import Picture from "../../components/login/Assets/Login/picture.png";
 import Tvs from "../../components/login/Assets/Login/mytvs.png";
 
-function NewLogin() {
+function ForgotPassword() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    // Check for success message from password reset
-    if (location.state?.message) {
-      setSuccessMessage(location.state.message);
-      // Clear the message after 5 seconds
-      setTimeout(() => setSuccessMessage(""), 5000);
-    }
-  }, [location]);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setError(""); // Clear error on input change
+    setError("");
   };
 
   const handleSubmit = async (e) => {
@@ -36,8 +27,27 @@ function NewLogin() {
     setLoading(true);
     setError("");
 
+    // Validation
+    if (!formData.email || !formData.password || !formData.confirmPassword) {
+      setError("All fields are required");
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
+      const response = await fetch("http://localhost:3000/auth/forgot-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,30 +55,22 @@ function NewLogin() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          is_proceed_to_login: true,
+          confirmPassword: formData.confirmPassword,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Store token and user details
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user_detail));
-        localStorage.setItem("isPasswordExpired", data.is_password_expired);
-
         setLoading(false);
-        
-        // Navigate to sales home for sales executive
-        if (data.user_detail.user_type === "sales_executive") {
-          navigate("/sales-home");
-        }
+        // Navigate to OTP verify page with email
+        navigate("/verify-otp", { state: { email: formData.email } });
       } else {
-        setError(data.message || "Login failed. Please try again.");
+        setError(data.message || "Failed to send OTP. Please try again.");
         setLoading(false);
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Forgot password error:", error);
       setError("Unable to connect to server. Please try again.");
       setLoading(false);
     }
@@ -93,11 +95,9 @@ function NewLogin() {
               <img src={Tvs} alt="myTVS" className="tvs-img" />
             </div>
 
-            <h2 className="auth-title">Login</h2>
+            <h2 className="auth-title">Forgot Password</h2>
+            <p className="auth-subtitle">Enter your details to reset password</p>
 
-            {successMessage && (
-              <div className="success-message-new">{successMessage}</div>
-            )}
             {error && <div className="error-message-new">{error}</div>}
 
             <form
@@ -106,9 +106,9 @@ function NewLogin() {
               autoComplete="off"
             >
               <div className="input-group">
-                <label className="input-label">Username or Email</label>
+                <label className="input-label">Email Address</label>
                 <input
-                  type="text"
+                  type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
@@ -116,12 +116,13 @@ function NewLogin() {
                   autoComplete="off"
                   disabled={loading}
                   className="input-box"
+                  placeholder="Enter your email"
                 />
               </div>
 
               <div className="input-group">
                 <div className="label-row">
-                  <label className="input-label">Password</label>
+                  <label className="input-label">New Password</label>
                   <button
                     type="button"
                     className="show-password-btn"
@@ -191,13 +192,84 @@ function NewLogin() {
                   autoComplete="new-password"
                   disabled={loading}
                   className="input-box"
+                  placeholder="Enter new password"
                 />
               </div>
 
-              <div className="helper-links">
-                <Link to="/forget-password" className="forgot">
-                  Forget Password ?
-                </Link>
+              <div className="input-group">
+                <div className="label-row">
+                  <label className="input-label">Confirm Password</label>
+                  <button
+                    type="button"
+                    className="show-password-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      {showConfirmPassword ? (
+                        <>
+                          <path
+                            d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z"
+                            stroke="#f36f21"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                            stroke="#f36f21"
+                            strokeWidth="2"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <path
+                            d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z"
+                            stroke="#f36f21"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                            stroke="#f36f21"
+                            strokeWidth="2"
+                          />
+                          <line
+                            x1="3"
+                            y1="3"
+                            x2="21"
+                            y2="21"
+                            stroke="#f36f21"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </>
+                      )}
+                    </svg>
+                    <span>{showConfirmPassword ? "Hide" : "Show"}</span>
+                  </button>
+                </div>
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  required
+                  autoComplete="new-password"
+                  disabled={loading}
+                  className="input-box"
+                  placeholder="Confirm new password"
+                />
               </div>
 
               <button
@@ -205,8 +277,18 @@ function NewLogin() {
                 className="gradient-login-btn"
                 disabled={loading}
               >
-                {loading ? "LOGGING IN..." : "LOGIN"}
+                {loading ? "GENERATING OTP..." : "GENERATE OTP"}
               </button>
+
+              <div className="helper-links">
+                <button
+                  type="button"
+                  className="back-to-login"
+                  onClick={() => navigate("/login")}
+                >
+                  Back to Login
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -215,4 +297,4 @@ function NewLogin() {
   );
 }
 
-export default NewLogin;
+export default ForgotPassword;

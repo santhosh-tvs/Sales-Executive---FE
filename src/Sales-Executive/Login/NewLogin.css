@@ -1,0 +1,319 @@
+/* Login Page Specific Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.login-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.login-wrapper::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #201070 0%, #3d1f8f 100%);
+    clip-path: polygon(65% 0%, 100% 0%, 100% 45%, 35% 100%, 0% 100%, 0% 55%);
+    z-index: 1;
+}
+
+.main-container {
+    position: relative;
+    z-index: 5;
+    width: 90%;
+    max-width: 1100px;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    background: #ffffff;
+    display: flex;
+    border-radius: 16px;
+    min-height: 550px;
+    overflow: hidden;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Left Panel */
+.left-panel {
+    flex: 1;
+    background: linear-gradient(135deg, #201070 0%, #3d1f8f 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.worker-img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Right Panel */
+.right-panel {
+    flex: 1;
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+}
+
+.brand-logo {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.tvs-img {
+    max-width: 200px;
+    height: auto;
+}
+
+.auth-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #4A4A4A;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Messages */
+.error-message-new {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+    border: 1px solid #fcc;
+    border-left: 4px solid #c33;
+    border-radius: 8px;
+    color: #c33;
+    font-size: 13px;
+    text-align: center;
+    animation: slideDown 0.3s ease;
+}
+
+.success-message-new {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 1px solid #c3e6cb;
+    border-left: 4px solid #28a745;
+    border-radius: 8px;
+    color: #155724;
+    font-size: 13px;
+    text-align: center;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Form */
+.auth-form {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-group {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.input-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4A4A4A;
+    margin-bottom: 8px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.show-password-btn {
+    background: none;
+    border: none;
+    color: #F36F21;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    transition: opacity 0.2s ease;
+}
+
+.show-password-btn:hover {
+    opacity: 0.8;
+}
+
+.input-box {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 14px !important;
+    border: 2px solid #ddd !important;
+    border-radius: 8px !important;
+    background: #f9f9f9 !important;
+    color: #4A4A4A !important;
+    transition: all 0.3s ease !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    height: auto !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+}
+
+.input-box:focus {
+    outline: none !important;
+    border-color: #20409A !important;
+    background: white !important;
+    box-shadow: 0 0 0 3px rgba(32, 64, 154, 0.1) !important;
+}
+
+.input-box:disabled {
+    background: #e9ecef !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+.input-box::placeholder {
+    color: #999 !important;
+}
+
+/* Helper Links */
+.helper-links {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+}
+
+.forgot {
+    color: #20409A;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.forgot:hover {
+    color: #F36F21;
+}
+
+/* Login Button */
+.gradient-login-btn {
+    width: 100%;
+    max-width: 400px;
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #F36F21 0%, #ff8c4a 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(243, 111, 33, 0.3);
+}
+
+.gradient-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(243, 111, 33, 0.4);
+}
+
+.gradient-login-btn:active {
+    transform: translateY(0);
+}
+
+.gradient-login-btn:disabled {
+    background: linear-gradient(135deg, #ccc 0%, #ddd 100%);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+    .login-card {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .left-panel {
+        display: none;
+    }
+
+    .right-panel {
+        padding: 40px 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .right-panel {
+        padding: 30px 20px;
+    }
+
+    .brand-logo {
+        margin-bottom: 20px;
+    }
+
+    .tvs-img {
+        max-width: 150px;
+    }
+
+    .auth-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .input-group {
+        margin-bottom: 18px;
+    }
+
+    .helper-links,
+    .gradient-login-btn,
+    .error-message-new,
+    .success-message-new {
+        max-width: 100%;
+    }
+}

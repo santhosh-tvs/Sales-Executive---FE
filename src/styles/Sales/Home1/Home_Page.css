@@ -145,20 +145,15 @@
   display: flex;
   gap: 0;
   margin-bottom: 20px;
-  background: #20409A;
-  border-radius: 0;
-  padding: 0;
-  box-shadow: 0 4px 12px rgba(32, 64, 154, 0.2);
 }
 
 .chart-tab {
-  background: #20409A !important;
   border: none !important;
   border-radius: 0 !important;
   padding: 16px 32px !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: #20409A !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
   display: flex !important;
@@ -173,16 +168,15 @@
 }
 
 .chart-tab.active {
-  background: #20409A !important;
-  color: #ffffff !important;
-  border-bottom: 3px solid #ffffff !important;
+  color: #20409A !important;
+  border-bottom: 3px solid #20409A !important;
   box-shadow: none !important;
   transform: none;
 }
 
 .chart-tab:hover:not(.active) {
-  background: #1a3580 !important;
-  color: rgba(255, 255, 255, 0.9) !important;
+  background: #20419a11 !important;
+  color: #20409A !important;
   transform: none;
   box-shadow: none !important;
 }

@@ -134,33 +134,20 @@ const Consolidate_Report = () => {
     setCurrentPage(page);
   };
 
-  const handleRowsPerPageChange = (rows) => {
-    setRowsPerPage(rows);
-    setCurrentPage(1);
-  };
-
   const handleExport = () => {
     console.log('Exporting data...', { orderTypeFilter, filteredData });
     // Add export functionality here
   };
 
-  // Get label for total orders based on filter
-  const getTotalOrdersLabel = () => {
-    if (orderTypeFilter === 'Sales Order') return 'Total Number of Sales Orders';
-    if (orderTypeFilter === 'Hold Order') return 'Total Number of Hold Orders';
-    return 'Total Number of Orders';
-  };
-
   return (
     <div className="consolidate-report-container">
       <Header />
-      <Breadcrumb currentPage="History" />
       
       {/* Main Content */}
       <div className="consolidate-report-content">
-        {/* Header Section */}
+        {/* Header Section with Navigation and Controls */}
         <div className="consolidate-report-header">
-          <h1>History</h1>
+          <Breadcrumb currentPage="History" />
           
           <div className="header-controls-group">
             <div className="report-dropdown">
@@ -248,32 +235,6 @@ const Consolidate_Report = () => {
 
         {/* Pagination Section */}
         <div className="pagination-container">
-          <div className="pagination-left">
-            <div className="rows-per-page">
-              <span className="rows-label">Rows Per Page</span>
-              <select 
-                value={rowsPerPage} 
-                onChange={(e) => handleRowsPerPageChange(Number(e.target.value))}
-                className="rows-select"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </div>
-            
-            <div className="total-orders">
-              <span>{getTotalOrdersLabel()}</span>
-              <input 
-                type="text" 
-                value={totalOrders} 
-                readOnly 
-                className="total-input"
-              />
-            </div>
-          </div>
-          
           <div className="pagination-right">
             <div className="pagination-controls">
               <button 

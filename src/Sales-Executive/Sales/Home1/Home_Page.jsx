@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../header/Header';
 import '../../../styles/Sales/Home1/Home_Page.css';
+import BellIcon from '../../../assets/Icons/Bell Pin.png';
+import CoinIcon from '../../../assets/Icons/coin.png';
+import ProfileIcon from '../../../assets/Icons/profile.png';
+import SalesIcon from '../../../assets/Icons/Sales.png';
+import ReceiptIcon from '../../../assets/Icons/Reciept.png';
+import BeatIcon from '../../../assets/Icons/Beat.png';
 
 const Home_Page = () => {
   const [activeTab, setActiveTab] = useState('Sales');
@@ -64,20 +70,22 @@ const Home_Page = () => {
       return '#dc3545';
     };
 
+    // Get icon based on widget type
+    const getWidgetIcon = () => {
+      if (type === 'sales') {
+        return <img src={SalesIcon} alt="Sales" className="widget-icon" />;
+      } else if (type === 'receipt') {
+        return <img src={ReceiptIcon} alt="Receipt" className="widget-icon" />;
+      }
+      return null;
+    };
+
     return (
       <div className="widget-card">
         <div className="widget-header">
           <h3>{title}</h3>
           <div className="widget-mini-chart">
-            {/* Mini chart placeholder */}
-            <svg width="60" height="30" viewBox="0 0 60 30">
-              <path
-                d="M5,25 Q15,15 25,20 T45,10 T55,15"
-                fill="none"
-                stroke="#FF6B35"
-                strokeWidth="2"
-              />
-            </svg>
+            {getWidgetIcon()}
           </div>
         </div>
         <div className="widget-metrics">
@@ -106,13 +114,7 @@ const Home_Page = () => {
         <div className="widget-header">
           <h3>{title}</h3>
           <div className="widget-mini-chart">
-            <svg width="60" height="30" viewBox="0 0 60 30">
-              <rect x="5" y="20" width="8" height="8" fill="#FF6B35" />
-              <rect x="15" y="15" width="8" height="13" fill="#FF6B35" />
-              <rect x="25" y="10" width="8" height="18" fill="#FF6B35" />
-              <rect x="35" y="12" width="8" height="16" fill="#FF6B35" />
-              <rect x="45" y="8" width="8" height="20" fill="#FF6B35" />
-            </svg>
+            <img src={BeatIcon} alt="Beat" className="widget-icon" />
           </div>
         </div>
         <div className="widget-metrics">
@@ -317,9 +319,18 @@ const Home_Page = () => {
         <div className="dashboard-header">
           <h1>Over View</h1>
           <div className="action-buttons">
-            <button className="action-btn" onClick={handleMyActionsClick}>My Actions</button>
-            <button className="action-btn" onClick={handleMyCollectionsClick}>My Collections</button>
-            <button className="action-btn" onClick={handleMyCustomersClick}>My Customers</button>
+            <button className="action-btn" onClick={handleMyActionsClick}>
+              <img src={BellIcon} alt="Actions" className="btn-icon-white" />
+              My Actions
+            </button>
+            <button className="action-btn" onClick={handleMyCollectionsClick}>
+              <img src={CoinIcon} alt="Collections" className="btn-icon-white" />
+              My Collections
+            </button>
+            <button className="action-btn" onClick={handleMyCustomersClick}>
+              <img src={ProfileIcon} alt="Customers" className="btn-icon-white" />
+              My Customers
+            </button>
           </div>
         </div>
 

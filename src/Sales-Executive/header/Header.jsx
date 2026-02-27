@@ -31,6 +31,9 @@ const Header = () => {
               <Link to="/create-order">Create Order</Link>
             </div>
           </div>
+          <div className="nav-item">
+            <Link to="/masters" className="nav-btn">Masters</Link>
+          </div>
         </div>
       </div>
       <div>

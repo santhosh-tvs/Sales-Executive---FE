@@ -26,6 +26,7 @@ import BeatPlanPage from "./Sales-Executive/BeatPlan/BeatPlanPage.jsx";
 import ViewPlan_2 from "./Sales-Executive/Sales/Beat/ViewPlan_2.jsx";
 import Apply_Leave from "./Sales-Executive/Sales/Beat/Apply_Leave.jsx";
 import Sales_Import from "./Sales-Executive/Sales/Beat/Sales_Import.jsx";
+import CreateBeat from "./Sales-Executive/BeatPlan/CreateBeat.jsx";
 
 // Profile
 import SalesProfile from "./Sales-Executive/Profile/sales-Profile.jsx";
@@ -54,6 +55,9 @@ import MyCustomers from "./Sales-Executive/MycustomerPage/Mycustomer.jsx";
 
 // Customer Summary
 import CustomerSummary from "./Sales-Executive/My Customer page-Summary/Customersumary.jsx";
+
+// Masters
+import Masters from "./Sales-Executive/Masters/Masters.jsx";
 
 import "./App.css";
 
@@ -87,9 +91,11 @@ function App() {
           {/* Beat */}
           <Route path="/locate" element={<Locate />} />
           <Route path="/view-plan" element={<BeatPlanPage />} />
+          <Route path="/beatplan" element={<BeatPlanPage />} />
           <Route path="/viewplan2" element={<ViewPlan_2 />} />
           <Route path="/apply-leave" element={<Apply_Leave />} />
           <Route path="/sales-import" element={<Sales_Import />} />
+          <Route path="/create-beat" element={<CreateBeat />} />
 
           {/* Profile */}
           <Route path="/sales-profile" element={<SalesProfile />} />
@@ -118,6 +124,9 @@ function App() {
 
           {/* Customer Summary */}
           <Route path="/customer-summary" element={<CustomerSummary />} />
+
+          {/* Masters */}
+          <Route path="/masters" element={<Masters />} />
         </Route>
       </Routes>
     </Router>

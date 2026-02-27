@@ -76,7 +76,7 @@
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 2px;
+  border-radius: 3px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -93,7 +93,6 @@
 /* Table Styles */
 .table-wrapper {
   flex: 1;
-  margin: 0 25px 0 25px;
   overflow: visible;
   /* Remove scrolling from table wrapper */
   display: flex;

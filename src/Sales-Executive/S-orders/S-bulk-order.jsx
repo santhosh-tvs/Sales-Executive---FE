@@ -16,6 +16,8 @@ const BulkOrder = () => {
   const [selectedAddress, setSelectedAddress] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [customerSearchTerm, setCustomerSearchTerm] = useState("");
+  const [customers, setCustomers] = useState([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
   const [rows, setRows] = useState([{ 
     itemCode: "",
     itemName: "",
@@ -30,36 +32,51 @@ const BulkOrder = () => {
   }]);
   const dropdownRef = useRef(null);
 
-  // Mock customer data - replace with API call
-  const mockCustomers = [
-    {
-      id: 1,
-      code: "CUST001",
-      name: "ABC Motors Pvt Ltd",
-      email: "contact@abcmotors.com",
-      phone: "+91 9876543210",
-      address: "123 Industrial Area, Mumbai, Maharashtra",
-      gst: "27ABCDE1234F1Z5"
-    },
-    {
-      id: 2,
-      code: "CUST002", 
-      name: "XYZ Auto Parts",
-      email: "info@xyzauto.com",
-      phone: "+91 9876543211",
-      address: "456 Commercial Street, Delhi",
-      gst: "07XYZAB5678G2H9"
-    },
-    {
-      id: 3,
-      code: "CUST003",
-      name: "PQR Vehicle Services",
-      email: "sales@pqrvehicle.com", 
-      phone: "+91 9876543212",
-      address: "789 Service Road, Bangalore, Karnataka",
-      gst: "29PQRST9012I3J4"
+  // Fetch customers from API
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  const fetchCustomers = async (searchQuery = "") => {
+    setLoadingCustomers(true);
+    try {
+      const token = localStorage.getItem("authToken");
+      
+      if (!token) {
+        console.error("No auth token found");
+        setCustomers([]);
+        return;
+      }
+
+      // Build URL with search parameter if provided
+      let url = "http://localhost:3000/profile/sales-executive-customers";
+      if (searchQuery) {
+        url += `?search=${encodeURIComponent(searchQuery)}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setCustomers(data.data || []);
+      } else {
+        console.error("Failed to fetch customers:", data.message);
+        setCustomers([]);
+      }
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      setCustomers([]);
+    } finally {
+      setLoadingCustomers(false);
     }
-  ];
+  };
 
   // Mock product database for auto-population
   const mockProducts = {
@@ -123,10 +140,21 @@ const BulkOrder = () => {
   };
 
   // Filter customers based on search term
-  const filteredCustomers = mockCustomers.filter(customer =>
-    customer.name.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
-    customer.code.toLowerCase().includes(customerSearchTerm.toLowerCase())
+  const filteredCustomers = customers.filter(customer =>
+    customer.customer_name.toLowerCase().includes(customerSearchTerm.toLowerCase()) ||
+    customer.customer_code.toLowerCase().includes(customerSearchTerm.toLowerCase())
   );
+
+  // Fetch customers when search term changes (with debounce)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (customerSearchTerm.length >= 3 || customerSearchTerm.length === 0) {
+        fetchCustomers(customerSearchTerm);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [customerSearchTerm]);
 
   const handleInputChange = (index, field, value) => {
     const updatedRows = [...rows];
@@ -260,7 +288,7 @@ const BulkOrder = () => {
                   onClick={() => setShowDropdown(!showDropdown)}
                 >
                   <span className="selector-text">
-                    {selectedCustomer ? selectedCustomer.name : "Choose a customer..."}
+                    {selectedCustomer ? selectedCustomer.customer_name : "Choose a customer..."}
                   </span>
                   <span className={`selector-arrow ${showDropdown ? 'open' : ''}`}>▼</span>
                 </div>
@@ -281,17 +309,19 @@ const BulkOrder = () => {
                     
                     {/* Customer List */}
                     <div className="dropdown-list">
-                      {filteredCustomers.length > 0 ? (
+                      {loadingCustomers ? (
+                        <div className="dropdown-loading">Loading customers...</div>
+                      ) : filteredCustomers.length > 0 ? (
                         filteredCustomers.map(customer => (
                           <div 
-                            key={customer.id} 
+                            key={customer.customer_id} 
                             className="dropdown-customer-item"
                             onClick={() => handleSelectCustomer(customer)}
                           >
                             <div className="customer-item-info">
-                              <div className="customer-item-name">{customer.name}</div>
+                              <div className="customer-item-name">{customer.customer_name}</div>
                               <div className="customer-item-details">
-                                <span className="customer-item-code">{customer.code}</span>
+                                <span className="customer-item-code">{customer.customer_code}</span>
                               </div>
                             </div>
                           </div>
@@ -315,11 +345,9 @@ const BulkOrder = () => {
             {/* Enhanced Customer Info Header */}
             <div className="enhanced-customer-header">
               <div className="customer-info-left">
-                <h2 className="customer-name">{selectedCustomer.name}</h2>
+                <h2 className="customer-name">{selectedCustomer.customer_name}</h2>
                 <div className="customer-details-row">
-                  <span className="customer-code">{selectedCustomer.code}</span>
-                  <span className="customer-gst">GST: {selectedCustomer.gst}</span>
-                  <span className="customer-phone">Phone: {selectedCustomer.phone}</span>
+                  <span className="customer-code">{selectedCustomer.customer_code}</span>
                 </div>
               </div>
             </div>

@@ -9,13 +9,45 @@ import "./header.css"
 const HeaderRight = () => {
   const navigate = useNavigate();
   const [showProfilePopup, setShowProfilePopup] = useState(false);
+  const [profileData, setProfileData] = useState(null);
   const profileRef = useRef(null);
+
+  // Fetch profile data when component mounts
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      
+      if (!token) {
+        return;
+      }
+
+      const response = await fetch("http://localhost:3000/profile/user-details", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setProfileData(data.data.profile);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
 
   const handleLogout = () => {
     // Clear any stored authentication data
     localStorage.removeItem("authToken");
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("userData");
+    localStorage.removeItem("user");
+    localStorage.removeItem("isPasswordExpired");
     
     // Navigate to login page
     navigate("/login");
@@ -76,40 +108,40 @@ const HeaderRight = () => {
                 <div className="avatar-circle"></div>
               </div>
               <div className="profile-info">
-                <h3 className="profile-name">Ashik</h3>
-                <p className="profile-email">ashik@tvs.in</p>
+                <h3 className="profile-name">{profileData?.name || "User"}</h3>
+                <p className="profile-email">{profileData?.email || "N/A"}</p>
               </div>
             </div>
             
             <div className="profile-details">
               <div className="profile-detail-row">
                 <span className="detail-label">Mobile</span>
-                <span className="detail-value">93228 99498</span>
+                <span className="detail-value">{profileData?.mobile_number || "N/A"}</span>
               </div>
               
               <div className="profile-detail-row">
                 <span className="detail-label">Employee Code</span>
-                <span className="detail-value">93228 99498</span>
+                <span className="detail-value">{profileData?.sales_executive_code || "N/A"}</span>
               </div>
               
               <div className="profile-detail-row">
                 <span className="detail-label">Reporting TO</span>
-                <span className="detail-value">Sam T</span>
+                <span className="detail-value">{profileData?.reporting_manager || "N/A"}</span>
               </div>
               
               <div className="profile-detail-row">
                 <span className="detail-label">Designation</span>
-                <span className="detail-value">Employee</span>
+                <span className="detail-value">{profileData?.department || "Employee"}</span>
               </div>
               
               <div className="profile-detail-row">
                 <span className="detail-label">Sales Manager Name</span>
-                <span className="detail-value">Jhon</span>
+                <span className="detail-value">{profileData?.reporting_manager || "N/A"}</span>
               </div>
               
               <div className="profile-detail-row">
                 <span className="detail-label">Sales Manager Number</span>
-                <span className="detail-value">9876545678</span>
+                <span className="detail-value">{profileData?.reporting_email || "N/A"}</span>
               </div>
             </div>
           </div>

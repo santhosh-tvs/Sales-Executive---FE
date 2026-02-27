@@ -114,16 +114,16 @@
   .graph-wrapper {
     padding: 20px;
   }
-  
+
   .graph-svg {
     max-width: 500px;
     height: 250px;
   }
-  
+
   .y-axis-labels {
     height: 250px;
   }
-  
+
   .x-axis-labels {
     max-width: 500px;
   }
@@ -133,13 +133,13 @@
   .receipt-daily-graph-content {
     padding: 0 15px;
   }
-  
+
   .graph-wrapper {
     padding: 15px;
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .y-axis-labels {
     flex-direction: row;
     height: auto;
@@ -149,18 +149,18 @@
     min-width: auto;
     padding: 0;
   }
-  
+
   .graph-svg {
     max-width: 100%;
     height: 200px;
   }
-  
+
   .x-axis-labels {
     max-width: 100%;
     flex-wrap: wrap;
     gap: 10px;
   }
-  
+
   .x-axis-labels span {
     font-size: 10px;
   }
@@ -170,20 +170,20 @@
   .graph-title {
     font-size: 20px;
   }
-  
+
   .graph-wrapper {
     padding: 10px;
   }
-  
+
   .graph-svg {
     height: 180px;
   }
-  
+
   .y-axis-labels span,
   .x-axis-labels span {
     font-size: 10px;
   }
-  
+
   .x-axis-labels {
     gap: 7px;
   }
@@ -208,7 +208,7 @@
 .legend-color {
   width: 12px;
   height: 12px;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .legend-color.blue {

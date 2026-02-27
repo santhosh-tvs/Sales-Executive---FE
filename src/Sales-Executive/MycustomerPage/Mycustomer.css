@@ -64,19 +64,12 @@
   align-items: center;
 }
 
-.search-input {
-  flex: 1;
-  max-width: 400px;
-  min-width: 250px;
-  /* Global input styling will apply */
-}
-
 .submit-btn {
   background-color: var(--secondary-color, #20409A);
   color: white;
   padding: 0px 20px;
   border: none;
-  border-radius: 2px;
+  border-radius: 3px;
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;

@@ -1,6 +1,6 @@
 /* Enhanced Bulk Order Page Styles */
 .bulk-order-page {
-    width: 97%;
+    width: 100%;
     min-height: 100vh;
     background-color: #f5f5f5;
     padding: 20px;
@@ -162,7 +162,7 @@
     background: #ff4757;
     color: white;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     width: 30px;
     height: 30px;
     font-size: 18px;
@@ -265,7 +265,7 @@
     background: #4169E1;
     color: white;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     padding: 8px 16px;
     font-size: 14px;
     font-weight: 500;
@@ -342,7 +342,7 @@
 .quantity-btn {
     background: #f0f0f0;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     width: 30px;
     height: 30px;
     display: flex;
@@ -367,7 +367,7 @@
     background: #ff4757;
     color: white;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     padding: 6px 12px;
     font-size: 12px;
     cursor: pointer;
@@ -428,7 +428,7 @@
 .submit-btn {
     padding: 12px 24px;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
@@ -668,7 +668,7 @@
     padding: 12px 16px;
     background: white;
     border: 1px solid #ddd;
-    border-radius: 2px;
+    border-radius: 3px;
     font-size: 14px;
     color: #333;
     cursor: pointer;
@@ -780,7 +780,7 @@
     background: linear-gradient(135deg, #4169E1 0%, #2c4bc6 100%);
     color: white;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     padding: 12px 24px;
     font-size: 16px;
     font-weight: 600;
@@ -1073,7 +1073,7 @@
     width: 28px;
     height: 28px;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1117,7 +1117,7 @@
 .submit-order-btn {
     padding: 12px 24px;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -1208,19 +1208,16 @@
 }
 
 .selector-button {
-    width: 80%;
-    padding: 14px 18px;
-    background: white;
-    border: 2px solid #e9ecef;
-    border-radius: 2px;
-    font-size: 15px;
-    color: #495057;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 300px !important;
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+  border: 1px solid #3b0aad !important;
+  border-radius: 6px !important;
+  background: #ffffff !important;
+  box-sizing: border-box !important;
+  height: 40px !important;
+  font-family: Inter, sans-serif !important;
+  color: #4A4A4A !important;
 }
 
 .selector-button:hover {
@@ -1456,7 +1453,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 2px;
+    border-radius: 3px;
     transition: all 0.2s ease;
 }
 
@@ -1619,7 +1616,7 @@
 .submit-btn {
     padding: 12px 24px;
     border: none;
-    border-radius: 2px;
+    border-radius: 3px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;

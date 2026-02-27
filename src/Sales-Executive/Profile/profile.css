@@ -77,7 +77,7 @@
     color: white;
     border: none;
     padding: 8px 20px;
-    border-radius: 2px;
+    border-radius: 3px;
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
@@ -257,4 +257,35 @@
     .profile-info-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Business Units Styling */
+.profile-business-units {
+    grid-column: 1 / -1;
+}
+
+.profile-business-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.profile-business-tag {
+    display: inline-block;
+    background-color: #e8f0fe;
+    color: var(--secondary-color, #20409A);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #c5d9f5;
+    transition: all 0.2s ease;
+}
+
+.profile-business-tag:hover {
+    background-color: var(--secondary-color, #20409A);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(32, 64, 154, 0.2);
 }

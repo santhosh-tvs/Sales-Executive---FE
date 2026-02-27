@@ -1,39 +1,59 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import './beatplan.css';
 
 // Asset Imports
 import DeleteIcon from "../../assets/Assets/Beat/delete.png";
-import FilterIcon from "../../assets/Assets/Beat/filter-lines.png";
 import ExportIcon from "../../assets/Assets/Beat/export.png";
 import ArrowIcon from "../../assets/Assets/Beat/arrow-down.png";
 import EyeIcon from "../../assets/Assets/Beat/eye.png"; 
 
-const BeatPlan = () => {
+const BeatPlan = ({ onCreateBeat, onApplyLeave, onImportBeat }) => {
+  const navigate = useNavigate();
   const [tableData, setTableData] = useState([
-    { id: 1, planNo: 'P#0011', customer: 'Sam auto part', location: 'Chennai', createdDate: '11-12-2025', planDate: '12-12-2025:10:00', status: 'New', isChecked: false },
-    { id: 2, planNo: 'P#0012', customer: 'K R Parts', location: 'Madurai', createdDate: '10-12-2025', planDate: '11-12-2025:11:00', status: 'Check in', isChecked: false, purpose: 'Collection', checkInTime: '26-02-2025 & 03:40:02 AM', checkOutTime: '26-02-2025 & 03:40:02 AM' },
-    { id: 3, planNo: 'P#0013', customer: 'Sam auto part', location: 'Chennai', createdDate: '10-12-2025', planDate: '11-12-2025:12:00', status: 'Visited', isChecked: false },
-    { id: 4, planNo: 'P#0014', customer: 'Vijay Spare Parts', location: 'Chennai', createdDate: '09-12-2025', planDate: '10-12-2025:10:00', status: 'Visited', isChecked: false },
-    { id: 5, planNo: 'P#0015', customer: 'M J Autos', location: 'Madurai', createdDate: '07-12-2025', planDate: '08-12-2025:10:00', status: 'Visited', isChecked: false },
-  { id: 6, planNo: 'P#0016', customer: 'Sam auto part', location: 'Chennai', createdDate: '07-12-2025', planDate: '08-12-2025:02:00', status: 'Visited', isChecked: false },
-]);
+    { id: 1, planNo: 'P#0011', customer: 'Sam auto part', location: 'Chennai', createdDate: '11-12-2025', planDate: '12-12-2025:10:00', status: 'New', flag: 'Beat', isChecked: false },
+    { id: 2, planNo: 'P#0012', customer: 'K R Parts', location: 'Madurai', createdDate: '10-12-2025', planDate: '11-12-2025:11:00', status: 'Check in', flag: 'Beat', isChecked: false, purpose: 'Collection', checkInTime: '26-02-2025 & 03:40:02 AM', checkOutTime: '26-02-2025 & 03:40:02 AM' },
+    { id: 3, planNo: 'P#0013', customer: 'Sam auto part', location: 'Chennai', createdDate: '10-12-2025', planDate: '11-12-2025:12:00', status: 'Visited', flag: 'Beat', isChecked: false },
+    { id: 4, planNo: 'P#0014', customer: 'Vijay Spare Parts', location: 'Chennai', createdDate: '09-12-2025', planDate: '10-12-2025:10:00', status: 'Visited', flag: 'Beat', isChecked: false },
+    { id: 5, planNo: 'P#0015', customer: 'M J Autos', location: 'Madurai', createdDate: '07-12-2025', planDate: '08-12-2025:10:00', status: 'Visited', flag: 'Beat', isChecked: false },
+    { id: 6, planNo: 'P#0016', customer: 'Sam auto part', location: 'Chennai', createdDate: '07-12-2025', planDate: '08-12-2025:02:00', status: 'Visited', flag: 'Beat', isChecked: false },
+  ]);
+
+  // Employee data
+  const employeeData = [
+    { code: 'EMP001', name: 'John Doe', mobile: '9876543210' },
+    { code: 'EMP002', name: 'Jane Smith', mobile: '9876543211' },
+    { code: 'EMP003', name: 'Mike Johnson', mobile: '9876543212' },
+  ];
 
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
-  const [showFilterPopup, setShowFilterPopup] = useState(false);
-  
-  // Form states
-  const [planType, setPlanType] = useState('New Plan');
-  const [dateTime, setDateTime] = useState('');
-  const [location, setLocation] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [remark, setRemark] = useState('');
 
-  // Function to delete selected rows
-  const handleDelete = () => {
-    const remainingData = tableData.filter(item => !item.isChecked);
-    setTableData(remainingData);
+  // Function to delete a single row
+  const handleDeleteRow = (id) => {
+    Swal.fire({
+      title: 'Delete Record?',
+      text: 'Are you sure you want to delete this record?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setTableData(tableData.filter(item => item.id !== id));
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Record has been deleted.',
+          confirmButtonColor: '#20409A',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
   };
 
   // Helper function to generate customer details HTML
@@ -454,322 +474,14 @@ const BeatPlan = () => {
     const matchesSearch = item.customer.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           item.planNo.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = activeFilter === 'All' || item.status === activeFilter;
+    
     return matchesSearch && matchesFilter;
   });
 
-  // Handle Submit with Repeat Popup
-  const handleSubmit = async () => {
-    // Validate form fields
-    if (!dateTime || !location || !customerName) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Missing Fields',
-        text: 'Please fill all required fields',
-        confirmButtonColor: '#20409A',
-      });
-      return;
-    }
-
-    // Show repeat options popup
-    const { value: formValues } = await Swal.fire({
-      title: '<span style="color: #20409A; font-size: 20px; font-weight: 600;">Repeat Plan</span>',
-      html: `
-        <div style="text-align: left; padding: 10px;">
-          <div style="margin-bottom: 24px;">
-            <label style="display: block; font-size: 14px; font-weight: 600; color: #4A4A4A; margin-bottom: 10px;">
-              Repeat Type
-            </label>
-            <select id="repeat-type" style="width: 100%; padding: 12px 14px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; color: #4A4A4A; outline: none; cursor: pointer; transition: all 0.3s ease;">
-              <option value="custom">Custom Date</option>
-              <option value="weekly">Weekly</option>
-            </select>
-          </div>
-          
-          <div id="custom-date-section" style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 14px; font-weight: 600; color: #4A4A4A; margin-bottom: 10px;">
-              Select Date
-            </label>
-            <input type="date" id="custom-date" style="width: 100%; padding: 12px 14px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; color: #4A4A4A; outline: none; transition: all 0.3s ease;" />
-          </div>
-          
-          <div id="weekly-section" style="display: none; margin-bottom: 20px;">
-            <label style="display: block; font-size: 14px; font-weight: 600; color: #4A4A4A; margin-bottom: 14px;">
-              Select Days
-            </label>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-              <button type="button" class="day-btn" data-day="Monday" style="padding: 12px 8px; border: 2px solid #ddd; border-radius: 8px; background: white; color: #4A4A4A; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s ease; text-align: center;">Monday</button>
-              <button type="button" class="day-btn" data-day="Tuesday" style="padding: 12px 8px; border: 2px solid #ddd; border-radius: 8px; background: white; color: #4A4A4A; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s ease; text-align: center;">Tuesday</button>
-              <button type="button" class="day-btn" data-day="Wednesday" style="padding: 12px 8px; border: 2px solid #ddd; border-radius: 8px; background: white; color: #4A4A4A; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s ease; text-align: center;">Wednesday</button>
-              <button type="button" class="day-btn" data-day="Thursday" style="padding: 12px 8px; border: 2px solid #ddd; border-radius: 8px; background: white; color: #4A4A4A; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s ease; text-align: center;">Thursday</button>
-              <button type="button" class="day-btn" data-day="Friday" style="padding: 12px 8px; border: 2px solid #ddd; border-radius: 8px; background: white; color: #4A4A4A; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s ease; text-align: center;">Friday</button>
-              <button type="button" class="day-btn" data-day="Saturday" style="padding: 12px 8px; border: 2px solid #ddd; border-radius: 8px; background: white; color: #4A4A4A; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s ease; text-align: center;">Saturday</button>
-              <button type="button" class="day-btn" data-day="Sunday" style="padding: 12px 8px; border: 2px solid #ddd; border-radius: 8px; background: white; color: #4A4A4A; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s ease; text-align: center;">Sunday</button>
-            </div>
-          </div>
-        </div>
-      `,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Submit',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#20409A',
-      cancelButtonColor: '#6c757d',
-      width: '550px',
-      padding: '30px',
-      background: '#fff',
-      customClass: {
-        popup: 'repeat-popup',
-        title: 'repeat-popup-title',
-        htmlContainer: 'repeat-popup-content',
-        confirmButton: 'repeat-confirm-btn',
-        cancelButton: 'repeat-cancel-btn'
-      },
-      didOpen: () => {
-        const repeatType = document.getElementById('repeat-type');
-        const customSection = document.getElementById('custom-date-section');
-        const weeklySection = document.getElementById('weekly-section');
-        const dayButtons = document.querySelectorAll('.day-btn');
-        const customDateInput = document.getElementById('custom-date');
-
-        // Add focus styles
-        repeatType.addEventListener('focus', () => {
-          repeatType.style.borderColor = '#20409A';
-          repeatType.style.boxShadow = '0 0 0 3px rgba(32, 64, 154, 0.1)';
-        });
-        repeatType.addEventListener('blur', () => {
-          repeatType.style.borderColor = '#ddd';
-          repeatType.style.boxShadow = 'none';
-        });
-
-        customDateInput.addEventListener('focus', () => {
-          customDateInput.style.borderColor = '#20409A';
-          customDateInput.style.boxShadow = '0 0 0 3px rgba(32, 64, 154, 0.1)';
-        });
-        customDateInput.addEventListener('blur', () => {
-          customDateInput.style.borderColor = '#ddd';
-          customDateInput.style.boxShadow = 'none';
-        });
-
-        // Toggle sections based on repeat type
-        repeatType.addEventListener('change', (e) => {
-          if (e.target.value === 'custom') {
-            customSection.style.display = 'block';
-            weeklySection.style.display = 'none';
-          } else {
-            customSection.style.display = 'none';
-            weeklySection.style.display = 'block';
-          }
-        });
-
-        // Handle day button clicks with enhanced styling
-        dayButtons.forEach(btn => {
-          btn.addEventListener('mouseenter', (e) => {
-            if (!e.currentTarget.classList.contains('selected')) {
-              e.currentTarget.style.borderColor = '#20409A';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 4px 8px rgba(32, 64, 154, 0.15)';
-            }
-          });
-
-          btn.addEventListener('mouseleave', (e) => {
-            if (!e.currentTarget.classList.contains('selected')) {
-              e.currentTarget.style.borderColor = '#ddd';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }
-          });
-
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const button = e.currentTarget;
-            if (button.classList.contains('selected')) {
-              button.classList.remove('selected');
-              button.style.background = 'white';
-              button.style.color = '#4A4A4A';
-              button.style.borderColor = '#ddd';
-              button.style.transform = 'translateY(0)';
-              button.style.boxShadow = 'none';
-            } else {
-              button.classList.add('selected');
-              button.style.background = '#20409A';
-              button.style.color = 'white';
-              button.style.borderColor = '#20409A';
-              button.style.transform = 'translateY(-2px)';
-              button.style.boxShadow = '0 4px 12px rgba(32, 64, 154, 0.3)';
-            }
-          });
-        });
-      },
-      preConfirm: () => {
-        const repeatType = document.getElementById('repeat-type').value;
-        const customDate = document.getElementById('custom-date').value;
-        const selectedDays = Array.from(document.querySelectorAll('.day-btn.selected')).map(btn => btn.dataset.day);
-
-        if (repeatType === 'custom' && !customDate) {
-          Swal.showValidationMessage('Please select a date');
-          return false;
-        }
-
-        if (repeatType === 'weekly' && selectedDays.length === 0) {
-          Swal.showValidationMessage('Please select at least one day');
-          return false;
-        }
-
-        return {
-          repeatType,
-          customDate,
-          selectedDays
-        };
-      }
-    });
-
-    if (formValues) {
-      // Get current date for created date
-      const now = new Date();
-      const createdDate = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
-      
-      // Generate new plan number
-      const newPlanNo = `P#${String(tableData.length + 11).padStart(4, '0')}`;
-      
-      // Create new plan object
-      const newPlan = {
-        id: tableData.length + 1,
-        planNo: newPlanNo,
-        customer: customerName,
-        location: location,
-        createdDate: createdDate,
-        planDate: dateTime.replace('T', ':'),
-        status: 'New',
-        isChecked: false,
-        repeat: formValues
-      };
-      
-      // Add new plan to table
-      setTableData([newPlan, ...tableData]);
-
-      // Show success message
-      let repeatMessage = '';
-      if (formValues.repeatType === 'custom') {
-        repeatMessage = `Custom Date: ${formValues.customDate}`;
-      } else {
-        repeatMessage = `Weekly on: ${formValues.selectedDays.join(', ')}`;
-      }
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Plan Created!',
-        html: `
-          <div style="text-align: left;">
-            <p><strong>Plan Number:</strong> ${newPlanNo}</p>
-            <p><strong>Customer:</strong> ${customerName}</p>
-            <p><strong>Location:</strong> ${location}</p>
-            <p><strong>Date & Time:</strong> ${dateTime}</p>
-            <p><strong>Repeat:</strong> ${repeatMessage}</p>
-            <p style="margin-top: 12px; color: #28a745; font-weight: 600;">✓ Plan added to View Plan table with status "New"</p>
-          </div>
-        `,
-        confirmButtonColor: '#20409A',
-      });
-
-      // Reset form
-      setPlanType('New Plan');
-      setDateTime('');
-      setLocation('');
-      setCustomerName('');
-      setRemark('');
-    }
-  };
-
   return (
     <div className="beat-container">
-      
-
-      {/* CREATE PLAN */}
-      <div className="white-card">
-        <h2 className="section-title">Create Plan</h2>
-        <div className="form-grid">
-          <div className="input-field">
-            <label>New Plan</label>
-            <select className="input-box" value={planType} onChange={(e) => setPlanType(e.target.value)}>
-              <option>New Plan</option>
-              <option>Follow-up</option>
-            </select>
-          </div>
-          <div className="input-field">
-            <label>Date and Time</label>
-            <input type="datetime-local" className="input-box" value={dateTime} onChange={(e) => setDateTime(e.target.value)} />
-          </div>
-          {/* LOCATION DROPDOWN FIX */}
-          <div className="input-field">
-            <label>Location</label>
-            <select className="input-box" value={location} onChange={(e) => setLocation(e.target.value)}>
-              <option value="">Select Location</option>
-              <option value="Chennai">Chennai</option>
-              <option value="Madurai">Madurai</option>
-              <option value="Coimbatore">Coimbatore</option>
-            </select>
-          </div>
-          <div className="input-field">
-            <label>Customer Name</label>
-            <select className="input-box" value={customerName} onChange={(e) => setCustomerName(e.target.value)}>
-              <option value="">Select Customer</option>
-              <option value="Sam auto part">Sam auto part</option>
-              <option value="K R Parts">K R Parts</option>
-            </select>
-          </div>
-        </div>
-        <div className="remark-container">
-          <div className="input-field">
-            <label>Remark (optional)</label>
-            <input type="text" placeholder="Enter Remark" className="input-box" value={remark} onChange={(e) => setRemark(e.target.value)} />
-          </div>
-          <div className="submit-container">
-            <button className="submit-btn" onClick={handleSubmit}>Submit</button>
-          </div>
-        </div>
-      </div>
-
       {/* VIEW PLAN */}
       <div className="white-card mt-25">
-        <div className="table-header">
-          <h2 className="section-title">View Plan</h2>
-          <div className="action-bar">
-            {/* SEARCH BOX WITH ICON INSIDE FIX */}
-            <div className="search-wrapper">
-              <input 
-                type="text" 
-                className="search-bar" 
-                placeholder="Search Customer Name / Code" 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            
-            {/* DELETE BUTTON FUNCTION */}
-            <button className="text-action delete" onClick={handleDelete}>
-              <img src={DeleteIcon} className="header-icon-btn" alt="delete" /> Delete
-            </button>
-            
-            {/* FILTER DROPDOWN FUNCTION */}
-            <div className="filter-dropdown-container">
-              <button className="text-action" onClick={() => setShowFilterPopup(!showFilterPopup)}>
-                <img src={FilterIcon} className="header-icon-btn" alt="filter" /> Filters {activeFilter !== 'All' && `(${activeFilter})`}
-              </button>
-              {showFilterPopup && (
-                <div className="filter-popup">
-                  <div onClick={() => {setActiveFilter('All'); setShowFilterPopup(false)}}>All Status</div>
-                  <div onClick={() => {setActiveFilter('New'); setShowFilterPopup(false)}}>New</div>
-                  <div onClick={() => {setActiveFilter('Visited'); setShowFilterPopup(false)}}>Visited</div>
-                </div>
-              )}
-            </div>
-
-            <button className="export-bordered">
-              <img src={ExportIcon} className="header-icon-btn" alt="export" /> Export
-            </button>
-          </div>
-        </div>
-
         <div className="table-responsive">
           <table className="beat-table">
             <thead>
@@ -781,6 +493,7 @@ const BeatPlan = () => {
                 <th>Created Date <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
                 <th>Plan Date <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
                 <th>Plan Status <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
+                <th>Flag <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
                 <th></th>
               </tr>
             </thead>
@@ -794,18 +507,28 @@ const BeatPlan = () => {
                   <td>{data.createdDate}</td>
                   <td>{data.planDate}</td>
                   <td><span className={`dot-status ${data.status.toLowerCase()}`}>{data.status}</span></td>
+                  <td><span className={`flag-badge ${data.flag.toLowerCase()}`}>{data.flag}</span></td>
                   <td>
-                    <img 
-                      src={EyeIcon} 
-                      className="table-eye-img" 
-                      alt="view" 
-                      onClick={() => handleViewDetails(data)}
-                      style={{ cursor: 'pointer' }}
-                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <img 
+                        src={EyeIcon} 
+                        className="table-eye-img" 
+                        alt="view" 
+                        onClick={() => handleViewDetails(data)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <img 
+                        src={DeleteIcon} 
+                        className="table-delete-img" 
+                        alt="delete" 
+                        onClick={() => handleDeleteRow(data.id)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </div>
                   </td>
                 </tr>
               )) : (
-                <tr><td colSpan="8" style={{textAlign:'center', padding:'20px'}}>No records found.</td></tr>
+                <tr><td colSpan="9" style={{textAlign:'center', padding:'20px'}}>No records found.</td></tr>
               )}
             </tbody>
           </table>

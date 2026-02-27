@@ -2,6 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./pages/layout.jsx";
 import Login from "./Sales-Executive/Login/NewLogin.jsx";
+import ForgotPassword from "./Sales-Executive/Login/ForgotPassword.jsx";
+import VerifyOTP from "./Sales-Executive/Login/VerifyOTP.jsx";
 
 // Sales Home
 import SalesHome from "./Sales-Executive/Sales/Home1/Home_Page.jsx";
@@ -68,6 +70,8 @@ function App() {
         {/* 🔹 Login (No Layout) */}
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forget-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
 
         {/* 🔹 Sales Executive Pages (With Layout) */}
         <Route element={<Layout />}>

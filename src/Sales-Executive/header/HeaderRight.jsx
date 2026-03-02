@@ -43,14 +43,39 @@ const HeaderRight = () => {
     }
   };
 
-  const handleLogout = () => {
-    // Clear any stored authentication data
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
-    localStorage.removeItem("isPasswordExpired");
-    
-    // Navigate to login page
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      
+      if (token) {
+        // Call logout API
+        const response = await fetch("http://localhost:3000/profile/logout", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          console.log("Logged out successfully from server");
+        } else {
+          console.error("Logout API failed:", data.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      // Clear local storage regardless of API response
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      localStorage.removeItem("isPasswordExpired");
+      
+      // Navigate to login page
+      navigate("/login");
+    }
   };
 
   const toggleProfilePopup = () => {

@@ -15,6 +15,8 @@ function NewLogin() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showSessionModal, setShowSessionModal] = useState(false);
+  const [sessionConflictData, setSessionConflictData] = useState(null);
 
   useEffect(() => {
     // Check for success message from password reset
@@ -23,7 +25,13 @@ function NewLogin() {
       // Clear the message after 5 seconds
       setTimeout(() => setSuccessMessage(""), 5000);
     }
-  }, [location]);
+
+    // If user is already logged in, redirect to home
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      navigate("/sales-home");
+    }
+  }, [location, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -45,7 +53,7 @@ function NewLogin() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          is_proceed_to_login: true,
+          is_proceed_to_login: false, // First attempt without forcing logout
         }),
       });
 
@@ -63,6 +71,11 @@ function NewLogin() {
         if (data.user_detail.user_type === "sales_executive") {
           navigate("/sales-home");
         }
+      } else if (response.status === 409 || data.message?.includes("already logged in")) {
+        // Session conflict - user is already logged in elsewhere
+        setSessionConflictData(data);
+        setShowSessionModal(true);
+        setLoading(false);
       } else {
         setError(data.message || "Login failed. Please try again.");
         setLoading(false);
@@ -72,6 +85,62 @@ function NewLogin() {
       setError("Unable to connect to server. Please try again.");
       setLoading(false);
     }
+  };
+
+  const handleProceedLogin = async () => {
+    setShowSessionModal(false);
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          is_proceed_to_login: true, // Force logout from other session
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Trigger force logout in other tabs/windows
+        localStorage.setItem('forceLogout', 'true');
+        
+        // Small delay to ensure other tabs receive the event
+        setTimeout(() => {
+          localStorage.removeItem('forceLogout');
+          
+          // Store token and user details
+          localStorage.setItem("authToken", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user_detail));
+          localStorage.setItem("isPasswordExpired", data.is_password_expired);
+
+          setLoading(false);
+          
+          // Navigate to sales home for sales executive
+          if (data.user_detail.user_type === "sales_executive") {
+            navigate("/sales-home");
+          }
+        }, 100);
+      } else {
+        setError(data.message || "Login failed. Please try again.");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Unable to connect to server. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  const handleCancelLogin = () => {
+    setShowSessionModal(false);
+    setSessionConflictData(null);
   };
 
   return (
@@ -211,6 +280,43 @@ function NewLogin() {
           </div>
         </div>
       </div>
+
+      {/* Session Conflict Modal */}
+      {showSessionModal && (
+        <>
+          <div className="modal-overlay" onClick={handleCancelLogin}></div>
+          <div className="session-modal">
+            <div className="session-modal-content">
+              <div className="session-modal-icon">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="#F36F21" strokeWidth="2"/>
+                  <path d="M12 8v4M12 16h.01" stroke="#F36F21" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <h2 className="session-modal-title">Session Already Active</h2>
+              <p className="session-modal-message">
+                This username is already logged in. If you want to continue, please log out from the other session and log in again.
+              </p>
+              <div className="session-modal-actions">
+                <button 
+                  className="session-cancel-btn" 
+                  onClick={handleCancelLogin}
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="session-proceed-btn" 
+                  onClick={handleProceedLogin}
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Proceed"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

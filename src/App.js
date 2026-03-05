@@ -4,6 +4,7 @@ import Layout from "./pages/layout.jsx";
 import Login from "./Sales-Executive/Login/NewLogin.jsx";
 import ForgotPassword from "./Sales-Executive/Login/ForgotPassword.jsx";
 import VerifyOTP from "./Sales-Executive/Login/VerifyOTP.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 // Sales Home
 import SalesHome from "./Sales-Executive/Sales/Home1/Home_Page.jsx";
@@ -60,6 +61,11 @@ import CustomerSummary from "./Sales-Executive/My Customer page-Summary/Customer
 
 // Masters
 import Masters from "./Sales-Executive/Masters/Masters.jsx";
+import Branchmaster from "./Sales-Executive/Masters/BranchMaster.jsx"
+import Customermaster from "./Sales-Executive/Masters/CustomerMaster.jsx"
+import Employeemaster from "./Sales-Executive/Masters/EmployeeMaster.jsx"
+import Item from "./Sales-Executive/Masters/item.jsx"
+import LocationMaster from "./Sales-Executive/Masters/LocationMaster.jsx"
 
 import "./App.css";
 
@@ -67,14 +73,16 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* 🔹 Login (No Layout) */}
-        <Route path="/" element={<Login />} />
+        {/* 🔹 Public Routes (No Authentication Required) */}
         <Route path="/login" element={<Login />} />
         <Route path="/forget-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOTP />} />
 
-        {/* 🔹 Sales Executive Pages (With Layout) */}
-        <Route element={<Layout />}>
+        {/* 🔹 Root path - Redirect to login if not authenticated */}
+        <Route path="/" element={<Login />} />
+
+        {/* 🔹 Sales Executive Pages (With Layout) - All Protected */}
+        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route path="/sales-home" element={<SalesHome />} />
 
           {/* Orders */}
@@ -131,7 +139,15 @@ function App() {
 
           {/* Masters */}
           <Route path="/masters" element={<Masters />} />
+          <Route path="/masters/item" element={<Item />} />
+          <Route path="/masters/branch" element={<Branchmaster />} />
+          <Route path="/masters/customer" element={<Customermaster />} />
+          <Route path="/masters/employee" element={<Employeemaster />} />
+          <Route path="/masters/location" element={<LocationMaster />} />
         </Route>
+
+        {/* 🔹 Catch-all route - Redirect any unknown path to login */}
+        <Route path="*" element={<Login />} />
       </Routes>
     </Router>
   );

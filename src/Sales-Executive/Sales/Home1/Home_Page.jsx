@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../../../hooks/useAuth';
 import Header from '../../header/Header';
 import '../../../styles/Sales/Home1/Home_Page.css';
 import BellIcon from '../../../assets/Icons/Bell Pin.png';
@@ -10,6 +11,7 @@ import ReceiptIcon from '../../../assets/Icons/Reciept.png';
 import BeatIcon from '../../../assets/Icons/Beat.png';
 
 const Home_Page = () => {
+  useAuth(); // Check authentication
   const [activeTab, setActiveTab] = useState('Sales');
   const navigate = useNavigate();
 

@@ -1,0 +1,277 @@
+/* Custom Calendar Styles */
+.custom-calendar {
+  display: none;
+  position: absolute;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  z-index: 10000;
+  width: 320px;
+  margin-top: 5px;
+}
+
+.custom-calendar.active {
+  display: block;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-header select {
+  padding: 6px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+
+.calendar-nav-btn {
+  background: #f5f5f5;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.calendar-nav-btn:hover {
+  background: #e0e0e0;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  padding: 8px 0;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.calendar-day:hover {
+  background: #f0f4ff;
+  border-color: #2196f3;
+}
+
+.calendar-day.today {
+  background: #fff3e0;
+  font-weight: 600;
+}
+
+.calendar-day.selected {
+  background: #ff6b35;
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-day.other-month {
+  color: #ccc;
+}
+
+.calendar-day.disabled {
+  color: #ddd;
+  cursor: not-allowed;
+}
+
+.calendar-day.disabled:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.calendar-today-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.calendar-today-btn:hover {
+  background: #1976d2;
+}
+
+/* Custom Time Picker Styles */
+.custom-time-picker {
+  display: none;
+  position: absolute;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  z-index: 10000;
+  width: 280px;
+  margin-top: 5px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.custom-time-picker.active {
+  display: block;
+}
+
+.time-picker-header {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.time-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.time-control {
+  text-align: center;
+}
+
+.time-control-label {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.time-control-value {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.time-btn {
+  background: #f5f5f5;
+  border: none;
+  width: 100%;
+  height: 36px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.time-btn:hover {
+  background: #e0e0e0;
+}
+
+.time-btn:active {
+  transform: scale(0.95);
+}
+
+.time-display {
+  font-size: 32px;
+  font-weight: 600;
+  color: #333;
+  padding: 12px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.time-period-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.period-btn {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.period-btn:hover {
+  border-color: #2196f3;
+  background: #f0f4ff;
+}
+
+.period-btn.active {
+  background: #ff6b35;
+  color: white;
+  border-color: #ff6b35;
+}
+
+.time-done-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.time-done-btn:hover {
+  background: #1976d2;
+}
+
+/* SweetAlert Dialog Overflow Fix */
+.swal2-popup.clean-popup {
+  overflow: visible !important;
+}
+
+.swal2-html-container.clean-popup-content {
+  overflow: visible !important;
+}

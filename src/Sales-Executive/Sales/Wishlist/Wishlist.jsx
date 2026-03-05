@@ -16,7 +16,8 @@ const Wishlist = () => {
     <>
       <Header />
       <div className="wishlist-container">
-        <PageNavigate />
+        <div className="wishlist-content">
+          <PageNavigate />
 
       {wishlistItems.length === 0 ? (
         <div className="wishlist-empty">
@@ -123,6 +124,7 @@ const Wishlist = () => {
           </div>
         </>
       )}
+        </div>
       </div>
     </>
   );

@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import"./profile.css";
+import { apiService } from "../../services/apiservice";
 
 // Dummy chart data
 const salesData = [
@@ -65,17 +66,9 @@ const SalesProfile = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:3000/profile/user-details", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const data = await apiService.get("/profile/user-details");
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         setProfileData(data.data.profile);
       } else {
         console.error("Failed to fetch profile:", data.message);
@@ -87,10 +80,31 @@ const SalesProfile = () => {
     }
   };
 
-  const handleLogOut = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
-    navigate("/login");
+  const handleLogOut = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      
+      if (token) {
+        // Call logout API
+        const data = await apiService.post("/profile/logout");
+
+        if (data.success) {
+          console.log("Logged out successfully from server");
+        } else {
+          console.error("Logout API failed:", data.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      // Clear local storage regardless of API response
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      localStorage.removeItem("isPasswordExpired");
+      
+      // Navigate to login page
+      navigate("/login");
+    }
   };
 
   if (!user || loading) return null;

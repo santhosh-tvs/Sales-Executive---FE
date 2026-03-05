@@ -1,4 +1,5 @@
 import axios from "axios";
+import apiConfigManager from './apiConfig';
 
 const PORTS = {
     company: '4001',
@@ -8,9 +9,22 @@ const PORTS = {
     formService: '4005'
 };
 
-// const BASE_URL = "https://websprint.mytvspartsmart.in/backend-api/";
-const BASE_URL = "http://localhost:3000/api";
-// const BASE_URL = "https://uat-websprint.mytvspartsmart.in"; // Updated to use the new port
+// Read base URL from environment variable
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
+
+// Helper to build full API URL
+const getApiUrl = (endpoint) => {
+  // If endpoint already starts with /api, use it as is
+  if (endpoint.startsWith('/api/')) {
+    return `${BASE_URL}${endpoint}`;
+  }
+  // If endpoint starts with /, add /api prefix
+  if (endpoint.startsWith('/')) {
+    return `${BASE_URL}/api${endpoint}`;
+  }
+  // Otherwise, add both /api and /
+  return `${BASE_URL}/api/${endpoint}`;
+};
 
 
 // Function to create an Axios instance with conditional authorization header
@@ -27,7 +41,7 @@ const  createApiClient= () => {
     }
 
     return axios.create({
-        baseURL: `${BASE_URL}`,
+        baseURL: BASE_URL,
         timeout: 20000,
         headers: headers,
     }); 
@@ -46,7 +60,7 @@ const createApiClients = () => {
     }
 
     return axios.create({
-        baseURL: `${BASE_URL}`,
+        baseURL: BASE_URL,
         timeout: 20000,
         headers: headers,
     }); 
@@ -65,10 +79,10 @@ const apiService = {
         }
     },
 
-    post: async (endpoint, data = {}) => {
+    post: async (endpoint, data = {}, config = {}) => {
         try {
             const client = createApiClient();
-            const response = await client.post(endpoint, data);
+            const response = await client.post(endpoint, data, config);
             return response.data;
         } catch (error) {
             console.error(`POST ${endpoint} `, error);
@@ -94,6 +108,73 @@ const apiService = {
             return response.data;
         } catch (error) {
             console.error(`DELETE ${endpoint} :`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Call external API using configuration from apiConfigManager
+     * Routes through backend proxy to avoid CORS issues
+     * @param {string} apiName - Name of the API from api_list
+     * @param {object} data - Request payload
+     * @param {object} options - Additional axios options
+     * @returns {Promise} - API response
+     */
+    callExternalApi: async (apiName, data = {}, options = {}) => {
+        try {
+            const apiConfig = apiConfigManager.getApi(apiName);
+
+            if (!apiConfig) {
+                throw new Error(`API "${apiName}" not found in configuration`);
+            }
+
+            const { api_url, http_method } = apiConfig;
+            
+            // CRITICAL DIAGNOSTIC: Check credentials BEFORE creating auth headers
+            console.log(`🔍 Calling external API: ${apiName} (${http_method} ${api_url})`);
+            console.log(`🔑 Raw API Config for "${apiName}":`, {
+                api_name: apiConfig.api_name,
+                auth_type: apiConfig.auth_type,
+                username: apiConfig.username ? `${apiConfig.username.substring(0, 10)}...` : 'MISSING',
+                password: apiConfig.password ? `${apiConfig.password.substring(0, 10)}...` : 'MISSING',
+                username_has_colon: apiConfig.username ? apiConfig.username.includes(':') : false,
+                password_has_colon: apiConfig.password ? apiConfig.password.includes(':') : false,
+                has_token: !!apiConfig.api_token
+            });
+            
+            const authHeaders = apiConfigManager.getAuthHeaders(apiName);
+
+            console.log(`🔑 Auth headers:`, authHeaders ? 'Present' : 'Missing');
+            console.log(`🔑 Auth header keys:`, Object.keys(authHeaders));
+
+            // Use backend proxy to avoid CORS issues
+            const proxyUrl = '/catalog/proxy';
+            
+            const proxyPayload = {
+                url: api_url,
+                method: http_method,
+                data: data,
+                headers: authHeaders
+            };
+
+            const client = createApiClient();
+            const response = await client.post(proxyUrl, proxyPayload);
+            
+            console.log(`✅ External API response from ${apiName}:`, response.data);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ External API call failed for "${apiName}":`, error);
+            
+            // Provide more context for 401 errors
+            if (error.response && error.response.status === 401) {
+                console.error(`🔐 Authentication failed for "${apiName}". The external API rejected the credentials.`);
+                console.error(`💡 This usually means:`);
+                console.error(`   1. API credentials have expired`);
+                console.error(`   2. API credentials are invalid`);
+                console.error(`   3. The external API is rejecting the request`);
+                console.error(`💡 Solution: Try logging out and logging in again to refresh API credentials.`);
+            }
+            
             throw error;
         }
     }
@@ -146,4 +227,5 @@ const apiServices = {
     }
 };
 
-export { apiService, apiServices,PORTS };
+export { apiService, apiServices, PORTS, BASE_URL, getApiUrl };
+export default apiService;

@@ -1,10 +1,20 @@
 // Layout.jsx
 import React, { useRef, useEffect, useState } from "react";
-import { Outlet } from "react-router-dom"; // ✅ For nested routing
+import { Outlet, useNavigate } from "react-router-dom";
+import SessionMonitor from "../components/SessionMonitor";
 
 const Layout = () => {
   const headerRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
+  const navigate = useNavigate();
+
+  // Check authentication on mount
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/login', { replace: true });
+    }
+  }, [navigate]);
 
   // ✅ Dynamically calculate header height for proper padding
   useEffect(() => {
@@ -22,6 +32,9 @@ const Layout = () => {
 
   return (
     <>
+      {/* Session Monitor - monitors token validity and cross-tab logout */}
+      <SessionMonitor />
+      
       {/* Header */}
       <div ref={headerRef}>
       </div>

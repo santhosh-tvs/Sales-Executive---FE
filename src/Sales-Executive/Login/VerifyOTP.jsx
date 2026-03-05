@@ -4,6 +4,7 @@ import "./Login.css";
 import "./VerifyOTP.css";
 import Picture from "../../components/login/Assets/Login/picture.png";
 import Tvs from "../../components/login/Assets/Login/mytvs.png";
+import { apiService } from "../../services/apiservice";
 
 function VerifyOTP() {
   const navigate = useNavigate();
@@ -79,20 +80,12 @@ function VerifyOTP() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/auth/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          otp: parseInt(otpValue),
-        }),
+      const data = await apiService.post("/auth/verify-otp", {
+        email: email,
+        otp: parseInt(otpValue),
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         setSuccess(true);
         setLoading(false);
         
@@ -110,7 +103,7 @@ function VerifyOTP() {
       }
     } catch (error) {
       console.error("OTP verification error:", error);
-      setError("Unable to connect to server. Please try again.");
+      setError(error.response?.data?.message || "Unable to connect to server. Please try again.");
       setLoading(false);
     }
   };
@@ -121,19 +114,11 @@ function VerifyOTP() {
     setResendMessage("");
 
     try {
-      const response = await fetch("http://localhost:3000/auth/resend-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-        }),
+      const data = await apiService.post("/auth/resend-otp", {
+        email: email,
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         setResendMessage("OTP has been resent to your email successfully!");
         setResendLoading(false);
         
@@ -151,7 +136,7 @@ function VerifyOTP() {
       }
     } catch (error) {
       console.error("Resend OTP error:", error);
-      setError("Unable to connect to server. Please try again.");
+      setError(error.response?.data?.message || "Unable to connect to server. Please try again.");
       setResendLoading(false);
     }
   };

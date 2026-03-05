@@ -13,19 +13,21 @@ const Cart = () => {
     <>
       <Header />
       <div className="cart-page">
-        <PageNavigate />
-        
-        <div className="cart-content-wrapper">
-          <div className="cart-left">
-            <CartDetails />
-          </div>
-
-          {/* Hide cart total when empty */}
-          {cartItems.length > 0 && (
-            <div className="cart-right">
-              <CardTotal />
+        <div className="cart-container">
+          <PageNavigate />
+          
+          <div className="cart-content-wrapper">
+            <div className="cart-left">
+              <CartDetails />
             </div>
-          )}
+
+            {/* Hide cart total when empty */}
+            {cartItems.length > 0 && (
+              <div className="cart-right">
+                <CardTotal />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

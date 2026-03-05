@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-
+import { useCart } from "../../Context/CartContext";
+import { useWishlist } from "../../Context/WishlistContext";
 import cartSvg from "../../assets/Icons/Cart.png";
 import heartSvg from "../../assets/Icons/Heart.png";
 import profileSvg from "../../assets/Icons/profile.png";
 import "./header.css"
+import { apiService } from "../../services/apiservice";
 
 const HeaderRight = () => {
   const navigate = useNavigate();
+  const { getCartCount } = useCart();
+  const { wishlistItems } = useWishlist();
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const profileRef = useRef(null);
@@ -25,17 +29,9 @@ const HeaderRight = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:3000/profile/user-details", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const data = await apiService.get("/profile/user-details");
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         setProfileData(data.data.profile);
       }
     } catch (error) {
@@ -43,14 +39,31 @@ const HeaderRight = () => {
     }
   };
 
-  const handleLogout = () => {
-    // Clear any stored authentication data
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
-    localStorage.removeItem("isPasswordExpired");
-    
-    // Navigate to login page
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      
+      if (token) {
+        // Call logout API
+        const data = await apiService.post("/profile/logout");
+
+        if (data.success) {
+          console.log("Logged out successfully from server");
+        } else {
+          console.error("Logout API failed:", data.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      // Clear local storage regardless of API response
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      localStorage.removeItem("isPasswordExpired");
+      
+      // Navigate to login page
+      navigate("/login");
+    }
   };
 
   const toggleProfilePopup = () => {
@@ -83,14 +96,24 @@ const HeaderRight = () => {
       {/* Heart/Wishlist Icon */}
       <div className="header-section header-wishlist">
         <RouterLink to="/wishlist" className="header-icon-link">
-          <img src={heartSvg} alt="wishlist" className="wishlist-icon" />
+          <div className="icon-wrapper">
+            <img src={heartSvg} alt="wishlist" className="wishlist-icon" />
+            {wishlistItems.length > 0 && (
+              <span className="badge-count">{wishlistItems.length}</span>
+            )}
+          </div>
         </RouterLink>
       </div>
 
       {/* Cart Icon */}
       <div className="header-section header-cart">
         <RouterLink to="/cart" className="header-icon-link">
-          <img src={cartSvg} alt="cart" className="cart-icon" />
+          <div className="icon-wrapper">
+            <img src={cartSvg} alt="cart" className="cart-icon" />
+            {getCartCount() > 0 && (
+              <span className="badge-count">{getCartCount()}</span>
+            )}
+          </div>
         </RouterLink>
       </div>
 

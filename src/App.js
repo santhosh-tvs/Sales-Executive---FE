@@ -61,6 +61,11 @@ import CustomerSummary from "./Sales-Executive/My Customer page-Summary/Customer
 
 // Masters
 import Masters from "./Sales-Executive/Masters/Masters.jsx";
+import Branchmaster from "./Sales-Executive/Masters/BranchMaster.jsx"
+import Customermaster from "./Sales-Executive/Masters/CustomerMaster.jsx"
+import Employeemaster from "./Sales-Executive/Masters/EmployeeMaster.jsx"
+import Item from "./Sales-Executive/Masters/item.jsx"
+import LocationMaster from "./Sales-Executive/Masters/LocationMaster.jsx"
 
 import "./App.css";
 
@@ -134,6 +139,11 @@ function App() {
 
           {/* Masters */}
           <Route path="/masters" element={<Masters />} />
+          <Route path="/masters/item" element={<Item />} />
+          <Route path="/masters/branch" element={<Branchmaster />} />
+          <Route path="/masters/customer" element={<Customermaster />} />
+          <Route path="/masters/employee" element={<Employeemaster />} />
+          <Route path="/masters/location" element={<LocationMaster />} />
         </Route>
 
         {/* 🔹 Catch-all route - Redirect any unknown path to login */}

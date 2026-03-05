@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiService } from '../services/apiservice';
 
 const SessionMonitor = () => {
   const navigate = useNavigate();
@@ -19,22 +20,15 @@ const SessionMonitor = () => {
 
       try {
         // Make a lightweight API call to check if token is still valid
-        const response = await fetch('http://localhost:3000/profile/user-details', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.status === 401 || response.status === 403) {
+        await apiService.get('/profile/user-details');
+      } catch (error) {
+        if (error.response?.status === 401 || error.response?.status === 403) {
           // Token is invalid or expired, clear storage and redirect
           localStorage.removeItem('authToken');
           localStorage.removeItem('user');
           localStorage.removeItem('isPasswordExpired');
           navigate('/login');
         }
-      } catch (error) {
         console.error('Token validation error:', error);
       }
     };

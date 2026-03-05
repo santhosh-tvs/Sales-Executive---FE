@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { apiService } from '../../services/apiservice';
+import * as XLSX from 'xlsx';
 import './beatplan.css';
 
 // Asset Imports
@@ -9,16 +11,96 @@ import ExportIcon from "../../assets/Assets/Beat/export.png";
 import ArrowIcon from "../../assets/Assets/Beat/arrow-down.png";
 import EyeIcon from "../../assets/Assets/Beat/eye.png"; 
 
-const BeatPlan = ({ onCreateBeat, onApplyLeave, onImportBeat }) => {
+const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) => {
   const navigate = useNavigate();
-  const [tableData, setTableData] = useState([
-    { id: 1, planNo: 'P#0011', customer: 'Sam auto part', location: 'Chennai', createdDate: '11-12-2025', planDate: '12-12-2025:10:00', status: 'New', flag: 'Beat', isChecked: false },
-    { id: 2, planNo: 'P#0012', customer: 'K R Parts', location: 'Madurai', createdDate: '10-12-2025', planDate: '11-12-2025:11:00', status: 'Check in', flag: 'Beat', isChecked: false, purpose: 'Collection', checkInTime: '26-02-2025 & 03:40:02 AM', checkOutTime: '26-02-2025 & 03:40:02 AM' },
-    { id: 3, planNo: 'P#0013', customer: 'Sam auto part', location: 'Chennai', createdDate: '10-12-2025', planDate: '11-12-2025:12:00', status: 'Visited', flag: 'Beat', isChecked: false },
-    { id: 4, planNo: 'P#0014', customer: 'Vijay Spare Parts', location: 'Chennai', createdDate: '09-12-2025', planDate: '10-12-2025:10:00', status: 'Visited', flag: 'Beat', isChecked: false },
-    { id: 5, planNo: 'P#0015', customer: 'M J Autos', location: 'Madurai', createdDate: '07-12-2025', planDate: '08-12-2025:10:00', status: 'Visited', flag: 'Beat', isChecked: false },
-    { id: 6, planNo: 'P#0016', customer: 'Sam auto part', location: 'Chennai', createdDate: '07-12-2025', planDate: '08-12-2025:02:00', status: 'Visited', flag: 'Beat', isChecked: false },
-  ]);
+  
+  const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState('All');
+
+  // Fetch beat plans on component mount
+  useEffect(() => {
+    fetchBeatPlans();
+  }, []);
+
+  const fetchBeatPlans = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.get('/beat-plan/new-beat-plan-list');
+      
+      if (response.success && response.data) {
+        // Map API data to table format
+        const formattedData = response.data.map(plan => {
+          // Determine status based on check_in, check_out, and visited_status
+          let status = 'New';
+          if (plan.visited_status === 'visited') {
+            status = 'Visited';
+          } else if (plan.check_in && !plan.check_out) {
+            status = 'Check in';
+          } else if (plan.check_in && plan.check_out) {
+            status = 'Visited';
+          }
+
+          // Format dates
+          const formatDate = (dateStr) => {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', { 
+              day: '2-digit', 
+              month: '2-digit', 
+              year: 'numeric' 
+            });
+          };
+
+          const formatDateTime = (dateStr) => {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const dateFormatted = date.toLocaleDateString('en-GB', { 
+              day: '2-digit', 
+              month: '2-digit', 
+              year: 'numeric' 
+            });
+            const timeFormatted = date.toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: true 
+            });
+            return `${dateFormatted} & ${timeFormatted}`;
+          };
+
+          return {
+            id: plan.beat_plan_id,
+            planNo: plan.plan_code,
+            customer: plan.garage_name,
+            customerCode: plan.garage_code,
+            customerId: plan.customer_id,
+            location: plan.garage_location,
+            createdDate: formatDate(plan.created_at),
+            planDate: plan.plan_date ? plan.plan_date.replace(' ', ':').substring(0, 16) : '',
+            status: status,
+            flag: 'Beat',
+            isChecked: false,
+            checkInTime: plan.check_in ? formatDateTime(plan.check_in) : null,
+            checkOutTime: plan.check_out ? formatDateTime(plan.check_out) : null,
+            purpose: 'Collection' // Default purpose
+          };
+        });
+
+        setTableData(formattedData);
+      }
+    } catch (error) {
+      console.error('Error fetching beat plans:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load beat plans',
+        confirmButtonColor: '#20409A'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Employee data
   const employeeData = [
@@ -26,9 +108,6 @@ const BeatPlan = ({ onCreateBeat, onApplyLeave, onImportBeat }) => {
     { code: 'EMP002', name: 'Jane Smith', mobile: '9876543211' },
     { code: 'EMP003', name: 'Mike Johnson', mobile: '9876543212' },
   ];
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState('All');
 
   // Function to delete a single row
   const handleDeleteRow = (id) => {
@@ -469,6 +548,78 @@ const BeatPlan = ({ onCreateBeat, onApplyLeave, onImportBeat }) => {
     setTableData(tableData.map(item => ({ ...item, isChecked: checked })));
   };
 
+  // Export selected records to Excel
+  const handleExport = () => {
+    const selectedData = tableData.filter(item => item.isChecked);
+    
+    if (selectedData.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Records Selected',
+        text: 'Please select at least one record to export',
+        confirmButtonColor: '#20409A'
+      });
+      return;
+    }
+
+    // Prepare data for Excel
+    const exportData = selectedData.map(item => ({
+      'Plan Number': item.planNo,
+      'Customer Name': item.customer,
+      'Customer Code': item.customerCode || '',
+      'Location': item.location,
+      'Created Date': item.createdDate,
+      'Plan Date': item.planDate,
+      'Status': item.status,
+      'Flag': item.flag,
+      'Check In Time': item.checkInTime || 'N/A',
+      'Check Out Time': item.checkOutTime || 'N/A'
+    }));
+
+    // Create worksheet
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    
+    // Set column widths
+    const columnWidths = [
+      { wch: 15 }, // Plan Number
+      { wch: 30 }, // Customer Name
+      { wch: 15 }, // Customer Code
+      { wch: 30 }, // Location
+      { wch: 15 }, // Created Date
+      { wch: 20 }, // Plan Date
+      { wch: 12 }, // Status
+      { wch: 10 }, // Flag
+      { wch: 25 }, // Check In Time
+      { wch: 25 }  // Check Out Time
+    ];
+    worksheet['!cols'] = columnWidths;
+
+    // Create workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Beat Plans');
+
+    // Generate filename with current date
+    const date = new Date();
+    const filename = `Beat_Plans_${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}.xlsx`;
+
+    // Export file
+    XLSX.writeFile(workbook, filename);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Exported Successfully!',
+      text: `${selectedData.length} record(s) exported to ${filename}`,
+      confirmButtonColor: '#20409A',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  };
+
+  // Expose handleExport to parent component
+  useImperativeHandle(ref, () => ({
+    handleExport
+  }));
+
   // Filter and Search Logic
   const filteredData = tableData.filter((item) => {
     const matchesSearch = item.customer.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -488,7 +639,7 @@ const BeatPlan = ({ onCreateBeat, onApplyLeave, onImportBeat }) => {
               <tr>
                 <th><input type="checkbox" onChange={(e) => toggleAll(e.target.checked)} /></th>
                 <th>Plan Number <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
-                <th>Customer Number <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
+                <th>Customer Name <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
                 <th>Location <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
                 <th>Created Date <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
                 <th>Plan Date <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
@@ -498,7 +649,13 @@ const BeatPlan = ({ onCreateBeat, onApplyLeave, onImportBeat }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.length > 0 ? filteredData.map((data) => (
+              {loading ? (
+                <tr>
+                  <td colSpan="9" style={{textAlign:'center', padding:'40px'}}>
+                    Loading beat plans...
+                  </td>
+                </tr>
+              ) : filteredData.length > 0 ? filteredData.map((data) => (
                 <tr key={data.id}>
                   <td><input type="checkbox" checked={data.isChecked || false} onChange={() => toggleCheck(data.id)} /></td>
                   <td className="plan-id">{data.planNo}</td>
@@ -536,6 +693,6 @@ const BeatPlan = ({ onCreateBeat, onApplyLeave, onImportBeat }) => {
       </div>
     </div>
   );
-};
+});
 
 export default BeatPlan;

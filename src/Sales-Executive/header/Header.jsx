@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import HeaderLogo from "./HeaderLogo"; 
+import HeaderLogo from "./HeaderLogo";
 import HeaderRight from "./HeaderRight";
 
 import "./header.css"
@@ -31,8 +31,15 @@ const Header = () => {
               <Link to="/create-order">Create Order</Link>
             </div>
           </div>
-          <div className="nav-item">
-            <Link to="/masters" className="nav-btn">Masters</Link>
+          <div className="nav-item dropdown">
+            <button className="nav-btn">Masters</button>
+            <div className="dropdown-content">
+              <Link to="/masters/item">Item </Link>
+              <Link to="/masters/employee">Employee</Link>
+              <Link to="/masters/customer">Customer</Link>
+              <Link to="/masters/branch">Branch</Link>
+              <Link to="/masters/location">Location</Link>
+            </div>
           </div>
         </div>
       </div>

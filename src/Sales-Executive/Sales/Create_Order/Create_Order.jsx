@@ -4,6 +4,7 @@ import Header from '../../header/Header';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import '../../../styles/Sales/Create_Order/Create_Order.css';
 import searchIcon from '../../../assets/Icons/MagnifyingGlass.png';
+import { apiService } from '../../../services/apiservice';
 
 const Create_Order = () => {
   const navigate = useNavigate();
@@ -30,23 +31,12 @@ const Create_Order = () => {
         return;
       }
 
-      // Build URL with search parameter if provided
-      let url = "http://localhost:3000/profile/sales-executive-customers";
-      if (searchQuery) {
-        url += `?search=${encodeURIComponent(searchQuery)}`;
-      }
+      // Build params object with search parameter if provided
+      const params = searchQuery ? { search: searchQuery } : {};
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const data = await apiService.get("/profile/sales-executive-customers", params);
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         setCustomers(data.data || []);
       } else {
         console.error("Failed to fetch customers:", data.message);

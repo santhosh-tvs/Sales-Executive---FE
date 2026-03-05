@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import axios from 'axios';
 import Header from '../header/Header';
 import FilterNavigation from './filter_Navigation';
 import ProFilter from './pro_filter';
 import ProProduct from './pro_product';
 import '../../../styles/customer/productss/pro_product_final.css';
-
-const API_BASE_URL = 'http://localhost:3000/api';
+import { apiService } from '../../services/apiservice';
 
 console.log('==========================================');
 console.log('🎯 PRO_PRODUCT_FINAL.JSX LOADED');
@@ -88,20 +86,20 @@ const ProProductFinal = () => {
 
       console.log('📤 Sending API request with body:', JSON.stringify(requestBody, null, 2));
       
-      const response = await axios.post(`${API_BASE_URL}/parts-list`, requestBody);
+      const response = await apiService.post('/parts-list', requestBody);
 
       console.log('📥 API Response received:', {
-        success: response.data.success,
-        count: response.data.count,
-        dataLength: response.data.data?.length,
-        data: response.data.data
+        success: response.success,
+        count: response.count,
+        dataLength: response.data?.length,
+        data: response.data
       });
 
-      if (response.data.success) {
-        const totalAvailable = response.data.count || 0;
+      if (response.success) {
+        const totalAvailable = response.count || 0;
         setTotalCount(totalAvailable);
         
-        const productsData = response.data.data.map((item, index) => ({
+        const productsData = response.data.map((item, index) => ({
           id: `${item.partNumber || 'unknown'}-${currentOffset}-${index}-${Date.now()}`,
           productImage: "", // No image in API response
           brand: item.brandName || "N/A",
@@ -146,12 +144,6 @@ const ProProductFinal = () => {
           }, 100);
         }
         console.log('📊 Product details:', productsData.map(p => ({ id: p.id, brand: p.brand, name: p.productName })));
-      } else {
-        console.error('Failed to fetch products:', response.data.message);
-        if (!append) {
-          setProducts([]);
-        }
-        setHasMore(false);
       }
     } catch (error) {
       console.error('Error fetching products:', error);

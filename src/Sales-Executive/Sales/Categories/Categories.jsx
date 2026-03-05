@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { apiService } from "../../../services/apiservice";
+import { useNavigate } from "react-router-dom";
+import { masterListAPI } from "../../../services/api";
+import apiConfigManager from "../../../services/apiConfig";
 import Header from "../../header/Header";
 import PageNavigate from "../Cart/PageNavigate";
+import OciImage from "../../../components/OciImage";
 import "./Categories.css";
 
 // Cache keys
@@ -15,7 +17,7 @@ const CACHE_KEYS = {
 // Cache duration: 24 hours (in milliseconds)
 const CACHE_DURATION = 24 * 60 * 60 * 1000;
 
-const CNG = () => {
+const Category = () => {
   const navigate = useNavigate();
   const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
   const [categories, setCategories] = useState([]);
@@ -102,7 +104,7 @@ const CNG = () => {
         year: null
       };
 
-      const response = await apiService.post("/filter", requestBody);
+      const response = await masterListAPI(requestBody);
 
       console.log("API Response:", response);
 
@@ -182,7 +184,7 @@ const CNG = () => {
         year: null
       };
 
-      const response = await apiService.post("/filter", requestBody);
+      const response = await masterListAPI(requestBody);
       const subcategoriesData = response.data || [];
 
       console.log("Subcategories for", categoryName, ":", subcategoriesData);
@@ -322,7 +324,12 @@ const CNG = () => {
                     onClick={() => handleCategoryClick(category)}
                   >
                     <div className="make-image-container">
-                      <span className="brand-placeholder">No Image</span>
+                      <OciImage
+                        partNumber={category.name}
+                        folder="categories"
+                        className="category-image"
+                        alt={category.name}
+                      />
                     </div>
 
                     <div className="make-name">{category.name}</div>
@@ -411,7 +418,12 @@ const CNG = () => {
                   onClick={() => handleSubcategoryClick(subcategory)}
                 >
                   <div className="model-image-container">
-                    <span className="brand-placeholder">No Image</span>
+                    <OciImage
+                      partNumber={subcategory.name}
+                      folder="subcategories"
+                      className="subcategory-image"
+                      alt={subcategory.name}
+                    />
                   </div>
                   <div className="model-name">{subcategory.name}</div>
                 </div>
@@ -424,4 +436,4 @@ const CNG = () => {
   );
 };
 
-export default CNG;
+export default Category;

@@ -3,6 +3,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./NewLogin.css";
 import Picture from "../../components/login/Assets/Login/picture.png";
 import Tvs from "../../components/login/Assets/Login/mytvs.png";
+import { apiService } from "../../services/apiservice";
+import apiConfigManager from "../../services/apiConfig";
 
 function NewLogin() {
   const navigate = useNavigate();
@@ -45,25 +47,36 @@ function NewLogin() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          is_proceed_to_login: false, // First attempt without forcing logout
-        }),
+      const data = await apiService.post("/auth/login", {
+        email: formData.email,
+        password: formData.password,
+        is_proceed_to_login: false, // First attempt without forcing logout
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         // Store token and user details
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("user", JSON.stringify(data.user_detail));
         localStorage.setItem("isPasswordExpired", data.is_password_expired);
+
+        // Initialize API config if api_list is present (for customers)
+        if (data.user_detail?.api_list && Array.isArray(data.user_detail.api_list)) {
+          console.log('🔧 Initializing API configuration from login response (customer)');
+          apiConfigManager.initialize(data.user_detail.api_list);
+        } 
+        // For sales executives, fetch profile to get api_list
+        else if (data.user_detail?.user_type === "sales_executive") {
+          console.log('🔧 Fetching profile for sales executive to get API configuration');
+          try {
+            const profileData = await apiService.get('/profile/user-details');
+            if (profileData.success && profileData.data?.profile?.api_list) {
+              console.log('✅ Initializing API configuration from profile response (sales executive)');
+              apiConfigManager.initialize(profileData.data.profile.api_list);
+            }
+          } catch (profileError) {
+            console.error('❌ Failed to fetch profile for API configuration:', profileError);
+          }
+        }
 
         setLoading(false);
         
@@ -71,7 +84,7 @@ function NewLogin() {
         if (data.user_detail.user_type === "sales_executive") {
           navigate("/sales-home");
         }
-      } else if (response.status === 409 || data.message?.includes("already logged in")) {
+      } else if (data.message?.includes("already logged in")) {
         // Session conflict - user is already logged in elsewhere
         setSessionConflictData(data);
         setShowSessionModal(true);
@@ -82,7 +95,12 @@ function NewLogin() {
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError("Unable to connect to server. Please try again.");
+      if (error.response?.status === 409 || error.response?.data?.message?.includes("already logged in")) {
+        setSessionConflictData(error.response.data);
+        setShowSessionModal(true);
+      } else {
+        setError(error.response?.data?.message || "Unable to connect to server. Please try again.");
+      }
       setLoading(false);
     }
   };
@@ -93,47 +111,58 @@ function NewLogin() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          is_proceed_to_login: true, // Force logout from other session
-        }),
+      const data = await apiService.post("/auth/login", {
+        email: formData.email,
+        password: formData.password,
+        is_proceed_to_login: true, // Force logout from other session
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         // Trigger force logout in other tabs/windows
         localStorage.setItem('forceLogout', 'true');
         
         // Small delay to ensure other tabs receive the event
         setTimeout(() => {
           localStorage.removeItem('forceLogout');
-          
-          // Store token and user details
-          localStorage.setItem("authToken", data.token);
-          localStorage.setItem("user", JSON.stringify(data.user_detail));
-          localStorage.setItem("isPasswordExpired", data.is_password_expired);
-
-          setLoading(false);
-          
-          // Navigate to sales home for sales executive
-          if (data.user_detail.user_type === "sales_executive") {
-            navigate("/sales-home");
-          }
         }, 100);
+
+        // Store token and user details
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user_detail));
+        localStorage.setItem("isPasswordExpired", data.is_password_expired);
+
+        // Initialize API config if api_list is present (for customers)
+        if (data.user_detail?.api_list && Array.isArray(data.user_detail.api_list)) {
+          console.log('🔧 Initializing API configuration from login response (customer)');
+          apiConfigManager.initialize(data.user_detail.api_list);
+        } 
+        // For sales executives, fetch profile to get api_list
+        else if (data.user_detail?.user_type === "sales_executive") {
+          console.log('🔧 Fetching profile for sales executive to get API configuration');
+          try {
+            const profileData = await apiService.get('/profile/user-details');
+            if (profileData.success && profileData.data?.profile?.api_list) {
+              console.log('✅ Initializing API configuration from profile response (sales executive)');
+              apiConfigManager.initialize(profileData.data.profile.api_list);
+            }
+          } catch (profileError) {
+            console.error('❌ Failed to fetch profile for API configuration:', profileError);
+          }
+        }
+
+        setLoading(false);
+        
+        // Navigate to sales home for sales executive
+        if (data.user_detail.user_type === "sales_executive") {
+          navigate("/sales-home");
+        }
       } else {
         setError(data.message || "Login failed. Please try again.");
         setLoading(false);
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError("Unable to connect to server. Please try again.");
+      setError(error.response?.data?.message || "Unable to connect to server. Please try again.");
       setLoading(false);
     }
   };

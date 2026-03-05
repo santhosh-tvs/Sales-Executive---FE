@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./ForgotPassword.css";
 import Picture from "../../components/login/Assets/Login/picture.png";
 import Tvs from "../../components/login/Assets/Login/mytvs.png";
+import { apiService } from "../../services/apiservice";
 
 function ForgotPassword() {
   const navigate = useNavigate();
@@ -47,21 +48,13 @@ function ForgotPassword() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/auth/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-        }),
+      const data = await apiService.post("/auth/forgot-password", {
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         setLoading(false);
         // Navigate to OTP verify page with email
         navigate("/verify-otp", { state: { email: formData.email } });
@@ -71,7 +64,7 @@ function ForgotPassword() {
       }
     } catch (error) {
       console.error("Forgot password error:", error);
-      setError("Unable to connect to server. Please try again.");
+      setError(error.response?.data?.message || "Unable to connect to server. Please try again.");
       setLoading(false);
     }
   };

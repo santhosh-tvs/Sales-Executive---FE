@@ -1,59 +1,91 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../";
 import "../../../styles/home-components/Brands.css";
 import searchIcon from "../../../assets/Icons/MagnifyingGlass.png";
-
-// Brand Images
-import ThreeM from "../../../assets/Images/brand/3M.png";
-import Ashokleyland from "../../../assets/Images/brand/ashok_leyland 2.png";
-import BEHR from "../../../assets/Images/brand/BEHR.png";
-import BOSCH from "../../../assets/Images/brand/BOSCH.png";
-import Castrol from "../../../assets/Images/brand/Castrol.png";
-import Champion from "../../../assets/Images/brand/Champion.png";
-import Contitech from "../../../assets/Images/brand/CONTITECH.png";
-import Denso from "../../../assets/Images/brand/DENSO.png";
-import DLPH from "../../../assets/Images/brand/DLPH.png";
-import Elofic from "../../../assets/Images/brand/ELOFIC.png";
-import Exedy from "../../../assets/Images/brand/EXEDY.png";
-import Finolex from "../../../assets/Images/brand/finolex.png";
-import GoodYear from "../../../assets/Images/brand/GOODYEAR.png";
-import Hella from "../../../assets/Images/brand/HELLA.png";
-import Iifi from "../../../assets/Images/brand/IIFI.png";
-import Ina from "../../../assets/Images/brand/INA.png";
-import Jai from "../../../assets/Images/brand/JAI.png";
-import Jk from "../../../assets/Images/brand/jk poineer.png";
-import JkTyre from "../../../assets/Images/brand/JKTYRE.png";
-import Lucas from "../../../assets/Images/brand/Lucas Tvs Logo-01.png";
-import LUK from "../../../assets/Images/brand/luk.png";
-import Mahle from "../../../assets/Images/brand/MAHLE.png";
-import Mfc from "../../../assets/Images/brand/MFC.png";
-import Ngk from "../../../assets/Images/brand/NGK.png";
-import Phc from "../../../assets/Images/brand/PHC.png";
-import Rane from "../../../assets/Images/brand/RANE.png";
-import Sachs from "../../../assets/Images/brand/Sachs.png";
-import Schaeffler from "../../../assets/Images/brand/schaeffler.png";
-import Smic from "../../../assets/Images/brand/SMIC.png";
-import Spicer from "../../../assets/Images/brand/spicer.png";
-import TVS from "../../../assets/Images/brand/TVS.png";
-import Ucap from "../../../assets/Images/brand/UCAP Logo-01.png";
-import Umax from "../../../assets/Images/brand/umax.png";
-import Valeo from "../../../assets/Images/brand/VALEO.png";
-
-const brandsList = [
-  Hella, LUK, BOSCH, Contitech, Ashokleyland, Lucas, Ucap, Valeo, Ina,
-  Finolex, Jk, Schaeffler, Spicer, Umax, TVS, DLPH, Champion,
-  ThreeM, Phc, Elofic, BEHR, Sachs, Mfc, Castrol, Mahle, Exedy, Denso,
-  Ngk, Rane, Iifi, Smic, Jai, JkTyre, GoodYear
-].map((image) => ({ image }));
+import { masterListAPI } from "../../../services/api";
+import apiConfigManager from "../../../services/apiConfig";
+import OciImage from "../../../components/OciImage";
 
 const HomeBrands = () => {
+  console.log('🏠 HomeBrands component rendered');
+  
   const [search, setSearch] = useState("");
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const filteredBrands = brandsList.filter(
-    (brand) =>
-      brand.image
-        .toLowerCase()
-        .includes(search.toLowerCase())
+  // Fetch brands from master list API on component mount
+  useEffect(() => {
+    console.log('🔄 HomeBrands useEffect triggered');
+    fetchBrands();
+  }, []);
+
+  const fetchBrands = async () => {
+    console.log('📡 fetchBrands called');
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Initialize API config if not already done
+      if (!apiConfigManager.isInitialized()) {
+        console.log('⚠️ API config not initialized, fetching...');
+        await apiConfigManager.fetchAndInitialize();
+      }
+
+      // Get user info for customer code
+      const user = JSON.parse(localStorage.getItem('user'));
+      const customerCode = user?.customer_code || '0046';
+      
+      console.log('👤 User customer code:', customerCode);
+
+      const requestBody = {
+        partNumber: null,
+        sortOrder: "ASC",
+        customerCode: customerCode,
+        aggregate: null,
+        brand: null,
+        fuelType: null,
+        limit: 240,
+        make: null,
+        masterType: "brand",
+        model: null,
+        offset: 0,
+        primary: false,
+        subAggregate: null,
+        variant: null,
+        year: null
+      };
+      
+      console.log('📤 Calling masterListAPI with:', requestBody);
+      const response = await masterListAPI(requestBody);
+      console.log('📥 masterListAPI response:', response);
+      
+      if (response && response.success && response.data) {
+        console.log('✅ Brands data received:', response.data.length, 'brands');
+        
+        // Transform API response to match component structure
+        const transformedBrands = response.data.map((brand, index) => ({
+          id: index + 1,
+          name: brand.masterName,
+        }));
+        
+        console.log('🔄 Transformed brands:', transformedBrands.slice(0, 3));
+        setBrands(transformedBrands);
+      } else {
+        console.error('❌ Invalid response from masterListAPI');
+        setError('Failed to load brands');
+      }
+    } catch (err) {
+      console.error('❌ Error in fetchBrands:', err);
+      setError('Error loading brands. Please try again.');
+    } finally {
+      console.log('🏁 fetchBrands completed, setting loading to false');
+      setLoading(false);
+    }
+  };
+
+  const filteredBrands = brands.filter((brand) =>
+    brand.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -74,13 +106,36 @@ const HomeBrands = () => {
           </div>
         </div>
 
-        <div className="home-brand-grid">
-          {filteredBrands.map((brand, idx) => (
-            <div key={idx} className="home-brand-card">
-              <img src={brand.image} alt="Brand" />
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="home-brand-loading">
+            <p>Loading brands...</p>
+          </div>
+        ) : error ? (
+          <div className="home-brand-error">
+            <p>{error}</p>
+            <button onClick={fetchBrands}>Retry</button>
+          </div>
+        ) : (
+          <div className="home-brand-grid">
+            {filteredBrands.length === 0 ? (
+              <div className="home-brand-no-results">
+                <p>No brands found for "{search}"</p>
+              </div>
+            ) : (
+              filteredBrands.map((brand) => (
+                <div key={brand.id} className="home-brand-card">
+                  <OciImage
+                    partNumber={brand.name}
+                    folder="brand"
+                    className="home-brand-image"
+                    alt={brand.name}
+                  />
+                  <div className="home-brand-name">{brand.name}</div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

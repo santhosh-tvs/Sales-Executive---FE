@@ -283,30 +283,21 @@ const BulkOrder = () => {
             <div className="enhanced-customer-selector" ref={dropdownRef}>
               <div className="selector-label">Select Customer:</div>
               <div className="customer-selector-dropdown">
-                <div 
-                  className="selector-button"
-                  onClick={() => setShowDropdown(!showDropdown)}
-                >
-                  <span className="selector-text">
-                    {selectedCustomer ? selectedCustomer.customer_name : "Choose a customer..."}
-                  </span>
-                  <span className={`selector-arrow ${showDropdown ? 'open' : ''}`}>▼</span>
-                </div>
+                {/* Search Input - Always visible */}
+                <input
+                  type="text"
+                  placeholder={selectedCustomer ? selectedCustomer.customer_name : "Search customer by name or code..."}
+                  value={customerSearchTerm}
+                  onChange={(e) => {
+                    setCustomerSearchTerm(e.target.value);
+                    setShowDropdown(true); // Show dropdown when typing
+                  }}
+                  onFocus={() => setShowDropdown(true)}
+                  className="customer-search-input"
+                />
                 
                 {showDropdown && (
                   <div className="selector-dropdown-menu">
-                    {/* Search Input */}
-                    <div className="dropdown-search">
-                      <input
-                        type="text"
-                        placeholder="Search customers..."
-                        value={customerSearchTerm}
-                        onChange={(e) => setCustomerSearchTerm(e.target.value)}
-                        className="search-input-dropdown"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </div>
-                    
                     {/* Customer List */}
                     <div className="dropdown-list">
                       {loadingCustomers ? (
@@ -328,7 +319,7 @@ const BulkOrder = () => {
                         ))
                       ) : (
                         <div className="no-customers-found">
-                          <span>No customers found</span>
+                          <span>{customerSearchTerm ? 'No customers found matching your search' : 'Start typing to search customers'}</span>
                         </div>
                       )}
                     </div>

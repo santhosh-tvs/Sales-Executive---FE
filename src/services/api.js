@@ -551,6 +551,16 @@ export const createOrderAPI = async (orderData) => {
   return null;
 };
 
+export const customerDetails = async (orderData) => {
+  try {
+    if (apiConfigManager.isInitialized()) {
+      return await apiService.callExternalApi('customer details', orderData);
+    }
+  } catch (error) {
+    console.error('Customer details API error:', error);
+  }
+  return null;
+};
 /* ============================
    EXPORT ALL
 ============================ */

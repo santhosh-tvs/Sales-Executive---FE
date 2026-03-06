@@ -5,32 +5,32 @@
 }
 
 .cartdetails-frame {
-    padding: 25px;
+    padding: 18px;
 }
 
 /* Empty Cart State */
 .empty-cart-wrapper {
     text-align: center;
-    padding: 60px 20px;
+    padding: 40px 20px;
 }
 
 .empty-cart-icon {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 20px;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
 }
 
 .empty-cart-wrapper h2 {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
     color: #4A4A4A;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .empty-cart-wrapper p {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 
 .return-shop-btn {
@@ -55,12 +55,12 @@
 .cartdetails-header {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr auto;
-    gap: 15px;
-    padding: 15px 20px;
+    gap: 12px;
+    padding: 12px 16px;
     background: #f5f5f5;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 14px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 13px;
     font-weight: 600;
     color: #4A4A4A;
 }
@@ -99,16 +99,16 @@
 .cartdetails-body {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
 
 .cartdetails-row {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr auto;
-    gap: 15px;
-    padding: 20px;
+    gap: 12px;
+    padding: 16px;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 6px;
     align-items: center;
     transition: all 0.3s ease;
 }
@@ -122,20 +122,20 @@
 .cartdetails-product {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
 .cartdetails-product-image {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 6px;
     background: #f5f5f5;
     flex-shrink: 0;
 }
 
 .cartdetails-product-name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: #4A4A4A;
     line-height: 1.4;
@@ -144,7 +144,7 @@
 /* Price Column */
 .cartdetails-price {
     text-align: center;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: #20409A;
 }
@@ -197,7 +197,7 @@
 /* Subtotal Column */
 .cartdetails-subtotal {
     text-align: center;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: #20409A;
 }
@@ -209,14 +209,14 @@
 }
 
 .cartdetails-remove-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     background: #dc3545;
     color: white;
     border: none;
     border-radius: 3px;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     display: flex;
     align-items: center;

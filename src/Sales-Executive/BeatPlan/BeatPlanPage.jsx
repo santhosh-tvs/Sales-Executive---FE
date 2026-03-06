@@ -18,11 +18,13 @@ const BeatPlanPage = () => {
   const [customersData, setCustomersData] = useState([]);
   const [citiesData, setCitiesData] = useState([]);
   const [nextPlanCode, setNextPlanCode] = useState('P # 0 0 0 1');
+  const [visitCounts, setVisitCounts] = useState({ today: 0, week: 0, month: 0 });
 
   // Fetch customers on component mount
   useEffect(() => {
     fetchCustomers();
     fetchNextPlanCode();
+    fetchVisitCounts();
   }, []);
 
   const fetchNextPlanCode = async () => {
@@ -83,6 +85,17 @@ const BeatPlanPage = () => {
         text: 'Failed to load customers data',
         confirmButtonColor: '#2196F3'
       });
+    }
+  };
+
+  const fetchVisitCounts = async () => {
+    try {
+      const response = await apiService.get('/beat-plan/plan-visited-counts');
+      if (response.success && response.data) {
+        setVisitCounts(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching visit counts:', error);
     }
   };
 
@@ -989,6 +1002,23 @@ const BeatPlanPage = () => {
             </button>
           </div>
         </div>
+        
+        {/* Visit Counts Dashboard */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', margin: '20px 0' }}>
+          <div style={{ background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)', padding: '20px', borderRadius: '12px', border: '1px solid #a5d6a7' }}>
+            <p style={{ fontSize: '14px', color: '#2e7d32', margin: '0 0 8px 0', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Today Visited</p>
+            <p style={{ fontSize: '32px', color: '#1b5e20', margin: '0', fontWeight: '700' }}>{visitCounts.today}</p>
+          </div>
+          <div style={{ background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)', padding: '20px', borderRadius: '12px', border: '1px solid #90caf9' }}>
+            <p style={{ fontSize: '14px', color: '#1565c0', margin: '0 0 8px 0', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>This Week Visited</p>
+            <p style={{ fontSize: '32px', color: '#0d47a1', margin: '0', fontWeight: '700' }}>{visitCounts.week}</p>
+          </div>
+          <div style={{ background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)', padding: '20px', borderRadius: '12px', border: '1px solid #ffcc80' }}>
+            <p style={{ fontSize: '14px', color: '#e65100', margin: '0 0 8px 0', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>This Month Visited</p>
+            <p style={{ fontSize: '32px', color: '#bf360c', margin: '0', fontWeight: '700' }}>{visitCounts.month}</p>
+          </div>
+        </div>
+        
         <BeatPlan
           ref={beatPlanRef}
           onCreateBeat={handleCreateBeat}

@@ -37,6 +37,7 @@ import SalesProfile from "./Sales-Executive/Profile/sales-Profile.jsx";
 // Cart and Wishlist
 import Cart from "./Sales-Executive/Sales/Cart/Cart.jsx";
 import Wishlist from "./Sales-Executive/Sales/Wishlist/Wishlist.jsx";
+import Shipping from "./Sales-Executive/Sales/Shipping/Shipping.jsx";
 
 // Brands
 import Brands from "./Sales-Executive/Sales/Brands/Brands.jsx";
@@ -114,6 +115,7 @@ function App() {
 
           {/* Cart and Wishlist */}
           <Route path="/cart" element={<Cart />} />
+          <Route path="/shipping" element={<Shipping />} />
           <Route path="/wishlist" element={<Wishlist />} />
 
           {/* Brands */}

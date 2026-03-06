@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { apiService } from '../../services/apiservice';
 import Header from '../header/Header';
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import './ImportBeat.css';
@@ -8,11 +9,55 @@ import './ImportBeat.css';
 const ImportBeat = () => {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadedFilename, setUploadedFilename] = useState(null);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
+      
+      // Upload file immediately
+      try {
+        Swal.fire({
+          title: 'Uploading...',
+          text: 'Please wait while we upload your file',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await apiService.post('/beat-plan/upload-file', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        if (response.success) {
+          setUploadedFilename(response.data.filename);
+          Swal.close();
+          Swal.fire({
+            icon: 'success',
+            title: 'File Uploaded!',
+            text: 'File uploaded successfully. Click Submit to import.',
+            confirmButtonColor: '#20409A',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Upload Failed',
+          text: 'Failed to upload file. Please try again.',
+          confirmButtonColor: '#20409A'
+        });
+        setSelectedFile(null);
+      }
     }
   };
 
@@ -40,8 +85,8 @@ const ImportBeat = () => {
     });
   };
 
-  const handleSubmit = () => {
-    if (!selectedFile) {
+  const handleSubmit = async () => {
+    if (!selectedFile || !uploadedFilename) {
       Swal.fire({
         icon: 'error',
         title: 'No File Selected',
@@ -51,33 +96,45 @@ const ImportBeat = () => {
       return;
     }
 
-    // Simulate file upload
-    Swal.fire({
-      title: 'Uploading...',
-      text: 'Please wait while we process your file',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
-
-    // Simulate processing
-    setTimeout(() => {
+    try {
       Swal.fire({
-        icon: 'success',
-        title: 'Beat Imported Successfully!',
-        html: `
-          <div style="text-align: left;">
-            <p><strong>File:</strong> ${selectedFile.name}</p>
-            <p><strong>Records Imported:</strong> 5</p>
-            <p style="margin-top: 12px; color: #28a745; font-weight: 600;">✓ Beat records added to View Plan table</p>
-          </div>
-        `,
-        confirmButtonColor: '#20409A',
-      }).then(() => {
-        navigate('/beatplan');
+        title: 'Importing...',
+        text: 'Please wait while we process your file',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
       });
-    }, 2000);
+
+      const response = await apiService.post('/beat-plan/import-beat-plan-excel', {
+        filename: uploadedFilename
+      });
+
+      if (response.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Beat Imported Successfully!',
+          html: `
+            <div style="text-align: left;">
+              <p><strong>File:</strong> ${selectedFile.name}</p>
+              <p><strong>Records Imported:</strong> ${response.data.imported}</p>
+              <p style="margin-top: 12px; color: #28a745; font-weight: 600;">✓ Beat records added to View Plan table</p>
+            </div>
+          `,
+          confirmButtonColor: '#20409A',
+        }).then(() => {
+          navigate('/beatplan');
+        });
+      }
+    } catch (error) {
+      console.error('Error importing beat plan:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Import Failed',
+        text: error.response?.data?.message || 'Failed to import beat plan',
+        confirmButtonColor: '#20409A'
+      });
+    }
   };
 
   return (

@@ -5,9 +5,9 @@
 }
 
 .cart-container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 16px;
   overflow-x: hidden;
 }
 
@@ -17,7 +17,7 @@
 
 .cart-content-wrapper {
   display: flex;
-  gap: 30px;
+  gap: 20px;
   width: 100%;
 }
 
@@ -27,7 +27,7 @@
 }
 
 .cart-right {
-  width: 400px;
+  width: 320px;
   flex-shrink: 0;
 }
 

@@ -14,6 +14,8 @@ const Create_Order = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
+  const [selectedShipTo, setSelectedShipTo] = useState(null);
+  const [showShipToDropdown, setShowShipToDropdown] = useState(false);
 
   // Fetch customers from API
   useEffect(() => {
@@ -93,10 +95,94 @@ const Create_Order = () => {
     setSearchTerm(e.target.value);
   };
 
-  // Handle customer selection - directly navigate to customer detail
-  const handleCustomerSelect = (customer) => {
-    setSelectedCustomer(customer);
-    setShowCustomerDetail(true);
+  // Handle customer selection - fetch complete details from both APIs
+  const handleCustomerSelect = async (customer) => {
+    try {
+      console.log('🔍 Fetching details for customer:', customer.customer_code);
+      
+      // First, set the basic customer data
+      setSelectedCustomer(customer);
+      setShowCustomerDetail(true);
+      
+      // Fetch complete customer details from view-customer API
+      const viewCustomerResponse = await apiService.get(`/profile/view-customer/${customer.customer_code}`);
+      console.log('📋 View Customer Response:', viewCustomerResponse);
+      
+      if (viewCustomerResponse.success && viewCustomerResponse.user_detail) {
+        const viewCustomerData = viewCustomerResponse.user_detail;
+        console.log('✅ View Customer Data:', viewCustomerData);
+        
+        // Now fetch financial details using account number
+        let customerDetailsData = null;
+        if (viewCustomerData.account_number) {
+          console.log('🔢 Account Number:', viewCustomerData.account_number);
+          
+          const { customerDetails: customerDetailsAPI } = await import('../../../services/api');
+          const detailsResponse = await customerDetailsAPI({ 
+            accountNumber: viewCustomerData.account_number.toString() 
+          });
+          
+          console.log('💰 Customer Details Response:', detailsResponse);
+          
+          if (detailsResponse) {
+            customerDetailsData = detailsResponse;
+            console.log('✅ Customer Details Data:', customerDetailsData);
+          }
+        }
+        
+        // Merge all data into selectedCustomer
+        const completeCustomerData = {
+          ...customer,
+          ...viewCustomerData,
+          // Financial data from customer details API
+          creditBalance: customerDetailsData?.availablecreditlimit 
+            ? customerDetailsData.availablecreditlimit.toFixed(2) 
+            : '0.00',
+          creditLimit: customerDetailsData?.creditLimit 
+            ? customerDetailsData.creditLimit.toString()
+            : (viewCustomerData.credit_limit || '0.00'),
+          overDueInvoice: customerDetailsData?.noofoverdueinvoices?.toString() || '0',
+          overDueAmount: customerDetailsData?.overdueamount 
+            ? customerDetailsData.overdueamount.toFixed(2) 
+            : '0.00',
+          totalOutstanding: customerDetailsData?.outstandingamount 
+            ? customerDetailsData.outstandingamount.toFixed(2) 
+            : '0.00',
+          // Format address
+          fullAddress: [
+            viewCustomerData.address1,
+            viewCustomerData.address2,
+            viewCustomerData.address3,
+            viewCustomerData.city,
+            viewCustomerData.state,
+            viewCustomerData.post_code
+          ].filter(Boolean).join(', '),
+          // Ship to options (can be multiple in future)
+          shipToOptions: [{
+            code: viewCustomerData.site_number || 'N/A',
+            name: viewCustomerData.site_code || customer.customer_name,
+            address: [
+              viewCustomerData.address1,
+              viewCustomerData.address2,
+              viewCustomerData.city,
+              viewCustomerData.state,
+              viewCustomerData.post_code
+            ].filter(Boolean).join(', ')
+          }]
+        };
+        
+        // Set default ship-to to null (user must select)
+        setSelectedShipTo(null);
+        
+        setSelectedCustomer(completeCustomerData);
+        console.log('✅ Complete Customer Data:', completeCustomerData);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching customer details:', error);
+      // Still show the basic customer data even if API fails
+      setSelectedCustomer(customer);
+      setShowCustomerDetail(true);
+    }
   };
 
   // Handle back to search
@@ -194,7 +280,7 @@ const Create_Order = () => {
               <div className="customer-detail-header-info">
                 <div className="customer-detail-header-content">
                   <h2 className="customer-detail-title">{selectedCustomer?.customer_name}</h2>
-                  <p className="customer-detail-code">{selectedCustomer?.customer_code}</p>
+                  <p className="customer-detail-code">{selectedCustomer?.customer_code} / {selectedCustomer?.city || 'KMS'}</p>
                 </div>
               </div>
               
@@ -206,19 +292,140 @@ const Create_Order = () => {
                     <span className="detail-value">{selectedCustomer?.customer_id}</span>
                   </div>
                   <div className="detail-item">
-                    <span className="detail-label">Customer Code</span>
+                    <span className="detail-label">Customer Email</span>
                     <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.customer_code}</span>
+                    <span className="detail-value">{selectedCustomer?.email_address || 'N/A'}</span>
+                  </div>
+                </div>
+
+                <div className="detail-row">
+                  <div className="detail-item">
+                    <span className="detail-label">Credit Balance</span>
+                    <span className="detail-colon">:</span>
+                    <span className="detail-value">{selectedCustomer?.creditBalance || '0.00'}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Credit Limit</span>
+                    <span className="detail-colon">:</span>
+                    <span className="detail-value">{selectedCustomer?.creditLimit || '0.00'}</span>
+                  </div>
+                </div>
+
+                <div className="detail-row">
+                  <div className="detail-item">
+                    <span className="detail-label">Over Due Invoice</span>
+                    <span className="detail-colon">:</span>
+                    <span className="detail-value">{selectedCustomer?.overDueInvoice || '0'}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Over Due Amount</span>
+                    <span className="detail-colon">:</span>
+                    <span className="detail-value">{selectedCustomer?.overDueAmount || '0.00'}</span>
                   </div>
                 </div>
 
                 <div className="detail-row">
                   <div className="detail-item full-width">
-                    <span className="detail-label">Customer Name</span>
+                    <span className="detail-label">Total Outstanding Amount</span>
                     <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.customer_name}</span>
+                    <span className="detail-value">{selectedCustomer?.totalOutstanding || '0.00'}</span>
                   </div>
                 </div>
+
+                <div className="detail-row">
+                  <div className="detail-item full-width">
+                    <span className="detail-label">Customer Address</span>
+                    <span className="detail-colon">:</span>
+                    <span className="detail-value">{selectedCustomer?.fullAddress || 'N/A'}</span>
+                  </div>
+                </div>
+
+                <div className="detail-row">
+                  <div className="detail-item full-width" style={{ position: 'relative' }}>
+                    <span className="detail-label">Ship To</span>
+                    <span className="detail-colon">:</span>
+                    <div style={{ flex: 1, position: 'relative' }}>
+                      <div 
+                        className="ship-to-dropdown-trigger"
+                        onClick={() => setShowShipToDropdown(!showShipToDropdown)}
+                        style={{
+                          padding: '10px 12px',
+                          border: '1px solid #e0e0e0',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          backgroundColor: '#fff',
+                          minHeight: '40px'
+                        }}
+                      >
+                        <span style={{ color: selectedShipTo ? '#333' : '#999' }}>
+                          {selectedShipTo ? `${selectedShipTo.code} / ${selectedShipTo.name}` : 'Select Ship To Address'}
+                        </span>
+                        <span style={{ fontSize: '12px', transform: showShipToDropdown ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
+                      </div>
+                      
+                      {showShipToDropdown && (
+                        <div 
+                          className="ship-to-dropdown-menu"
+                          style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: '0',
+                            right: '0',
+                            backgroundColor: '#fff',
+                            border: '1px solid #e0e0e0',
+                            borderRadius: '4px',
+                            marginTop: '4px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            zIndex: 1000,
+                            maxHeight: '250px',
+                            overflowY: 'auto'
+                          }}
+                        >
+                          {selectedCustomer?.shipToOptions?.map((option, index) => (
+                            <div
+                              key={index}
+                              onClick={() => {
+                                setSelectedShipTo(option);
+                                setShowShipToDropdown(false);
+                              }}
+                              style={{
+                                padding: '14px 16px',
+                                cursor: 'pointer',
+                                borderBottom: index < selectedCustomer.shipToOptions.length - 1 ? '1px solid #f0f0f0' : 'none',
+                                backgroundColor: selectedShipTo?.code === option.code ? '#f0f7ff' : '#fff',
+                                transition: 'background-color 0.2s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f7ff'}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = selectedShipTo?.code === option.code ? '#f0f7ff' : '#fff'}
+                            >
+                              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#20409A', fontSize: '14px' }}>
+                                {option.code} / {option.name}
+                              </div>
+                              <div style={{ fontSize: '13px', color: '#666', lineHeight: '1.4' }}>
+                                {option.address}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {selectedShipTo && !showShipToDropdown && (
+                  <div className="detail-row">
+                    <div className="detail-item full-width">
+                      <span className="detail-label"></span>
+                      <span className="detail-colon"></span>
+                      <span className="detail-value" style={{ color: '#666', fontSize: '14px' }}>
+                        {selectedShipTo.address}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="customer-detail-footer">

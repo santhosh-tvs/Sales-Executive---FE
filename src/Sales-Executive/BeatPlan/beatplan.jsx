@@ -274,22 +274,95 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
   // Function to handle eye icon click - show customer details
   const handleViewDetails = async (planData) => {
     try {
-      // Use planData directly - customer details are already in the beat plan
+      // Fetch customer details using customer code
+      let customerDetailsData = null;
+      let viewCustomerData = null;
+      
+      try {
+        // First get customer details from view-customer API
+        console.log('🔍 Fetching customer with code:', planData.customerCode);
+        console.log('🔍 Plan data:', planData);
+        
+        const viewCustomerResponse = await apiService.get(`/profile/view-customer/${planData.customerCode}`);
+        
+        console.log('📋 View Customer Response:', viewCustomerResponse);
+        
+        if (viewCustomerResponse.success && viewCustomerResponse.user_detail) {
+          viewCustomerData = viewCustomerResponse.user_detail;
+          
+          console.log('✅ View Customer Data:', viewCustomerData);
+          console.log('🔢 Account Number:', viewCustomerData.account_number);
+          
+          // Now fetch financial details using account number
+          if (viewCustomerData.account_number) {
+            const { customerDetails: customerDetailsAPI } = await import('../../services/api');
+            const detailsResponse = await customerDetailsAPI({ 
+              accountNumber: viewCustomerData.account_number.toString() 
+            });
+            
+            console.log('💰 Customer Details Response:', detailsResponse);
+            console.log('💰 Response type:', typeof detailsResponse);
+            console.log('💰 Response keys:', detailsResponse ? Object.keys(detailsResponse) : 'null');
+            
+            if (detailsResponse) {
+              customerDetailsData = detailsResponse;
+              console.log('✅ Customer Details Data:', customerDetailsData);
+              console.log('✅ Available Credit Limit:', customerDetailsData.availablecreditlimit);
+              console.log('✅ Credit Limit:', customerDetailsData.creditLimit);
+              console.log('✅ Overdue Invoices:', customerDetailsData.noofoverdueinvoices);
+            } else {
+              console.warn('⚠️ Customer details API returned null or undefined');
+            }
+          } else {
+            console.warn('⚠️ No account number found in view customer data');
+          }
+        }
+      } catch (apiError) {
+        console.error('❌ Could not fetch customer details from API:', apiError);
+      }
+      
+      // Build customer details from API data only
       const customerDetails = {
-        name: planData.customer,
-        code: planData.customerCode || 'N/A',
-        location: planData.location,
-        phone: 'N/A', // Not available in beat plan data
-        email: 'N/A', // Not available in beat plan data
-        address: planData.location,
-        creditBalance: '0.00', // Not available in beat plan data
-        creditLimit: '0.00', // Not available in beat plan data
-        overDueInvoice: '0', // Not available in beat plan data
-        overDueAmount: '0.00', // Not available in beat plan data
-        totalOutstanding: '0.00', // Not available in beat plan data
-        shipToCode: 'N/A', // Not available in beat plan data
-        shipToName: planData.customer,
-        shipToAddress: planData.location
+        // Basic info from view-customer API
+        name: viewCustomerData?.customer_name || planData.customer,
+        code: viewCustomerData?.customer_code || planData.customerCode || 'N/A',
+        location: viewCustomerData?.city || planData.location,
+        phone: viewCustomerData?.phone_number || 'N/A',
+        email: viewCustomerData?.email_address || 'N/A',
+        address: viewCustomerData ? [
+          viewCustomerData.address1,
+          viewCustomerData.address2,
+          viewCustomerData.address3,
+          viewCustomerData.city,
+          viewCustomerData.state,
+          viewCustomerData.post_code
+        ].filter(Boolean).join(', ') : planData.location,
+        
+        // Financial info from customer details API
+        creditBalance: customerDetailsData?.availablecreditlimit 
+          ? customerDetailsData.availablecreditlimit.toFixed(2) 
+          : '0.00',
+        creditLimit: customerDetailsData?.creditLimit 
+          ? customerDetailsData.creditLimit.toString()
+          : (viewCustomerData?.credit_limit || '0.00'),
+        overDueInvoice: customerDetailsData?.noofoverdueinvoices?.toString() || '0',
+        overDueAmount: customerDetailsData?.overdueamount 
+          ? customerDetailsData.overdueamount.toFixed(2) 
+          : '0.00',
+        totalOutstanding: customerDetailsData?.outstandingamount 
+          ? customerDetailsData.outstandingamount.toFixed(2) 
+          : '0.00',
+        
+        // Ship to info from view-customer API
+        shipToCode: viewCustomerData?.site_number || 'N/A',
+        shipToName: viewCustomerData?.site_code || planData.customer,
+        shipToAddress: viewCustomerData ? [
+          viewCustomerData.address1,
+          viewCustomerData.address2,
+          viewCustomerData.city,
+          viewCustomerData.state,
+          viewCustomerData.post_code
+        ].filter(Boolean).join(', ') : planData.location
       };
 
     // Check if status is "New" - show check in button

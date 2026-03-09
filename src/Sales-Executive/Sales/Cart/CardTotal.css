@@ -7,39 +7,39 @@
 }
 
 .cardtotal-frame {
-  padding: 25px;
+  padding: 18px;
 }
 
 .cardtotal-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   color: #4A4A4A;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 2px solid #e0e0e0;
 }
 
 .cardtotal-body {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .cardtotal-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
+  padding: 8px 0;
 }
 
 .cardtotal-row .label {
-  font-size: 14px;
+  font-size: 13px;
   color: #666;
   font-weight: 500;
 }
 
 .cardtotal-row .value {
-  font-size: 16px;
+  font-size: 14px;
   color: #4A4A4A;
   font-weight: 600;
 }
@@ -47,37 +47,37 @@
 .cardtotal-sep {
   height: 1px;
   background: #e0e0e0;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .cardtotal-row.total {
-  padding: 15px 0;
-  margin-top: 5px;
+  padding: 12px 0;
+  margin-top: 4px;
 }
 
 .cardtotal-row.total .label {
-  font-size: 18px;
+  font-size: 16px;
   color: #4A4A4A;
   font-weight: 700;
 }
 
 .cardtotal-row.total .value {
-  font-size: 20px;
+  font-size: 18px;
   color: #20409A;
   font-weight: 700;
 }
 
 .cardtotal-cta {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   background: #20409A;
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 16px;
   transition: all 0.3s ease;
 }
 

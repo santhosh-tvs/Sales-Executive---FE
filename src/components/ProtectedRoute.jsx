@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { apiService } from '../services/apiservice';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -21,28 +22,12 @@ const ProtectedRoute = ({ children }) => {
 
       // Validate token with API
       try {
-        const response = await fetch('http://localhost:3000/profile/user-details', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          console.log('Token is valid');
-          setIsAuthenticated(true);
-        } else {
-          console.log('Token is invalid - clearing and redirecting');
-          // Token is invalid, clear it
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('user');
-          localStorage.removeItem('isPasswordExpired');
-          setIsAuthenticated(false);
-        }
+        await apiService.get('/profile/user-details');
+        console.log('Token is valid');
+        setIsAuthenticated(true);
       } catch (error) {
-        console.error('Token validation error:', error);
-        // On error, assume not authenticated
+        console.log('Token is invalid - clearing and redirecting');
+        // Token is invalid, clear it
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
         localStorage.removeItem('isPasswordExpired');

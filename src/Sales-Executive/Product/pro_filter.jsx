@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import axios from 'axios';
 import '../../../styles/customer/productss/pro_filter.css';
 import EditIcon from '../../../assets/customer/product/Edit.png';
 import RightArrow from '../../../assets/customer/product/RightArrow.png';
 import ClearIcon from '../../../assets/customer/product/pro_product/clear.png';
-
-const API_BASE_URL = 'http://localhost:3000/api';
+import { apiService } from '../../services/apiservice';
 
 // Master type mapping for API calls
 const MASTER_TYPE_MAP = {
@@ -305,10 +303,10 @@ const ProFilter = ({ onFilterChange, externalFilters }) => {
 
       console.log(`Fetching ${filterKey} with masterType: ${masterType}`, requestBody);
 
-      const response = await axios.post(`${API_BASE_URL}/matertype`, requestBody);
+      const response = await apiService.post('/matertype', requestBody);
 
-      if (response.data.success) {
-        let options = response.data.data.map(item => item.masterName);
+      if (response.success) {
+        let options = response.data.map(item => item.masterName);
         
         // Ensure currently selected filter value is included in options
         if (filters[filterKey]?.length > 0) {

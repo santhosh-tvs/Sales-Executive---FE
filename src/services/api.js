@@ -537,6 +537,20 @@ export const profileAPI = async () => {
 };
 
 /**
+ * View Customer API
+ * Get customer details including customer-specific API list
+ * @param {string} customerId - Customer code/ID
+ */
+export const viewCustomerAPI = async (customerId) => {
+  try {
+    return await apiService.get(`/profile/view-customer/${customerId}`);
+  } catch (error) {
+    console.error('View customer API error:', error);
+  }
+  return null;
+};
+
+/**
  * Create Order API
  * Submit order to external ERP system
  */
@@ -596,5 +610,6 @@ export default {
   resetPasswordAPI,
   uiAssetsAPI,
   profileAPI,
+  viewCustomerAPI,
   createOrderAPI,
 };

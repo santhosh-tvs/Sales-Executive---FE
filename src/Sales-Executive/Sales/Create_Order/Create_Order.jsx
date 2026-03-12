@@ -112,6 +112,16 @@ const Create_Order = () => {
         const viewCustomerData = viewCustomerResponse.user_detail;
         console.log('✅ View Customer Data:', viewCustomerData);
         
+        // Update API configuration with customer-specific API list
+        const { default: apiConfigManager } = await import('../../../services/apiConfig');
+        const updated = apiConfigManager.updateFromCustomer(viewCustomerResponse);
+        
+        if (updated) {
+          console.log('✅ API configuration updated for customer:', customer.customer_code);
+        } else {
+          console.warn('⚠️ Could not update API configuration for customer:', customer.customer_code);
+        }
+        
         // Now fetch financial details using account number
         let customerDetailsData = null;
         if (viewCustomerData.account_number) {
@@ -193,6 +203,12 @@ const Create_Order = () => {
 
   // Handle continue to brands page
   const handleContinueToBrands = () => {
+    // Check if ship-to is selected
+    if (!selectedShipTo) {
+      alert('Please select a Ship To address before continuing');
+      return;
+    }
+    
     // Navigate to brands page
     navigate('/brands');
   };
@@ -433,6 +449,11 @@ const Create_Order = () => {
                   <button 
                     className="continue-button"
                     onClick={handleContinueToBrands}
+                    disabled={!selectedShipTo}
+                    style={{
+                      opacity: selectedShipTo ? 1 : 0.5,
+                      cursor: selectedShipTo ? 'pointer' : 'not-allowed'
+                    }}
                   >
                     Continue
                   </button>

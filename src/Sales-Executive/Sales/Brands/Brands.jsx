@@ -50,9 +50,16 @@ const Brands = () => {
         }
       }
       
-      // Check if API config is initialized
-      const user = JSON.parse(localStorage.getItem('user'));
-      const customerCode = user?.customer_code || '0046';
+      // Get unit_code from apiConfigManager (set from view customer API)
+      const { default: apiConfigManager } = await import('../../../services/apiConfig');
+      const unitCode = apiConfigManager.getUnitCode();
+
+      if (!unitCode) {
+        console.error('❌ Unit code not found. Please select a customer first.');
+        setError('Please select a customer first.');
+        setLoading(false);
+        return;
+      }
 
       // Check if apiConfigManager is initialized
       const apiConfig = localStorage.getItem('api_config');
@@ -66,7 +73,7 @@ const Brands = () => {
       const requestBody = {
         partNumber: null,
         sortOrder: "ASC",
-        customerCode: customerCode,
+        customerCode: unitCode, // Using unit_code instead of customer_code
         aggregate: null,
         brand: null,
         fuelType: null,
@@ -81,7 +88,7 @@ const Brands = () => {
         year: null
       };
 
-      console.log('🔍 Fetching brands from master list API:', requestBody);
+      console.log('🔍 Fetching brands from master list API with unit_code:', unitCode);
       
       const response = await masterListAPI(requestBody);
       

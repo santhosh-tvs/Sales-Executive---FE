@@ -10,6 +10,9 @@ class ApiConfigManager {
     this.apiList = [];
     this.apiMap = new Map();
     this.initialized = false;
+    this.unitCode = null; // Store unit_code from customer data
+    this.customerWarehouses = []; // Store customer warehouses
+    this.customerDetails = null; // Store full customer details
   }
 
   /**
@@ -68,6 +71,123 @@ class ApiConfigManager {
       console.error('❌ Error fetching API configuration:', error);
       return false;
     }
+  }
+
+  /**
+   * Update API configuration from customer data
+   * @param {Object} customerData - Customer data from viewCustomer API
+   * @returns {boolean} - Success status
+   */
+  updateFromCustomer(customerData) {
+    try {
+      if (!customerData || !customerData.user_detail || !customerData.user_detail.api_list) {
+        console.error('❌ Invalid customer data provided');
+        return false;
+      }
+
+      const apiList = customerData.user_detail.api_list;
+      const unitCode = customerData.user_detail.unit_code;
+      const userDetail = customerData.user_detail;
+      
+      if (!Array.isArray(apiList) || apiList.length === 0) {
+        console.warn('⚠️ Customer has no API list, keeping current configuration');
+        return false;
+      }
+
+      console.log('🔄 Updating API configuration from customer data...');
+      console.log('📋 Customer:', userDetail.customer_name);
+      console.log('📋 Customer Code:', userDetail.customer_code);
+      console.log('📋 Unit Code:', unitCode);
+      
+      // Store unit_code
+      this.unitCode = unitCode;
+      localStorage.setItem('unit_code', unitCode || '');
+      
+      // Store full customer details
+      this.customerDetails = userDetail;
+      localStorage.setItem('selected_customer', JSON.stringify(userDetail));
+      console.log('📦 Customer details stored');
+      
+      // Store customer warehouses
+      const warehouses = [];
+      if (userDetail.primary_ware_house) {
+        warehouses.push(userDetail.primary_ware_house);
+      }
+      if (userDetail.secondary_ware_house) {
+        warehouses.push(userDetail.secondary_ware_house);
+      }
+      if (userDetail.teritary_ware_house) {
+        warehouses.push(userDetail.teritary_ware_house);
+      }
+      if (userDetail.warehouse && userDetail.warehouse.warehouse_name) {
+        if (!warehouses.includes(userDetail.warehouse.warehouse_name)) {
+          warehouses.push(userDetail.warehouse.warehouse_name);
+        }
+      }
+      
+      this.customerWarehouses = warehouses;
+      localStorage.setItem('customer_warehouses', JSON.stringify(warehouses));
+      console.log('📦 Customer warehouses stored:', warehouses);
+      
+      this.initialize(apiList);
+      
+      console.log('✅ API configuration updated from customer data');
+      console.log('✅ Unit code stored:', this.unitCode);
+      return true;
+    } catch (error) {
+      console.error('❌ Error updating API config from customer:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get customer details
+   * @returns {Object|null} - Customer details or null
+   */
+  getCustomerDetails() {
+    if (!this.customerDetails) {
+      // Try to load from localStorage
+      const stored = localStorage.getItem('selected_customer');
+      if (stored) {
+        try {
+          this.customerDetails = JSON.parse(stored);
+        } catch (error) {
+          console.error('❌ Failed to parse customer details from storage:', error);
+        }
+      }
+    }
+    return this.customerDetails;
+  }
+
+  /**
+   * Get customer warehouses
+   * @returns {Array} - Array of warehouse names
+   */
+  getCustomerWarehouses() {
+    if (this.customerWarehouses.length === 0) {
+      // Try to load from localStorage
+      const stored = localStorage.getItem('customer_warehouses');
+      if (stored) {
+        try {
+          this.customerWarehouses = JSON.parse(stored);
+        } catch (error) {
+          console.error('❌ Failed to parse customer warehouses from storage:', error);
+        }
+      }
+    }
+    return this.customerWarehouses;
+  }
+
+  /**
+   * Get unit code for external API requests
+   * @returns {string|null} - Unit code or null
+   */
+  getUnitCode() {
+    if (!this.unitCode) {
+      // Try to load from localStorage
+      this.unitCode = localStorage.getItem('unit_code');
+    }
+    return this.unitCode;
   }
 
   /**
@@ -203,7 +323,13 @@ class ApiConfigManager {
     this.apiList = [];
     this.apiMap.clear();
     this.initialized = false;
+    this.unitCode = null;
+    this.customerWarehouses = [];
+    this.customerDetails = null;
     localStorage.removeItem('api_config');
+    localStorage.removeItem('unit_code');
+    localStorage.removeItem('customer_warehouses');
+    localStorage.removeItem('selected_customer');
     console.log('🗑️ API configuration cleared');
   }
 

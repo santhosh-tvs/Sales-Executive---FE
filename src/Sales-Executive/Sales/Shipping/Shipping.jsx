@@ -21,13 +21,67 @@ const Shipping = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderError, setOrderError] = useState('');
   const [shippingAddress, setShippingAddress] = useState({
-    name: 'Chandra sekar yadhav',
-    phone: '9876543211',
-    address: '12/30, Titan Township, Mathigiri main road, Hosur, Krishnagiri, Tamil Nadu-635110'
+    name: '',
+    phone: '',
+    address: ''
   });
   const [tempAddress, setTempAddress] = useState({ ...shippingAddress });
+  const [loadingCustomer, setLoadingCustomer] = useState(true);
 
   const currentBalance = 1112;
+
+  // Load customer details from localStorage or apiConfigManager
+  useEffect(() => {
+    const loadCustomerDetails = async () => {
+      try {
+        // First try localStorage
+        let customerData = localStorage.getItem('selected_customer');
+        
+        if (!customerData) {
+          // If not in localStorage, try apiConfigManager
+          const { default: apiConfigManager } = await import('../../../services/apiConfig');
+          const customer = apiConfigManager.getCustomerDetails();
+          
+          if (customer) {
+            console.log('📦 Customer loaded from apiConfigManager');
+            customerData = JSON.stringify(customer);
+          }
+        }
+        
+        if (customerData) {
+          const customer = typeof customerData === 'string' ? JSON.parse(customerData) : customerData;
+          
+          // Build address from customer data
+          const addressParts = [];
+          if (customer.address1) addressParts.push(customer.address1);
+          if (customer.address2) addressParts.push(customer.address2);
+          if (customer.address3) addressParts.push(customer.address3);
+          if (customer.address4) addressParts.push(customer.address4);
+          if (customer.city) addressParts.push(customer.city);
+          if (customer.state) addressParts.push(customer.state);
+          if (customer.post_code) addressParts.push(customer.post_code);
+          
+          const address = {
+            name: customer.customer_name || '',
+            phone: customer.phone_number || '',
+            address: addressParts.filter(Boolean).join(', ')
+          };
+          
+          console.log('📦 Customer address loaded:', address);
+          setShippingAddress(address);
+          setTempAddress(address);
+        } else {
+          console.warn('⚠️ No customer data found - please select a customer first');
+        }
+      } catch (error) {
+        console.error('❌ Error loading customer details:', error);
+      } finally {
+        setLoadingCustomer(false);
+      }
+    };
+    
+    loadCustomerDetails();
+  }, []);
 
   // Calculate totals dynamically
   const basicTotal = cartItems.reduce((sum, item) => sum + (item.listPrice * item.quantity), 0);
@@ -53,9 +107,18 @@ const Shipping = () => {
 
       const { latitude, longitude } = position.coords;
 
+      // Get unit_code from apiConfigManager
+      const { default: apiConfigManager } = await import('../../../services/apiConfig');
+      const unitCode = apiConfigManager.getUnitCode();
+      
+      if (!unitCode) {
+        console.error('❌ Unit code not found. Please select a customer first.');
+        alert('Please select a customer first');
+        return;
+      }
+
       // Get user data from localStorage
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      const customerCode = userData.customer_code || 'PFR_000100';
       const employeeId = userData.employee_id || '51164060';
 
       // Generate transaction track ID
@@ -78,9 +141,9 @@ const Shipping = () => {
         parts_no: item.partNumber || item.parts_no,
         parts_name: item.itemDescription || item.parts_name,
         quantity: item.quantity,
-        warehouse: item.warehouse || 'KMS_WHG',
+        warehouse: item.warehouse ,
         item_price: parseFloat(item.listPrice || item.item_price).toFixed(2),
-        brand_name: item.brandName || item.brand_name || 'DELPHI TECH',
+        brand_name: item.brandName || item.brand_name ,
         sub_total: parseFloat(item.listPrice * item.quantity).toFixed(0),
         tax_price: (parseFloat(item.listPrice * item.quantity) * 0.18).toFixed(2),
         total_price: parseFloat(item.listPrice * item.quantity).toFixed(1),
@@ -97,7 +160,7 @@ const Shipping = () => {
       // Build order payload
       const orderPayload = {
         validity_date: formattedValidityDate,
-        customer_code: customerCode,
+        customer_code: unitCode, // Using unit_code from view customer API
         employee_id: employeeId,
         purchase_order_no: null,
         purchase_order_date: null,
@@ -196,11 +259,17 @@ const Shipping = () => {
                     Change ✎
                   </button>
                 </div>
-                <div className="address-details">
-                  <p className="customer-name">{shippingAddress.name}</p>
-                  <p className="customer-phone">{shippingAddress.phone}</p>
-                  <p className="customer-address">{shippingAddress.address}</p>
-                </div>
+                {loadingCustomer ? (
+                  <div className="address-details">
+                    <p>Loading customer details...</p>
+                  </div>
+                ) : (
+                  <div className="address-details">
+                    <p className="customer-name">{shippingAddress.name || 'N/A'}</p>
+                    <p className="customer-phone">{shippingAddress.phone || 'N/A'}</p>
+                    <p className="customer-address">{shippingAddress.address || 'N/A'}</p>
+                  </div>
+                )}
               </div>
 
               {/* Order Summary */}

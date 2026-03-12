@@ -86,10 +86,19 @@ const Category = () => {
       // No cache or expired - fetch from API
       console.log("Fetching categories from API...");
 
+      // Get unit_code from apiConfigManager
+      const unitCode = apiConfigManager.getUnitCode();
+      
+      if (!unitCode) {
+        console.error('❌ Unit code not found. Please select a customer first.');
+        setLoading(false);
+        return;
+      }
+
       const requestBody = {
         partNumber: null,
         sortOrder: "ASC",
-        customerCode: "0046",
+        customerCode: unitCode, // Using unit_code instead of customer_code
         aggregate: null,
         brand: null,
         fuelType: null,
@@ -103,6 +112,8 @@ const Category = () => {
         variant: null,
         year: null
       };
+
+      console.log("Fetching categories with unit_code:", unitCode);
 
       const response = await masterListAPI(requestBody);
 
@@ -166,10 +177,19 @@ const Category = () => {
       // No cache - fetch from API using filter endpoint with masterType: "subAggregate"
       console.log(`Fetching subcategories for ${categoryName} from API...`);
 
+      // Get unit_code from apiConfigManager
+      const unitCode = apiConfigManager.getUnitCode();
+      
+      if (!unitCode) {
+        console.error('❌ Unit code not found. Please select a customer first.');
+        setLoadingSubcategories(false);
+        return;
+      }
+
       const requestBody = {
         partNumber: null,
         sortOrder: "ASC",
-        customerCode: "0046",
+        customerCode: unitCode, // Using unit_code instead of customer_code
         aggregate: categoryName,
         brand: null,
         fuelType: null,
@@ -183,6 +203,8 @@ const Category = () => {
         variant: null,
         year: null
       };
+
+      console.log(`Fetching subcategories with unit_code: ${unitCode}`);
 
       const response = await masterListAPI(requestBody);
       const subcategoriesData = response.data || [];

@@ -281,12 +281,21 @@ const ProFilter = ({ onFilterChange, externalFilters }) => {
       // Use custom filters if provided, otherwise use current filters state
       const activeFilters = customFilters || filters;
       
+      // Get unit_code from apiConfigManager
+      const { default: apiConfigManager } = await import('../../services/apiConfig');
+      const unitCode = apiConfigManager.getUnitCode();
+      
+      if (!unitCode) {
+        console.error('❌ Unit code not found. Please select a customer first.');
+        return [];
+      }
+      
       // When fetching options for a specific filter, don't use that filter's value in the request
       // This ensures all options remain visible even when one is selected
       const requestBody = {
         partNumber: null,
         sortOrder: "ASC",
-        customerCode: "0046",
+        customerCode: unitCode, // Using unit_code instead of customer_code
         aggregate: filterKey !== 'category' && activeFilters.category.length > 0 ? activeFilters.category[0] : null,
         brand: filterKey !== 'brand' && activeFilters.brand.length > 0 ? activeFilters.brand[0] : null,
         fuelType: filterKey !== 'fuelType' && activeFilters.fuelType.length > 0 ? activeFilters.fuelType[0] : null,
@@ -301,7 +310,7 @@ const ProFilter = ({ onFilterChange, externalFilters }) => {
         year: filterKey !== 'year' && activeFilters.year.length > 0 ? activeFilters.year[0] : null
       };
 
-      console.log(`Fetching ${filterKey} with masterType: ${masterType}`, requestBody);
+      console.log(`Fetching ${filterKey} with masterType: ${masterType} and unit_code: ${unitCode}`, requestBody);
 
       const response = await apiService.post('/matertype', requestBody);
 

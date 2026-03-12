@@ -2,13 +2,49 @@ import React from "react";
 import { useNavigate } from 'react-router-dom';
 import Header from '../header/Header';
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
+import { viewCustomerAPI } from '../../services/api';
+import apiConfigManager from '../../services/apiConfig';
 import "./Mycustomer.css";
 
 const MyCustomer = () => {
   const navigate = useNavigate();
 
+  // Fetch customer details and update API configuration
+  const fetchAndSetCustomerConfig = async (customerCode) => {
+    try {
+      console.log('🔄 Fetching customer details for:', customerCode);
+      
+      const response = await viewCustomerAPI(customerCode);
+      
+      if (response && response.success) {
+        console.log('✅ Customer details fetched:', response.user_detail);
+        
+        // Update API configuration with customer-specific API list
+        // This also stores customer details in localStorage
+        const updated = apiConfigManager.updateFromCustomer(response);
+        
+        if (updated) {
+          console.log('✅ API configuration updated for customer:', customerCode);
+        } else {
+          console.warn('⚠️ Could not update API configuration for customer:', customerCode);
+        }
+        
+        return response.user_detail;
+      } else {
+        console.error('❌ Failed to fetch customer details:', response?.message);
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Error fetching customer details:', error);
+      return null;
+    }
+  };
+
   // Navigation functions
-  const handleOrderClick = (customer) => {
+  const handleOrderClick = async (customer) => {
+    // Fetch customer details and update API config before navigating
+    const customerDetails = await fetchAndSetCustomerConfig(customer.code);
+    
     // Navigate to create order page with customer data
     navigate('/create-order', { 
       state: { 
@@ -16,27 +52,37 @@ const MyCustomer = () => {
           id: customer.code,
           customerCode: customer.code,
           customerName: customer.name,
-          // Add other customer details as needed
+          customerDetails: customerDetails,
         }
       }
     });
   };
 
-  const handleCollectionsClick = (customer) => {
+  const handleCollectionsClick = async (customer) => {
+    // Fetch customer details and update API config
+    await fetchAndSetCustomerConfig(customer.code);
+    
     // Navigate to my collections page
     navigate('/my-collections');
   };
 
-  const handleVisitClick = (customer) => {
+  const handleVisitClick = async (customer) => {
+    // Fetch customer details and update API config
+    await fetchAndSetCustomerConfig(customer.code);
+    
     // Navigate to view plan page for visits
     navigate('/view-plan');
   };
 
-  const handleDetailsClick = (customer) => {
+  const handleDetailsClick = async (customer) => {
+    // Fetch customer details and update API config
+    const customerDetails = await fetchAndSetCustomerConfig(customer.code);
+    
     // Navigate to customer summary page
     navigate('/customer-summary', {
       state: {
-        customer: customer
+        customer: customer,
+        customerDetails: customerDetails
       }
     });
   };

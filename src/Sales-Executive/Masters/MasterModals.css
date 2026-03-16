@@ -166,8 +166,6 @@
 
 .edit-input:focus {
     outline: none;
-    border-color: #20409A;
-    box-shadow: 0 0 0 3px rgba(32, 64, 154, 0.1);
 }
 
 .edit-input:disabled {

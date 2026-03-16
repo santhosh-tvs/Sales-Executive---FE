@@ -204,13 +204,6 @@
   height: 44px !important;
 }
 
-.date-input:focus,
-.employee-select:focus,
-.employee-input:focus,
-.mobile-input:focus {
-  border-color: #20409A !important;
-  box-shadow: 0 0 0 2px rgba(32, 64, 154, 0.2);
-}
 
 /* Readonly input styling */
 .employee-input.readonly,

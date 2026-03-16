@@ -5,6 +5,7 @@ import Picture from "../../components/login/Assets/Login/picture.png";
 import Tvs from "../../components/login/Assets/Login/mytvs.png";
 import { apiService } from "../../services/apiservice";
 import apiConfigManager from "../../services/apiConfig";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 function NewLogin() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ function NewLogin() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [navigating, setNavigating] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Loading Dashboard...");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +47,8 @@ function NewLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setLoadingMessage("Verifying Authorization...");
+    setNavigating(true); // Show spinner immediately when login starts
     setError("");
 
     try {
@@ -80,18 +85,23 @@ function NewLogin() {
 
         setLoading(false);
         
-        // Navigate to sales home for sales executive
+        // Navigate to sales home for sales executive after minimum 1 second
         if (data.user_detail.user_type === "sales_executive") {
-          navigate("/sales-home");
+          setLoadingMessage("Loading Dashboard...");
+          setTimeout(() => {
+            navigate("/sales-home");
+          }, 1000); // Keep spinner visible for smooth transition
         }
       } else if (data.message?.includes("already logged in")) {
         // Session conflict - user is already logged in elsewhere
         setSessionConflictData(data);
         setShowSessionModal(true);
         setLoading(false);
+        setNavigating(false);
       } else {
         setError(data.message || "Login failed. Please try again.");
         setLoading(false);
+        setNavigating(false);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -102,12 +112,15 @@ function NewLogin() {
         setError(error.response?.data?.message || "Unable to connect to server. Please try again.");
       }
       setLoading(false);
+      setNavigating(false);
     }
   };
 
   const handleProceedLogin = async () => {
     setShowSessionModal(false);
     setLoading(true);
+    setLoadingMessage("Verifying Authorization...");
+    setNavigating(true);
     setError("");
 
     try {
@@ -152,9 +165,12 @@ function NewLogin() {
 
         setLoading(false);
         
-        // Navigate to sales home for sales executive
+        // Show loading spinner and navigate to sales home for sales executive
         if (data.user_detail.user_type === "sales_executive") {
-          navigate("/sales-home");
+          setLoadingMessage("Loading Dashboard...");
+          setTimeout(() => {
+            navigate("/sales-home");
+          }, 1000); // Show spinner for 1 second before navigation
         }
       } else {
         setError(data.message || "Login failed. Please try again.");
@@ -173,8 +189,11 @@ function NewLogin() {
   };
 
   return (
-    <div className="login-wrapper">
-      <div className="orange-bg-slant"></div>
+    <>
+      {navigating && <LoadingSpinner message={loadingMessage} />}
+      
+      <div className="login-wrapper">
+        <div className="orange-bg-slant"></div>
 
       <div className="main-container">
         <div className="login-card">
@@ -348,7 +367,8 @@ function NewLogin() {
           </div>
         </>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

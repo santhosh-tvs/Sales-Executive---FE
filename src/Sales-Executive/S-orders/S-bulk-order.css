@@ -8,7 +8,6 @@
 
 .bulk-order-content {
     padding: 0;
-    max-width: 1400px;
     margin: 0 auto;
 }
 
@@ -1211,7 +1210,7 @@
     width: 300px !important;
     padding: 8px 12px !important;
     font-size: 12px !important;
-    border: 1px solid #3b0aad !important;
+    border-bottom: 1px solid #ffffff !important;
     border-radius: 6px !important;
     background: #ffffff !important;
     box-sizing: border-box !important;

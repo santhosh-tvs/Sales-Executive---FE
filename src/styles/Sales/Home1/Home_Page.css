@@ -33,7 +33,7 @@
   gap: 15px;
 }
 
-.action-btn {
+.myaction-btn, .mycollection-btn,.mycustomer-btn {
   color: white;
   border: none;
   border-radius: 3px;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../header/Header';
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import './Masters.css';
@@ -8,6 +9,7 @@ const Masters = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
   // Sample data for different masters
   const mastersData = {
@@ -85,14 +87,12 @@ const Masters = () => {
 
   // Handle edit action
   const handleEdit = (item) => {
-    console.log('Edit item:', item);
-    // Add edit functionality here
+    navigate('/masters/edit', { state: { data: item, masterType: activeTab } });
   };
 
   // Handle view action
   const handleView = (item) => {
-    console.log('View item:', item);
-    // Add view functionality here
+    navigate('/masters/view', { state: { data: item, masterType: activeTab } });
   };
 
   // Render table headers based on active tab

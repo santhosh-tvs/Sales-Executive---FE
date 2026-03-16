@@ -22,6 +22,8 @@ import S_OrderView from "./Sales-Executive/S-orders/S-order-view.jsx";
 
 // Sales Reports - Using Receipt module instead
 import ReceiptPage from "./Sales-Executive/Receipt/Components/receipt.jsx";
+import ReceiptHistory from "./Sales-Executive/Receipt/Components/ReceiptHistory.jsx";
+import ExportReport from "./Sales-Executive/Receipt/Components/ExportReport.jsx";
 
 // Sales Beat
 import Locate from "./Sales-Executive/Sales/Beat/Locate.jsx";
@@ -67,6 +69,11 @@ import Customermaster from "./Sales-Executive/Masters/CustomerMaster.jsx"
 import Employeemaster from "./Sales-Executive/Masters/EmployeeMaster.jsx"
 import Item from "./Sales-Executive/Masters/item.jsx"
 import LocationMaster from "./Sales-Executive/Masters/LocationMaster.jsx"
+import PartnerMaster from "./Sales-Executive/Masters/PartnerMaster.jsx"
+import ApplicationMaster from "./Sales-Executive/Masters/ApplicationMaster.jsx"
+import PricingMaster from "./Sales-Executive/Masters/PricingMaster.jsx"
+import MasterViewPage from "./Sales-Executive/Masters/MasterViewPage.jsx"
+import MasterEditPage from "./Sales-Executive/Masters/MasterEditPage.jsx"
 
 import "./App.css";
 
@@ -100,6 +107,8 @@ function App() {
             element={<Consolidate_Report />}
           />
           <Route path="/receipt" element={<ReceiptPage />} />
+          <Route path="/receipt-history" element={<ReceiptHistory />} />
+          <Route path="/receipt-export" element={<ExportReport />} />
 
           {/* Beat */}
           <Route path="/locate" element={<Locate />} />
@@ -141,11 +150,16 @@ function App() {
 
           {/* Masters */}
           <Route path="/masters" element={<Masters />} />
+          <Route path="/masters/view" element={<MasterViewPage />} />
+          <Route path="/masters/edit" element={<MasterEditPage />} />
           <Route path="/masters/item" element={<Item />} />
           <Route path="/masters/branch" element={<Branchmaster />} />
           <Route path="/masters/customer" element={<Customermaster />} />
           <Route path="/masters/employee" element={<Employeemaster />} />
           <Route path="/masters/location" element={<LocationMaster />} />
+          <Route path="/masters/partner" element={<PartnerMaster />} />
+          <Route path="/masters/application" element={<ApplicationMaster />} />
+          <Route path="/masters/pricing" element={<PricingMaster />} />
         </Route>
 
         {/* 🔹 Catch-all route - Redirect any unknown path to login */}

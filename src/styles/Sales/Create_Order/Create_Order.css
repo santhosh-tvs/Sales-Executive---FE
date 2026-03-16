@@ -614,6 +614,7 @@
 
 .create-order-container .detail-item {
   display: flex !important;
+  flex-direction: row;
   gap: 12px !important;
   align-items: flex-start !important;
   flex: 1 !important;
@@ -637,6 +638,7 @@
   font-weight: 700 !important;
   font-size: 12px !important;
   width: 225px;
+  padding-top: 10px;
   flex-shrink: 0 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
@@ -645,6 +647,7 @@
 .create-order-container .detail-colon {
   color: #2c3e50 !important;
   font-weight: 700 !important;
+  padding-top: 10px;
   flex-shrink: 0 !important;
 }
 

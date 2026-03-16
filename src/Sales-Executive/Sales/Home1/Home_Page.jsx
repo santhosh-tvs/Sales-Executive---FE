@@ -321,15 +321,15 @@ const Home_Page = () => {
         <div className="dashboard-header">
           <h1>Over View</h1>
           <div className="action-buttons">
-            <button className="action-btn" onClick={handleMyActionsClick}>
+            <button className="myaction-btn" onClick={handleMyActionsClick}>
               <img src={BellIcon} alt="Actions" className="btn-icon-white" />
               My Actions
             </button>
-            <button className="action-btn" onClick={handleMyCollectionsClick}>
+            <button className="mycollection-btn" onClick={handleMyCollectionsClick}>
               <img src={CoinIcon} alt="Collections" className="btn-icon-white" />
               My Collections
             </button>
-            <button className="action-btn" onClick={handleMyCustomersClick}>
+            <button className="mycustomer-btn" onClick={handleMyCustomersClick}>
               <img src={ProfileIcon} alt="Customers" className="btn-icon-white" />
               My Customers
             </button>

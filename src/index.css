@@ -32,7 +32,7 @@ p,
 .content,
 span,
 div {
-  font-size: clamp(11px, 1.5vw, 14px) !important;
+  font-size: clamp(11px, 1.5vw, 10px) !important;
 }
 
 /* Global Button Standardization */

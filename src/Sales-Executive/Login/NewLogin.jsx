@@ -204,11 +204,12 @@ function NewLogin() {
               autoComplete="off"
             >
               <div className="input-group">
-                <label className="input-label">Username or Email</label>
+                <label className="input-label">Username</label>
                 <input
                   type="text"
                   name="email"
                   value={formData.email}
+                  placeholder="Enter Your Email"
                   onChange={handleInputChange}
                   required
                   autoComplete="off"
@@ -284,6 +285,7 @@ function NewLogin() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
+                  placeholder="Enter Your Password"
                   onChange={handleInputChange}
                   required
                   autoComplete="new-password"

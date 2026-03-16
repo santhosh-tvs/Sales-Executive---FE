@@ -58,7 +58,7 @@
     width: 100%;
     padding: 12px;
     font-size: 14px;
-    border: 1px solid #ddd;
+    border: 1px solid #ffffff;
     border-radius: 6px;
     background: #f9f9f9;
     box-sizing: border-box;
@@ -574,7 +574,7 @@
 .header-right .search-input {
     width: 100%;
     padding: 12px 45px 12px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #ffffff;
     border-radius: 8px;
     font-size: 14px;
     transition: border-color 0.3s ease;

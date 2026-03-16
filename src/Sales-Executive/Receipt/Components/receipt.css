@@ -753,7 +753,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: bold;
-  font-family: serif;
+  font-family: Inter, sans-serif;
 }
 
 .green-check-circle {

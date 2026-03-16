@@ -34,7 +34,7 @@
 }
 
 .report-select {
-  border: 1px solid #ddd;
+  border: 1px solid #ffffff;
   border-radius: 4px;
   padding: 8px 12px;
   font-size: 14px;
@@ -61,7 +61,7 @@
 }
 
 .search-input {
-  border: 1px solid #ddd;
+  border: 1px solid #ffffff;
   border-radius: 4px;
   padding: 8px 12px;
   font-size: 14px;
@@ -255,7 +255,7 @@
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 20px;

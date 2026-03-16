@@ -100,22 +100,90 @@ const Shipping = () => {
     setOrderError('');
 
     try {
-      // Get geolocation
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
+      // Convert address to latitude and longitude using geocoding
+      let latitude, longitude;
 
-      const { latitude, longitude } = position.coords;
+      try {
+        // Build a more complete address string for better geocoding
+        const fullAddress = `${shippingAddress.address}, India`;
+        
+        console.log('🔍 Geocoding address:', fullAddress);
+        
+        const geocodeResponse = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=1&countrycodes=in`,
+          {
+            headers: {
+              'User-Agent': 'MyTVS-Sales-App'
+            }
+          }
+        );
 
-      // Get unit_code from apiConfigManager
+        const geocodeData = await geocodeResponse.json();
+        console.log('📍 Geocoding response:', geocodeData);
+
+        if (geocodeData && geocodeData.length > 0) {
+          latitude = parseFloat(geocodeData[0].lat);
+          longitude = parseFloat(geocodeData[0].lon);
+          console.log('✅ Address geocoded successfully:', { 
+            latitude, 
+            longitude, 
+            address: fullAddress,
+            display_name: geocodeData[0].display_name 
+          });
+        } else {
+          // Fallback to device location if geocoding fails
+          console.warn('⚠️ Geocoding returned no results, using device location as fallback');
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            });
+          });
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+          console.log('📍 Using device location:', { latitude, longitude });
+        }
+      } catch (geocodeError) {
+        console.error('❌ Geocoding error:', geocodeError);
+        // Fallback to device location
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            });
+          });
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+          console.log('📍 Using device location (after geocoding error):', { latitude, longitude });
+        } catch (locationError) {
+          console.error('❌ Location error:', locationError);
+          setOrderError('Unable to get location. Please enable location services and try again.');
+          setIsPlacingOrder(false);
+          return;
+        }
+      }
+
+      // Get customer details from apiConfigManager
       const { default: apiConfigManager } = await import('../../../services/apiConfig');
-      const unitCode = apiConfigManager.getUnitCode();
+      const customerDetails = apiConfigManager.getCustomerDetails();
       
-      if (!unitCode) {
-        console.error('❌ Unit code not found. Please select a customer first.');
+      console.log('📦 Customer details for order:', {
+        customerCode: customerDetails?.customer_code,
+        customerName: customerDetails?.customer_name,
+        fullDetails: customerDetails
+      });
+      
+      if (!customerDetails || !customerDetails.customer_code) {
+        console.error('❌ Customer code not found. Please select a customer first.');
         alert('Please select a customer first');
+        setIsPlacingOrder(false);
         return;
       }
+
+      const customerCode = customerDetails.customer_code;
 
       // Get user data from localStorage
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
@@ -160,7 +228,7 @@ const Shipping = () => {
       // Build order payload
       const orderPayload = {
         validity_date: formattedValidityDate,
-        customer_code: unitCode, // Using unit_code from view customer API
+        customer_code: customerCode, // Using customer_code from customer details
         employee_id: employeeId,
         purchase_order_no: null,
         purchase_order_date: null,
@@ -177,17 +245,21 @@ const Shipping = () => {
         part_details: partDetails
       };
 
-      console.log('Placing order:', orderPayload);
+      console.log('📦 Placing order:', orderPayload);
+      console.log('📦 Customer code being sent:', customerCode);
 
       // Call API
       const response = await createOrderAPI(orderPayload);
 
-      if (response) {
+      if (response && response.success) {
+        console.log('✅ Order placed successfully:', response);
         setOrderSuccess(true);
         // Clear cart after successful order
         // contextCartItems will be cleared by CartContext
       } else {
-        setOrderError('Failed to place order. Please try again.');
+        const errorMessage = response?.error?.message || response?.message || 'Failed to place order. Please try again.';
+        console.error('❌ Order placement failed:', errorMessage);
+        setOrderError(errorMessage);
       }
     } catch (error) {
       console.error('Order placement error:', error);

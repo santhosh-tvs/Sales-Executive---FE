@@ -687,11 +687,16 @@ const BeatPlanPage = () => {
         const formatted = newNumber.toString().padStart(4, '0').split('').join(' ');
         setNextPlanCode(`P # ${formatted}`);
 
-        // Navigate with all data
+        // Navigate with all data including selected customer info
         navigate('/create-beat', {
           state: {
             ...formValues,
-            repeatData
+            repeatData,
+            selectedCustomer: {
+              customer_code: formValues.employee,
+              customer_name: formValues.employeeName,
+              city: formValues.location
+            }
           }
         });
       }

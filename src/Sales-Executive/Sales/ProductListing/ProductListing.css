@@ -424,6 +424,14 @@
     background: #5a6268;
 }
 
+.add-to-cart-btn.out-of-stock-btn {
+    background: #ff6b6b;
+}
+
+.add-to-cart-btn.out-of-stock-btn:hover {
+    background: #ff5252;
+}
+
 /* Loading, Error, No Products */
 .loading-message,
 .error-message,

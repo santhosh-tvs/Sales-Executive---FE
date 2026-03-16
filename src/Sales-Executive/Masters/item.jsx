@@ -132,19 +132,8 @@ const Masters = () => {
       <Header />
       <div className="masters-content">
         <div className="masters-header">
-          <Breadcrumb currentPage="Masters" />
+          <Breadcrumb currentPage="Item Masters" />
           <div className="masters-header-controls">
-            <div className="masters-tabs">
-              {tabs.map((tab) => (
-                <button
-                  key={tab}
-                  className={`master-tab ${activeTab === tab ? "active" : ""}`}
-                  onClick={() => handleTabChange(tab)}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
             <div className="header-search-control">
               <input type="text" value={searchTerm} onChange={handleSearchChange} placeholder="Search..." className="header-search-input" />
               <button className="export-btn">Export</button>

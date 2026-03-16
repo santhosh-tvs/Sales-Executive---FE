@@ -37,19 +37,50 @@ const CreateBeat = () => {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const response = await apiService.get('/profile/sales-executive-customers');
-      if (response.success && response.data) {
-        const formattedCustomers = response.data.map(customer => ({
-          id: customer.customer_id,
-          code: customer.customer_code,
-          name: customer.customer_name,
-          contact: customer.mobile || 'N/A',
+      
+      // Check if a specific customer was selected in BeatPlanPage
+      if (beatData.selectedCustomer) {
+        // Only show the selected customer and pre-select it
+        const selectedCustomer = {
+          id: beatData.selectedCustomer.customer_code, // Using code as id for now
+          code: beatData.selectedCustomer.customer_code,
+          name: beatData.selectedCustomer.customer_name,
+          contact: 'N/A', // Will be fetched from API if needed
           target: '',
           unit: 'Rs',
-          isChecked: false,
-          city: customer.city
-        }));
-        setCustomers(formattedCustomers);
+          isChecked: true, // Pre-select the customer
+          city: beatData.selectedCustomer.city
+        };
+        
+        // Fetch full customer details to get contact number
+        const response = await apiService.get('/profile/sales-executive-customers');
+        if (response.success && response.data) {
+          const fullCustomerData = response.data.find(
+            c => c.customer_code === beatData.selectedCustomer.customer_code
+          );
+          if (fullCustomerData) {
+            selectedCustomer.id = fullCustomerData.customer_id;
+            selectedCustomer.contact = fullCustomerData.mobile || 'N/A';
+          }
+        }
+        
+        setCustomers([selectedCustomer]);
+      } else {
+        // No specific customer selected, show all customers
+        const response = await apiService.get('/profile/sales-executive-customers');
+        if (response.success && response.data) {
+          const formattedCustomers = response.data.map(customer => ({
+            id: customer.customer_id,
+            code: customer.customer_code,
+            name: customer.customer_name,
+            contact: customer.mobile || 'N/A',
+            target: '',
+            unit: 'Rs',
+            isChecked: false,
+            city: customer.city
+          }));
+          setCustomers(formattedCustomers);
+        }
       }
     } catch (error) {
       console.error('Error fetching customers:', error);
@@ -366,18 +397,72 @@ const CreateBeat = () => {
       if (allSuccess) {
         Swal.fire({
           icon: 'success',
-          title: 'Beat Plans Created!',
+          iconColor: '#28a745',
+          title: '<div style="color: #28a745; font-size: 20px; font-weight: 600;">Beat Plan Created!</div>',
           html: `
-            <div style="text-align: left;">
-              <p><strong>Date:</strong> ${beatInfo.date}</p>
-              <p><strong>Employee:</strong> ${beatInfo.employeeName || 'N/A'}</p>
-              <p><strong>Plan Type:</strong> ${beatInfo.planType}</p>
-              <p><strong>Location:</strong> ${beatInfo.location}</p>
-              <p><strong>Customers:</strong> ${selectedCustomers.length}</p>
-              <p><strong>Plans Created:</strong> ${responses.length}</p>
+            <div style="background: #f8f9fa; border-radius: 8px; padding: 16px; margin: 12px 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #dee2e6;">
+                <div style="text-align: left; flex: 1;">
+                  <div style="font-size: 11px; color: #6c757d; font-weight: 500; margin-bottom: 4px;">DATE</div>
+                  <div style="font-size: 14px; color: #212529; font-weight: 600;">${new Date(beatInfo.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                </div>
+                <div style="text-align: left; flex: 1;">
+                  <div style="font-size: 11px; color: #6c757d; font-weight: 500; margin-bottom: 4px;">PLAN TYPE</div>
+                  <div style="font-size: 14px; color: #212529; font-weight: 600;">${beatInfo.planType}</div>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #dee2e6;">
+                <div style="text-align: left; flex: 1;">
+                  <div style="font-size: 11px; color: #6c757d; font-weight: 500; margin-bottom: 4px;">CUSTOMER</div>
+                  <div style="font-size: 14px; color: #212529; font-weight: 600;">${beatInfo.employeeName || 'N/A'}</div>
+                </div>
+                <div style="text-align: left; flex: 1;">
+                  <div style="font-size: 11px; color: #6c757d; font-weight: 500; margin-bottom: 4px;">LOCATION</div>
+                  <div style="font-size: 14px; color: #212529; font-weight: 600;">${beatInfo.location}</div>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-around; align-items: center; padding-top: 8px;">
+                <div style="text-align: center;">
+                  <div style="font-size: 24px; color: #20409A; font-weight: 700; margin-bottom: 2px;">${selectedCustomers.length}</div>
+                  <div style="font-size: 11px; color: #6c757d; font-weight: 500;">Customer${selectedCustomers.length > 1 ? 's' : ''}</div>
+                </div>
+                <div style="width: 1px; height: 40px; background: #dee2e6;"></div>
+                <div style="text-align: center;">
+                  <div style="font-size: 24px; color: #28a745; font-weight: 700; margin-bottom: 2px;">${responses.length}</div>
+                  <div style="font-size: 11px; color: #6c757d; font-weight: 500;">Plan${responses.length > 1 ? 's' : ''} Created</div>
+                </div>
+              </div>
             </div>
           `,
+          confirmButtonText: 'Done',
           confirmButtonColor: '#20409A',
+          width: '450px',
+          padding: '20px',
+          customClass: {
+            popup: 'compact-success-popup',
+            confirmButton: 'compact-confirm-btn'
+          },
+          didOpen: () => {
+            const style = document.createElement('style');
+            style.textContent = `
+              .compact-success-popup {
+                border-radius: 12px !important;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
+              }
+              .compact-confirm-btn {
+                padding: 10px 28px !important;
+                font-size: 14px !important;
+                font-weight: 600 !important;
+                border-radius: 6px !important;
+                transition: all 0.2s ease !important;
+              }
+              .compact-confirm-btn:hover {
+                transform: translateY(-1px) !important;
+                box-shadow: 0 3px 10px rgba(32, 64, 154, 0.25) !important;
+              }
+            `;
+            document.head.appendChild(style);
+          }
         }).then(() => {
           navigate('/beatplan');
         });

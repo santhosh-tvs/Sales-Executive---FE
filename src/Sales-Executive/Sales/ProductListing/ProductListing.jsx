@@ -238,6 +238,54 @@ const ProductListing = () => {
   }, [products, searchQuery, filterStock, sortBy, productStockStatus]);
 
   const handleAddToCart = async (product) => {
+    const partNumber = product.partNumber;
+    const stockInfo = productStockStatus[partNumber];
+
+    // Check if product is out of stock
+    if (!stockInfo || !stockInfo.inStock) {
+      // Out of stock - add to wishlist directly
+      console.log('📦 Product out of stock, adding to wishlist:', partNumber);
+      
+      const wishlistProduct = {
+        id: product.partNumber,
+        partNumber: product.partNumber,
+        itemDescription: product.itemDescription,
+        brandName: product.brandName,
+        price: parseFloat(product.mrp) || 0,
+        mrp: product.mrp,
+        listPrice: product.listPrice,
+        hsnCode: product.hsnCode,
+        taxpercent: product.taxpercent,
+        aggregate: product.aggregate,
+        subAggregate: product.subAggregate,
+        imageUrl: null,
+      };
+      
+      addToWishlist(wishlistProduct);
+      
+      // Show feedback
+      setAddedToCart(prev => ({ ...prev, [partNumber]: true }));
+      
+      if (undoTimers[partNumber]) {
+        clearTimeout(undoTimers[partNumber]);
+      }
+      
+      const timer = setTimeout(() => {
+        setAddedToCart(prev => ({ ...prev, [partNumber]: false }));
+        setUndoTimers(prev => {
+          const newTimers = { ...prev };
+          delete newTimers[partNumber];
+          return newTimers;
+        });
+      }, 2000);
+      
+      setUndoTimers(prev => ({ ...prev, [partNumber]: timer }));
+      
+      return;
+    }
+
+    // In stock - show warehouse popup
+    console.log('✅ Product in stock, opening warehouse popup:', partNumber);
     setSelectedProduct(product);
     setShowWarehousePopup(true);
     await fetchWarehouseStock(product.partNumber);
@@ -583,7 +631,7 @@ const ProductListing = () => {
                   <button
                     className={`add-to-cart-btn ${addedToCart[product.partNumber] ? 'added' : ''} ${
                       isInCart(product.partNumber) && !addedToCart[product.partNumber] ? 'in-cart' : ''
-                    }`}
+                    } ${!productStockStatus[product.partNumber]?.inStock ? 'out-of-stock-btn' : ''}`}
                     onClick={() => handleAddToCart(product)}
                   >
                     {addedToCart[product.partNumber] ? (
@@ -591,11 +639,11 @@ const ProductListing = () => {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                           <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
-                        Added
+                        {productStockStatus[product.partNumber]?.inStock ? 'Added to Cart' : 'Added to Wishlist'}
                       </>
                     ) : isInCart(product.partNumber) ? (
                       `In Cart (${getCartQuantity(product.partNumber)})`
-                    ) : (
+                    ) : productStockStatus[product.partNumber]?.inStock ? (
                       <>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <circle cx="9" cy="21" r="1"></circle>
@@ -603,6 +651,13 @@ const ProductListing = () => {
                           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                         </svg>
                         Add to Cart
+                      </>
+                    ) : (
+                      <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        Add to Wishlist
                       </>
                     )}
                   </button>

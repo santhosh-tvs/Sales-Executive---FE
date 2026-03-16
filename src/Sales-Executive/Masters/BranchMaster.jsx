@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../header/Header';
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import './Employeemaster.css';
@@ -9,16 +10,14 @@ const Masters = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [rowsPerPage] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
+    const navigate = useNavigate();
 
-    // 2. Action functions-ah inga define pannunga (Error-ah fix panna)
     const handleView = (item) => {
-        console.log("Viewing item:", item);
-        // Inga view logic-ah add pannunga
+        navigate('/masters/view', { state: { data: item, masterType: activeTab } });
     };
 
     const handleEdit = (item) => {
-        console.log("Editing item:", item);
-        // Inga edit logic-ah add pannunga
+        navigate('/masters/edit', { state: { data: item, masterType: activeTab } });
     };
 
     const mastersData = {

@@ -179,6 +179,17 @@
 
 .create-beat-btn {
   background: #20409a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .create-beat-btn:hover {
@@ -187,6 +198,17 @@
 
 .apply-leave-btn {
   background: #20409a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .apply-leave-btn:hover {
@@ -195,14 +217,36 @@
 
 .import-beat-btn {
   background: #20409a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .import-beat-btn:hover {
   background: #20409a;
 }
 
-.export-btn {
+.export-btnn {
   background: #28a745;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .export-btn:hover {

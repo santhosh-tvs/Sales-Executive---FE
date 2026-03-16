@@ -185,9 +185,9 @@ const Shipping = () => {
 
       const customerCode = customerDetails.customer_code;
 
-      // Get user data from localStorage
+      // Get user data from localStorage — sales_executive_id is the employee id
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      const employeeId = userData.employee_id || '51164060';
+      const employeeId = userData.sales_executive_id;
 
       // Generate transaction track ID
       const now = new Date();

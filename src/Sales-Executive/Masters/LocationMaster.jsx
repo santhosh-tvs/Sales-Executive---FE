@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../header/Header';
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import './Locationmaster.css';
@@ -9,9 +10,15 @@ const Masters = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [rowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
-  const handleView = (item) => console.log("Viewing item:", item);
-  const handleEdit = (item) => console.log("Editing item:", item);
+  const handleView = (item) => {
+    navigate('/masters/view', { state: { data: item, masterType: activeTab } });
+  };
+
+  const handleEdit = (item) => {
+    navigate('/masters/edit', { state: { data: item, masterType: activeTab } });
+  };
 
   const mastersData = {
     'Countries': [

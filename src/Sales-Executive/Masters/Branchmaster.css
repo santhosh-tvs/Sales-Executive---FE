@@ -55,7 +55,7 @@
     border-bottom: 3px solid transparent !important;
     white-space: nowrap;
     min-width: 120px;
-    
+
 }
 
 .master-tab.active {
@@ -81,7 +81,7 @@
 }
 
 .header-search-input {
-    border: 1px solid #ddd;
+    border: 1px solid #ffffff;
     border-radius: 6px;
     padding: 8px 12px;
     font-size: 14px;
@@ -99,8 +99,7 @@
 }
 
 .header-search-input:focus {
-    border-color: #20409A;
-    box-shadow: 0 0 0 2px rgba(32, 64, 154, 0.1);
+    border-bottom: 1px solid #3b0aad !important;
 }
 
 .header-search-control .export-btn {
@@ -197,7 +196,7 @@
 }
 
 .masters-table th {
-   padding: 18px 16px;
+    padding: 18px 16px;
     text-align: left;
     font-weight: 700;
     color: #ffffff;
@@ -242,7 +241,7 @@
     background: rgba(255, 255, 255, 0.7);
     transition: all 0.3s ease;
     font-weight: 500;
-        text-align: center;
+    text-align: center;
 }
 
 .masters-table tbody tr {

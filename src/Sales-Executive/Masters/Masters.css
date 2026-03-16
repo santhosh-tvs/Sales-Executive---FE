@@ -80,7 +80,7 @@
 }
 
 .header-search-input {
-    border: 1px solid #ddd;
+    border: 1px solid #ffffff;
     border-radius: 6px;
     padding: 8px 12px;
     font-size: 14px;
@@ -98,8 +98,7 @@
 }
 
 .header-search-input:focus {
-    border-color: #20409A;
-    box-shadow: 0 0 0 2px rgba(32, 64, 154, 0.1);
+    border-bottom: 1px solid #3b0aad !important;
 }
 
 .header-search-control .export-btn {
@@ -484,7 +483,117 @@
     }
 }
 
-/* Action Icons - Table specific */
+/* Action Icons - Removed duplicate, using unified styles above */
+
+
+/* Platform Badge Styles */
+.platform-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.platform-badge.mobile {
+    background: #e7f3ff;
+    color: #0066cc;
+}
+
+.platform-badge.web {
+    background: #f0e7ff;
+    color: #6600cc;
+}
+
+.platform-badge.desktop {
+    background: #fff3e0;
+    color: #cc6600;
+}
+
+/* Price and Discount Value Styles */
+.price-value {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.discount-value {
+    font-weight: 600;
+    color: #F36F21;
+}
+
+
+/* ========== CONSISTENT MASTER PAGE STYLES ========== */
+
+/* Masters Actions Section */
+.masters-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.masters-search {
+    width: 280px;
+    height: 40px;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+    background: #fff;
+    transition: all 0.2s ease;
+}
+
+.masters-search:focus {
+    border-color: #20409A;
+    box-shadow: 0 0 0 3px rgba(32, 64, 154, 0.1);
+}
+
+.masters-search::placeholder {
+    color: #999;
+}
+
+.masters-btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    width: 180px;
+    height: 40px;
+    background: linear-gradient(135deg, #20409A 0%, #1a3580 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(32, 64, 154, 0.3);
+}
+
+.masters-btn-primary:hover {
+    background: linear-gradient(135deg, #1a3580 0%, #142a66 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(32, 64, 154, 0.4);
+}
+
+.masters-btn-primary svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Masters Table Container */
+.masters-table-container {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e8e8e8;
+}
+
+/* Action Buttons - Consistent across all tables - UPDATED TO MATCH ITEM MASTER */
+.action-buttons,
 .action-icons {
     display: flex;
     align-items: center;
@@ -492,51 +601,185 @@
     justify-content: center;
 }
 
-.action-icons .action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
+.action-btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
 }
 
-.action-icons .action-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
+.action-btn:hover {
     transform: scale(1.1);
 }
 
-.action-icons .view-btn {
+.action-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.action-btn.view-btn {
     color: #007bff;
+    background: transparent;
 }
 
-.action-icons .view-btn:hover {
-    color: #0056b3;
+.action-btn.view-btn:hover {
     background: rgba(0, 123, 255, 0.1);
+    color: #0056b3;
 }
 
-.action-icons .edit-btn {
+.action-btn.edit-btn {
     color: #28a745;
+    background: transparent;
 }
 
-.action-icons .edit-btn:hover {
-    color: #1e7e34;
+.action-btn.edit-btn:hover {
     background: rgba(40, 167, 69, 0.1);
+    color: #1e7e34;
 }
 
-.action-icons .delete-btn {
-    color: #CF0D00;
+.action-btn.delete-btn {
+    color: #dc3545;
+    background: transparent;
 }
 
-.action-icons .delete-btn:hover {
-    color: #a00a00;
-    background: rgba(207, 13, 0, 0.1);
+.action-btn.delete-btn:hover {
+    background: rgba(220, 53, 69, 0.1);
+    color: #c82333;
 }
 
-.action-icons .action-btn svg {
-    width: 16px;
-    height: 16px;
+/* No Data Message */
+.no-data {
+    text-align: center;
+    padding: 60px 20px !important;
+}
+
+.no-data-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.no-data-message svg {
+    opacity: 0.5;
+}
+
+.no-data-message p {
+    font-size: 14px;
+    color: #999;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Responsive Styles for Masters Pages */
+@media (max-width: 992px) {
+    .masters-actions {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .masters-search {
+        width: 100%;
+    }
+
+    .masters-btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .masters-container {
+        padding: 15px;
+    }
+
+    .masters-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .masters-actions {
+        width: 100%;
+    }
+
+    .masters-search {
+        width: 100%;
+        height: 36px;
+        font-size: 13px;
+    }
+
+    .masters-btn-primary {
+        height: 36px;
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+
+    .masters-table {
+        font-size: 12px;
+    }
+
+    .masters-table th,
+    .masters-table td {
+        padding: 12px 10px;
+    }
+
+    .action-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .action-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .masters-container {
+        padding: 10px;
+    }
+
+    .masters-search {
+        height: 34px;
+        font-size: 12px;
+    }
+
+    .masters-btn-primary {
+        height: 34px;
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .masters-table {
+        font-size: 11px;
+    }
+
+    .masters-table th,
+    .masters-table td {
+        padding: 10px 8px;
+    }
+
+    .action-btn {
+        width: 26px;
+        height: 26px;
+    }
+
+    .action-btn svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .status-badge,
+    .platform-badge {
+        font-size: 10px;
+        padding: 3px 8px;
+    }
 }

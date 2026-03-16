@@ -81,7 +81,7 @@
 }
 
 .header-search-input {
-    border: 1px solid #ddd;
+    border: 1px solid #ffffff;
     border-radius: 6px;
     padding: 8px 12px;
     font-size: 14px;
@@ -99,8 +99,7 @@
 }
 
 .header-search-input:focus {
-    border-color: #20409A;
-    box-shadow: 0 0 0 2px rgba(32, 64, 154, 0.1);
+    border-bottom: 1px solid #3b0aad !important;
 }
 
 .header-search-control .export-btn {

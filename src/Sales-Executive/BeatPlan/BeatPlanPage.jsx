@@ -989,19 +989,19 @@ const BeatPlanPage = () => {
                 placeholder="Search Customer Name / Code"
               />
             </div>
-            <button className="action-btn create-beat-btn" onClick={handleCreateBeat}>
+            <button className="create-beat-btn" onClick={handleCreateBeat}>
               <img src={DateIcon} alt="Create" className="btn-icon" />
               Create Beat
             </button>
-            <button className="action-btn apply-leave-btn" onClick={handleApplyLeave}>
+            <button className="apply-leave-btn" onClick={handleApplyLeave}>
               <img src={DateIcon} alt="Leave" className="btn-icon" />
               Apply Leave
             </button>
-            <button className="action-btn import-beat-btn" onClick={handleImportBeat}>
+            <button className="import-beat-btn" onClick={handleImportBeat}>
               <img src={ImportIcon} alt="Import" className="btn-icon" />
               Import
             </button>
-            <button className="action-btn export-btn" onClick={() => beatPlanRef.current?.handleExport()}>
+            <button className="export-btnn" onClick={() => beatPlanRef.current?.handleExport()}>
               <img src={ExportIcon} alt="Export" className="btn-icon" />
               Export
             </button>

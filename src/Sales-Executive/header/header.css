@@ -872,3 +872,20 @@
     padding: 7px 8px;
   }
 }
+
+/* Direct link inside mega menu (no submenu arrow) */
+.mega-menu-direct-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  text-decoration: none;
+  display: block;
+}
+
+.mega-menu-item:has(.mega-menu-direct-link):hover {
+  background: linear-gradient(135deg, rgba(32, 64, 154, 0.1) 0%, rgba(32, 64, 154, 0.05) 100%);
+}
+
+.mega-menu-item:has(.mega-menu-direct-link) .mega-menu-direct-link:hover {
+  color: #20409A;
+}

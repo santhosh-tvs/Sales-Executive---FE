@@ -200,7 +200,7 @@
   max-width: 400px;
   height: 40px;
   padding: 8px 12px;
-  border: 2px solid #d0d0d0;
+  border: 2px solid #ffffff;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 400;
@@ -211,11 +211,6 @@
 
 .input-box:hover {
   border-color: #a0a0a0;
-}
-
-.input-box:focus {
-  border-color: #201070;
-  box-shadow: 0 0 0 4px rgba(32, 16, 112, 0.1);
 }
 
 .input-box:disabled {

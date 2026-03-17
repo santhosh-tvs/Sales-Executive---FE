@@ -180,86 +180,224 @@
   box-shadow: none !important;
 }
 
-/* Main Chart Section */
-.main-chart-section {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
-  margin-bottom: 30px;
-}
-
-.main-chart-container {
-  width: 100%;
-}
-
+/* Chart header, legend, tooltip — compact for panel layout */
 .chart-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .chart-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a2340;
 }
 
 .chart-legend {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 6px;
+  font-size: 12px;
   color: #666;
 }
 
 .legend-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
 }
 
-.legend-dot.target {
-  background-color: #FFA500;
-}
-
-.legend-dot.actual {
-  background-color: #2563eb;
-}
+.legend-dot.target { background-color: #FFA500; }
+.legend-dot.actual { background-color: #2563eb; }
 
 .chart-stats {
   display: flex;
   align-items: center;
-  gap: 15px;
-  font-size: 14px;
+  gap: 8px;
+  font-size: 12px;
 }
 
-.chart-value {
-  font-weight: 600;
-  color: #333;
-}
+.chart-value { font-weight: 600; color: #333; }
 
 .chart-growth {
   color: #28a745;
   background: #d4edda;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.chart-growth.warn  { color: #856404; background: #fff3cd; }
+.chart-growth.danger { color: #721c24; background: #f8d7da; }
+
+/* Tooltip */
+.chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, -110%);
+  background: #1a2340;
+  color: #fff;
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-size: 11px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.chart-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #1a2340;
+}
+.chart-tooltip-day {
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #b0b8cc;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.chart-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+/* Pie chart header */
+.pie-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.pie-chart-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a2340;
+  margin: 0;
+}
+.pie-chart-total { font-size: 13px; color: #666; }
+
+.pie-total-badge {
+  background: #eef2ff;
+  color: #20409A;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* Pie legend */
+.pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #333;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.pie-legend-item:hover,
+.pie-legend-active { background: #f4f6fb; }
+
+.pie-legend-pct {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+/* Charts Row — side by side with expand on hover/click */
+.charts-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.chart-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 20px 24px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 1.5px solid #e8ecf4;
+  position: relative;
+  cursor: pointer;
+  /* default: equal halves */
+  flex: 1 1 50%;
+  min-width: 0;
+  transition: flex 0.4s cubic-bezier(0.4,0,0.2,1),
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+  overflow: hidden;
+}
+
+.chart-panel:hover {
+  border-color: #20409A44;
+  box-shadow: 0 4px 20px rgba(32,64,154,0.12);
+}
+
+.chart-panel--expanded {
+  flex: 0 0 64%;
+  box-shadow: 0 6px 28px rgba(32,64,154,0.14);
+  border-color: #20409A66;
+}
+
+.chart-panel--shrunk {
+  flex: 0 0 34%;
+  opacity: 0.72;
+}
+
+/* Expand hint badge */
+.chart-panel-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #9aa3b8;
+  background: #f4f6fb;
+  padding: 2px 8px;
+  border-radius: 20px;
+  pointer-events: none;
+  letter-spacing: 0.3px;
+  transition: opacity 0.2s;
+  opacity: 0;
+}
+
+.chart-panel:hover .chart-panel-badge,
+.chart-panel--expanded .chart-panel-badge {
+  opacity: 1;
+}
+
+/* Keep old class names working inside panels */
+.main-chart-container,
+.pie-chart-container {
+  width: 100%;
 }
 
 .main-chart-svg {
   width: 100%;
-  height: 300px;
-  border: 1px solid #f0f0f0;
+  height: auto;
+  border: 1px solid #f0f2f8;
   border-radius: 8px;
   background: white;
 }
@@ -267,77 +405,39 @@
 .chart-x-axis {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
-  padding: 0 20px;
+  margin-top: 10px;
+  padding: 0 4px;
 }
 
 .chart-x-axis span {
-  font-size: 12px;
-  color: #666;
+  font-size: 11px;
+  color: #b0b8cc;
   text-align: center;
-  min-width: 20px;
-}
-
-/* Pie Chart Section */
-.pie-chart-section {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
-}
-
-.pie-chart-container {
-  width: 100%;
-}
-
-.pie-chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-.pie-chart-header h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
-}
-
-.pie-chart-total {
-  font-size: 14px;
-  color: #666;
+  min-width: 16px;
 }
 
 .pie-chart-content {
   display: flex;
   align-items: center;
-  gap: 50px;
+  gap: 24px;
+}
+
+.pie-chart-svg-container {
+  flex-shrink: 0;
 }
 
 .pie-chart-legend {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-}
-
-.pie-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  color: #333;
+  gap: 8px;
+  min-width: 0;
 }
 
 .pie-legend-color {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   border-radius: 3px;
-}
-
-.pie-chart-svg-container {
   flex-shrink: 0;
 }
 
@@ -364,18 +464,30 @@
   .chart-legend {
     flex-direction: column;
     align-items: flex-start;
-    gap: 15px;
+    gap: 8px;
   }
 
   .pie-chart-content {
     flex-direction: column;
-    gap: 30px;
+    gap: 16px;
+  }
+
+  .charts-row {
+    flex-direction: column;
+  }
+
+  .chart-panel--expanded,
+  .chart-panel--shrunk {
+    flex: 1 1 100%;
+    opacity: 1;
   }
 }
 
 @media (max-width: 768px) {
-  .dashboard-header h1 {
-    font-size: 20px;
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .widget-metrics {
@@ -387,58 +499,95 @@
   }
 
   .chart-tab {
-    padding: 14px 16px !important;
+    padding: 12px 16px !important;
     font-size: 12px !important;
-    letter-spacing: 0.3px;
   }
 
-  .chart-header {
+  .charts-row {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
   }
 
-  .main-chart-section,
-  .pie-chart-section {
-    padding: 20px;
-  }
-
-  .chart-x-axis {
-    padding: 0 10px;
-  }
-
-  .chart-x-axis span {
-    font-size: 10px;
+  .chart-panel {
+    padding: 14px 16px 12px;
   }
 }
 
 @media (max-width: 480px) {
-  .dashboard-content {
-    padding: 10px;
-  }
+  .dashboard-content { padding: 10px; }
+  .widget-card { padding: 14px; }
+  .chart-tab { padding: 10px 8px !important; font-size: 11px !important; }
+  .chart-title, .pie-chart-header h3 { font-size: 13px; }
+}
 
-  .widget-card {
-    padding: 15px;
-  }
+/* ── Widget trend badge ── */
+.widget-trend {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 3px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  display: inline-block;
+}
+.widget-trend.up   { color: #15803d; background: #dcfce7; }
+.widget-trend.down { color: #b91c1c; background: #fee2e2; }
 
-  .action-btn {
-    padding: 10px 16px;
-    font-size: 12px;
-  }
+/* ── Progress track ── */
+.metric-progress-track {
+  height: 4px;
+  background: #f0f2f8;
+  border-radius: 3px;
+  overflow: hidden;
+}
 
-  .chart-tab {
-    padding: 12px 8px !important;
-    font-size: 11px !important;
-    letter-spacing: 0.2px;
-  }
+/* ── Chart summary bar ── */
+.chart-summary-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
 
-  .main-chart-section,
-  .pie-chart-section {
-    padding: 15px;
-  }
+.chart-stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f4f6fb;
+  border: 1px solid #e8ecf4;
+}
+.chart-stat-chip .chip-label { color: #9aa3b8; font-weight: 500; }
+.chart-stat-chip .chip-value { color: #1a2340; }
+.chart-stat-chip.planned { background: #eff6ff; border-color: #bfdbfe; }
+.chart-stat-chip.planned .chip-value { color: #2563eb; }
+.chart-stat-chip.visited { background: #f0fdf4; border-color: #bbf7d0; }
+.chart-stat-chip.visited .chip-value { color: #15803d; }
+.chart-stat-chip.missed  { background: #fff7ed; border-color: #fed7aa; }
+.chart-stat-chip.missed  .chip-value { color: #c2410c; }
+.chart-stat-chip.rate.good { background: #f0fdf4; border-color: #bbf7d0; }
+.chart-stat-chip.rate.good .chip-value { color: #15803d; }
+.chart-stat-chip.rate.warn { background: #fff7ed; border-color: #fed7aa; }
+.chart-stat-chip.rate.warn .chip-value { color: #c2410c; }
+.chart-stat-chip.rate.bad  { background: #fef2f2; border-color: #fecaca; }
+.chart-stat-chip.rate.bad  .chip-value { color: #b91c1c; }
 
-  .chart-title,
-  .pie-chart-header h3 {
-    font-size: 16px;
-  }
+/* ── Pie ranking badge ── */
+.pie-rank-badge {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ── Pie warning banner ── */
+.pie-warning-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
 }

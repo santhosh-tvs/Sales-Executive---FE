@@ -5,6 +5,7 @@ import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import '../../../styles/Sales/Create_Order/Create_Order.css';
 import searchIcon from '../../../assets/Icons/MagnifyingGlass.png';
 import { apiService } from '../../../services/apiservice';
+import apiConfigManager from '../../../services/apiConfig';
 
 const Create_Order = () => {
   const navigate = useNavigate();
@@ -112,6 +113,10 @@ const Create_Order = () => {
         const viewCustomerData = viewCustomerResponse.user_detail;
         console.log('✅ View Customer Data:', viewCustomerData);
         
+        // Store unit_code and API config from customer data
+        apiConfigManager.updateFromCustomer(viewCustomerResponse);
+        console.log('✅ API config updated, unit_code:', apiConfigManager.getUnitCode());
+        
         // Now fetch financial details using account number
         let customerDetailsData = null;
         if (viewCustomerData.account_number) {
@@ -193,8 +198,13 @@ const Create_Order = () => {
 
   // Handle continue to brands page
   const handleContinueToBrands = () => {
-    // Navigate to brands page
-    navigate('/brands');
+    navigate('/brands', {
+      state: {
+        customerCode: selectedCustomer?.customer_code,
+        customerName: selectedCustomer?.customer_name,
+        shipTo: selectedShipTo,
+      }
+    });
   };
 
   return (

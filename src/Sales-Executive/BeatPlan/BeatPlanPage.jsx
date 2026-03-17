@@ -510,15 +510,9 @@ const BeatPlanPage = () => {
             <div id="custom-date-section" style="display: none;">
               <div style="margin-bottom: 15px;">
                 <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-                  From Date
+                  Date
                 </label>
-                <input type="date" id="repeat-from-date" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none;" />
-              </div>
-              <div style="margin-bottom: 15px;">
-                <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-                  To Date
-                </label>
-                <input type="date" id="repeat-to-date" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none;" />
+                <input type="date" id="repeat-custom-date" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none;" />
               </div>
             </div>
 
@@ -570,8 +564,6 @@ const BeatPlanPage = () => {
           const repeatTypeSelect = document.getElementById('repeat-type');
           const customDateSection = document.getElementById('custom-date-section');
           const weeklySection = document.getElementById('weekly-section');
-          const fromDateInput = document.getElementById('repeat-from-date');
-          const toDateInput = document.getElementById('repeat-to-date');
           const weeklyFromDateInput = document.getElementById('weekly-from-date');
           const weeklyToDateInput = document.getElementById('weekly-to-date');
 
@@ -589,13 +581,6 @@ const BeatPlanPage = () => {
             } else {
               customDateSection.style.display = 'none';
               weeklySection.style.display = 'none';
-            }
-          });
-
-          // Handle from date change for custom
-          fromDateInput.addEventListener('change', () => {
-            if (fromDateInput.value) {
-              toDateInput.min = fromDateInput.value;
             }
           });
 
@@ -640,15 +625,14 @@ const BeatPlanPage = () => {
           }
 
           if (repeatType === 'custom') {
-            const fromDate = document.getElementById('repeat-from-date').value;
-            const toDate = document.getElementById('repeat-to-date').value;
+            const customDate = document.getElementById('repeat-custom-date').value;
 
-            if (!fromDate || !toDate) {
-              Swal.showValidationMessage('Please select both from and to dates');
+            if (!customDate) {
+              Swal.showValidationMessage('Please select a date');
               return false;
             }
 
-            return { repeatType: 'custom', fromDate, toDate };
+            return { repeatType: 'custom', customDate };
           } else if (repeatType === 'weekly') {
             const fromDate = document.getElementById('weekly-from-date').value;
             const toDate = document.getElementById('weekly-to-date').value;

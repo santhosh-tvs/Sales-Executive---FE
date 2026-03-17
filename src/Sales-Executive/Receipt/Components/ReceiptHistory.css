@@ -1,13 +1,11 @@
 /* ===== BASE ===== */
 .receipt-history-container { font-family: "Inter", sans-serif; background: #f5f7fa; min-height: 100vh; }
-.receipt-history-content { max-width: 1400px; margin: 0 auto; padding: 16px; }
+.receipt-history-content { margin: 0 auto; padding: 16px; }
 
 /* ===== HEADER ===== */
 .receipt-history-header {
     display: flex; justify-content: space-between; align-items: center;
     flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
-    background: #fff; padding: 14px 18px; border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #e5e7eb;
 }
 .receipt-history-container .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; flex-shrink: 0; }
 .receipt-history-container .search-input {

@@ -135,7 +135,7 @@
   padding: 8px 12px;
   width: 250px;
   height: 40px;
-  border: 1px solid #ddd;
+  border: 1px solid #ffffff;
   border-radius: 6px;
   font-size: 14px;
   outline: none;
@@ -145,8 +145,7 @@
 }
 
 .top-action-buttons .search-bar:focus {
-  border-color: #20409a;
-  box-shadow: 0 0 0 2px rgba(32, 64, 154, 0.1);
+  border-bottom: #20409a;
 }
 
 .top-action-buttons .search-bar::placeholder {

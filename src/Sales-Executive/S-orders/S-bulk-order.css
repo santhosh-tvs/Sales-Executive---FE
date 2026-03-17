@@ -8,7 +8,6 @@
 
 .bulk-order-content {
     padding: 0;
-    max-width: 1400px;
     margin: 0 auto;
 }
 
@@ -58,7 +57,7 @@
     width: 100%;
     padding: 12px;
     font-size: 14px;
-    border: 1px solid #ddd;
+    border: 1px solid #ffffff;
     border-radius: 6px;
     background: #f9f9f9;
     box-sizing: border-box;
@@ -68,7 +67,6 @@
 
 .search-input:focus {
     outline: none;
-    border-color: #00a0e9;
 }
 
 .search-icon {
@@ -574,7 +572,7 @@
 .header-right .search-input {
     width: 100%;
     padding: 12px 45px 12px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #ffffff;
     border-radius: 8px;
     font-size: 14px;
     transition: border-color 0.3s ease;
@@ -583,8 +581,6 @@
 
 .header-right .search-input:focus {
     outline: none;
-    border-color: #00a0e9;
-    box-shadow: 0 0 0 3px rgba(0, 160, 233, 0.1);
 }
 
 .header-right .search-icon {
@@ -1211,13 +1207,13 @@
     width: 300px !important;
     padding: 8px 12px !important;
     font-size: 12px !important;
-    border: 1px solid #3b0aad !important;
+    border-bottom: 1px solid #ffffff !important;
     border-radius: 6px !important;
     background: #ffffff !important;
     box-sizing: border-box !important;
     height: 40px !important;
     font-family: Inter, sans-serif !important;
-    color: #4A4A4A !important;
+    color: #ffffff !important;
     transition: all 0.2s ease !important;
 }
 

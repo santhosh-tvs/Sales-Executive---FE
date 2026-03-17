@@ -38,7 +38,7 @@
 .vr-search-input {
   height: 34px;
   padding: 0 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #ffffff;
   border-radius: 6px;
   font-size: 12px;
   outline: none;
@@ -48,7 +48,7 @@
 }
 
 .vr-search-input:focus {
-  border-color: #20409A;
+  border-color: #ffffff;
   background: #fff;
 }
 

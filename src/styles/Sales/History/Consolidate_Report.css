@@ -75,12 +75,6 @@
   outline: none;
 }
 
-/* Make Calendar input same height */
-.date-control input {
-  height: 40px !important;
-  padding: 8px 12px !important;
-}
-
 /* Export Button - Same style as ViewPlan */
 .export-btn {
   display: flex;

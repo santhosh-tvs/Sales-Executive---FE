@@ -195,22 +195,23 @@
 }
 
 /* ============================================
-   CUSTOMER DETAIL CARD
+   CUSTOMER DETAIL CARD - matches reference UI
    ============================================ */
 
 .create-order-container .customer-detail-card {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(32, 64, 154, 0.07);
+  border-radius: 10px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   overflow: visible;
   margin-top: 8px;
+  border: 1px solid #e8eaf0;
 }
 
 .create-order-container .customer-detail-header-info {
-  background: #f8f9fd;
-  padding: 18px 24px;
+  background: #fff;
+  padding: 20px 24px 16px;
   border-bottom: 1px solid #eef0f6;
-  border-radius: 12px 12px 0 0;
+  border-radius: 10px 10px 0 0;
 }
 
 .create-order-container .customer-detail-header-content {
@@ -220,82 +221,87 @@
 }
 
 .create-order-container .customer-detail-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  color: #1a2340;
+  color: #1a1a1a;
   margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .create-order-container .customer-detail-code {
   font-size: 13px;
-  color: #7a8499;
+  color: #888;
   margin: 0;
+  font-weight: 400;
 }
 
 /* ---- Detail Rows ---- */
 .create-order-container .customer-detail-content {
-  padding: 20px 24px;
+  padding: 20px 24px 8px;
 }
 
 .create-order-container .detail-row {
   display: flex;
-  gap: 24px;
-  padding: 6px 0;
+  gap: 0;
+  padding: 4px 0;
 }
 
 .create-order-container .detail-item {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 0;
   flex: 1;
   min-width: 0;
+  padding: 6px 0;
 }
 
 .create-order-container .detail-item.full-width {
-  flex: 2;
+  flex: 1;
 }
 
 .create-order-container .detail-label {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   color: #20409A;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
-  width: 200px;
+  letter-spacing: 0.3px;
+  width: 190px;
   flex-shrink: 0;
-  padding-top: 10px;
+  line-height: 1.5;
+  padding-top: 1px;
 }
 
 .create-order-container .detail-colon {
   font-weight: 600;
-  color: #9aa3b8;
-  padding-top: 10px;
+  color: #555;
   flex-shrink: 0;
+  padding: 0 10px 0 4px;
+  line-height: 1.5;
 }
 
 .create-order-container .detail-value {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1a2340;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: #333;
   line-height: 1.5;
   word-break: break-word;
-  padding-top: 8px;
   flex: 1;
 }
 
 /* ---- Ship To Dropdown ---- */
 .create-order-container .ship-to-dropdown-trigger {
-  padding: 10px 14px;
+  padding: 8px 12px;
   border: 1.5px solid #dde2ef;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: #fff;
-  min-height: 42px;
+  min-height: 38px;
   transition: border-color 0.2s, box-shadow 0.2s;
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .create-order-container .ship-to-dropdown-trigger:hover {
@@ -310,7 +316,7 @@
   right: 0;
   background: #fff;
   border: 1.5px solid #dde2ef;
-  border-radius: 8px;
+  border-radius: 6px;
   margin-top: 4px;
   box-shadow: 0 8px 24px rgba(32, 64, 154, 0.12);
   z-index: 1000;
@@ -322,10 +328,10 @@
 .create-order-container .customer-detail-footer {
   display: flex;
   justify-content: flex-end;
-  padding: 16px 24px;
-  background: #f8f9fd;
+  padding: 16px 24px 20px;
+  background: #fff;
   border-top: 1px solid #eef0f6;
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 10px 10px;
 }
 
 .create-order-container .continue-button-container {
@@ -334,21 +340,22 @@
 }
 
 .create-order-container .continue-button {
-  background: #F36F21;
+  background: #20409A;
   color: #fff;
   border: none;
-  padding: 11px 32px;
-  border-radius: 8px;
+  padding: 11px 28px;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
-  min-width: 120px;
+  min-width: 160px;
+  letter-spacing: 0.2px;
 }
 
 .create-order-container .continue-button:hover:not(:disabled) {
-  background: #d85a1a;
-  box-shadow: 0 4px 12px rgba(243, 111, 33, 0.25);
+  background: #1a3380;
+  box-shadow: 0 4px 12px rgba(32, 64, 154, 0.3);
 }
 
 .create-order-container .continue-button:disabled {

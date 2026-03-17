@@ -488,9 +488,7 @@ const PaymentView = ({
         <div className="payment-amount-section-enhanced">
           <div className="section-header-enhanced">
             <div className="icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <img src="your-image.png" width="24" height="24" />
             </div>
             <div>
               <h3 className="payment-heading-enhanced">Enter Amount to Pay</h3>

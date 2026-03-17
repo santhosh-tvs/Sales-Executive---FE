@@ -46,6 +46,7 @@
     grid-template-columns: 180px 20px 1fr;
     align-items: start;
     gap: 8px;
+    width: 100%;
 }
 
 .customer-detail-item.full-width {
@@ -58,6 +59,7 @@
     color: #20409A;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    line-height: 18px;
     padding-top: 2px;
 }
 
@@ -175,10 +177,10 @@
 
 .customer-details-continue-btn {
     padding: 12px 40px;
-    background: #F36F21;
+    background: #20409A;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 3px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
@@ -187,9 +189,8 @@
 }
 
 .customer-details-continue-btn:hover {
-    background: #d45e1a;
+    background: #20409A;
     transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(243, 111, 33, 0.4);
 }
 
 /* Loading State */

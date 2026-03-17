@@ -591,9 +591,9 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
                 onClick={() => setActiveFilter(filterValues[index])}
                 style={{
                   padding: '6px 14px',
-                  borderRadius: '6px',
-                  border: activeFilter === filterValues[index] ? '2px solid #20409A' : '2px solid #e0e0e0',
-                  background: activeFilter === filterValues[index] ? '#20409A' : 'white',
+                  borderRadius: '3px',
+                  border: activeFilter === filterValues[index] ? '2px solid #20409A' : '1px solid #e0e0e0',
+                  background: activeFilter === filterValues[index] ? '#20409A' : '#ffffffff',
                   color: activeFilter === filterValues[index] ? 'white' : '#666',
                   fontSize: '12px',
                   fontWeight: '600',
@@ -616,14 +616,14 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
               style={{
                 padding: '6px 12px',
                 borderRadius: '6px',
-                border: '2px solid #e0e0e0',
+                border: '2px solid #ffffffff',
                 fontSize: '12px',
                 width: '280px',
                 outline: 'none',
                 transition: 'all 0.2s ease'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#20409A'}
-              onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+              onFocus={(e) => e.target.style.borderColor = '#ffffffff'}
+              onBlur={(e) => e.target.style.borderColor = '#ffffffff'}
             />
           </div>
         </div>

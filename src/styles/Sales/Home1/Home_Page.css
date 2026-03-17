@@ -20,7 +20,7 @@
 }
 
 .dashboard-header h1 {
-  font-size: 32px;
+  font-size: 20px;
   font-weight: 600;
   color: #333;
   margin: 0;
@@ -375,7 +375,7 @@
 
 @media (max-width: 768px) {
   .dashboard-header h1 {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .widget-metrics {

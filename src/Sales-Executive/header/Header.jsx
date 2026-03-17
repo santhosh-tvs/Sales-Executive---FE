@@ -16,15 +16,30 @@ const Header = () => {
           <div className="nav-item">
             <Link to="/consolidate-report" className="nav-btn">History</Link>
           </div>
-          <div className="nav-item">
-            <Link to="/view-plan" className="nav-btn">Beat</Link>
+          <div className="nav-item mega-dropdown">
+            <button className="nav-btn">Beat</button>
+            <div className="mega-dropdown-content">
+              <div className="mega-menu-main">
+                <div className="mega-menu-item">
+                  <Link to="/view-plan" className="mega-menu-direct-link">Create Beat</Link>
+                </div>
+                <div className="mega-menu-item has-submenu">
+                  <span className="mega-menu-main-link">Report</span>
+                  <div className="mega-submenu">
+                    <Link to="/report/plan-report" className="mega-submenu-link">Plan Report</Link>
+                    <Link to="/report/visit-report" className="mega-submenu-link">Visit Report</Link>
+                    <Link to="/report/checkin-checkout-report" className="mega-submenu-link">Check In &amp; Check Out Report</Link>
+                    <Link to="/report/consolidate-report" className="mega-submenu-link">Consolidate Report</Link>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="nav-item dropdown">
             <button className="nav-btn">Receipt</button>
             <div className="dropdown-content">
               <Link to="/receipt">Receipt</Link>
               <Link to="/receipt-history">Receipt History</Link>
-              <Link to="/receipt-export">Export Report</Link>
             </div>
           </div>
           <div className="nav-item dropdown">

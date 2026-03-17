@@ -32,7 +32,7 @@ p,
 .content,
 span,
 div {
-  font-size: clamp(11px, 1.5vw, 10px) !important;
+  font-size: clamp(13px, 1.5vw, 10px) !important;
 }
 
 /* Global Button Standardization */
@@ -59,9 +59,6 @@ button:disabled {
   border: 1px solid #ddd !important;
 }
 
-.view-plan-action-btn:hover {
-  /* Individual hover colors defined in ViewPlan1.css */
-}
 
 /* Global Input Standardization - Beat Plan Style - Responsive */
 input[type="text"],

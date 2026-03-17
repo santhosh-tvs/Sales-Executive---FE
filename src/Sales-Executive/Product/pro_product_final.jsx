@@ -65,13 +65,24 @@ const ProProductFinal = () => {
     setLoading(true);
     
     try {
+      // Get unit_code from apiConfigManager
+      const { default: apiConfigManager } = await import('../../services/apiConfig');
+      const unitCode = apiConfigManager.getUnitCode();
+      
+      if (!unitCode) {
+        console.error('❌ Unit code not found. Please select a customer first.');
+        setLoading(false);
+        loadingRef.current = false;
+        return;
+      }
+      
       const requestBody = {
         brandPriority: null,
         limit: ITEMS_PER_PAGE,
         offset: currentOffset,
         sortOrder: "ASC",
         fieldOrder: null,
-        customerCode: "0046",
+        customerCode: unitCode, // Using unit_code instead of customer_code
         partNumber: null,
         model: filterParams.model.length > 0 ? filterParams.model[0] : null,
         brand: filterParams.brand.length > 0 ? filterParams.brand[0] : null,
@@ -84,7 +95,7 @@ const ProProductFinal = () => {
         year: filterParams.year.length > 0 ? parseInt(filterParams.year[0]) || filterParams.year[0] : null
       };
 
-      console.log('📤 Sending API request with body:', JSON.stringify(requestBody, null, 2));
+      console.log('📤 Sending API request with unit_code:', unitCode, 'body:', JSON.stringify(requestBody, null, 2));
       
       const response = await apiService.post('/parts-list', requestBody);
 

@@ -32,16 +32,19 @@ const HomeBrands = () => {
         await apiConfigManager.fetchAndInitialize();
       }
 
-      // Get user info for customer code
-      const user = JSON.parse(localStorage.getItem('user'));
-      const customerCode = user?.customer_code || '0046';
+      // Get unit_code from apiConfigManager (set from view customer API)
+      const unitCode = apiConfigManager.getUnitCode();
       
-      console.log('👤 User customer code:', customerCode);
+      if (!unitCode) {
+        throw new Error('Unit code not found. Please select a customer first.');
+      }
+      
+      console.log('👤 Using unit code:', unitCode);
 
       const requestBody = {
         partNumber: null,
         sortOrder: "ASC",
-        customerCode: customerCode,
+        customerCode: unitCode, // Using unit_code instead of customer_code
         aggregate: null,
         brand: null,
         fuelType: null,

@@ -21,13 +21,67 @@ const Shipping = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderError, setOrderError] = useState('');
   const [shippingAddress, setShippingAddress] = useState({
-    name: 'Chandra sekar yadhav',
-    phone: '9876543211',
-    address: '12/30, Titan Township, Mathigiri main road, Hosur, Krishnagiri, Tamil Nadu-635110'
+    name: '',
+    phone: '',
+    address: ''
   });
   const [tempAddress, setTempAddress] = useState({ ...shippingAddress });
+  const [loadingCustomer, setLoadingCustomer] = useState(true);
 
   const currentBalance = 1112;
+
+  // Load customer details from localStorage or apiConfigManager
+  useEffect(() => {
+    const loadCustomerDetails = async () => {
+      try {
+        // First try localStorage
+        let customerData = localStorage.getItem('selected_customer');
+        
+        if (!customerData) {
+          // If not in localStorage, try apiConfigManager
+          const { default: apiConfigManager } = await import('../../../services/apiConfig');
+          const customer = apiConfigManager.getCustomerDetails();
+          
+          if (customer) {
+            console.log('📦 Customer loaded from apiConfigManager');
+            customerData = JSON.stringify(customer);
+          }
+        }
+        
+        if (customerData) {
+          const customer = typeof customerData === 'string' ? JSON.parse(customerData) : customerData;
+          
+          // Build address from customer data
+          const addressParts = [];
+          if (customer.address1) addressParts.push(customer.address1);
+          if (customer.address2) addressParts.push(customer.address2);
+          if (customer.address3) addressParts.push(customer.address3);
+          if (customer.address4) addressParts.push(customer.address4);
+          if (customer.city) addressParts.push(customer.city);
+          if (customer.state) addressParts.push(customer.state);
+          if (customer.post_code) addressParts.push(customer.post_code);
+          
+          const address = {
+            name: customer.customer_name || '',
+            phone: customer.phone_number || '',
+            address: addressParts.filter(Boolean).join(', ')
+          };
+          
+          console.log('📦 Customer address loaded:', address);
+          setShippingAddress(address);
+          setTempAddress(address);
+        } else {
+          console.warn('⚠️ No customer data found - please select a customer first');
+        }
+      } catch (error) {
+        console.error('❌ Error loading customer details:', error);
+      } finally {
+        setLoadingCustomer(false);
+      }
+    };
+    
+    loadCustomerDetails();
+  }, []);
 
   // Calculate totals dynamically
   const basicTotal = cartItems.reduce((sum, item) => sum + (item.listPrice * item.quantity), 0);
@@ -46,17 +100,94 @@ const Shipping = () => {
     setOrderError('');
 
     try {
-      // Get geolocation
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
+      // Convert address to latitude and longitude using geocoding
+      let latitude, longitude;
+
+      try {
+        // Build a more complete address string for better geocoding
+        const fullAddress = `${shippingAddress.address}, India`;
+        
+        console.log('🔍 Geocoding address:', fullAddress);
+        
+        const geocodeResponse = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=1&countrycodes=in`,
+          {
+            headers: {
+              'User-Agent': 'MyTVS-Sales-App'
+            }
+          }
+        );
+
+        const geocodeData = await geocodeResponse.json();
+        console.log('📍 Geocoding response:', geocodeData);
+
+        if (geocodeData && geocodeData.length > 0) {
+          latitude = parseFloat(geocodeData[0].lat);
+          longitude = parseFloat(geocodeData[0].lon);
+          console.log('✅ Address geocoded successfully:', { 
+            latitude, 
+            longitude, 
+            address: fullAddress,
+            display_name: geocodeData[0].display_name 
+          });
+        } else {
+          // Fallback to device location if geocoding fails
+          console.warn('⚠️ Geocoding returned no results, using device location as fallback');
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            });
+          });
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+          console.log('📍 Using device location:', { latitude, longitude });
+        }
+      } catch (geocodeError) {
+        console.error('❌ Geocoding error:', geocodeError);
+        // Fallback to device location
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            });
+          });
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+          console.log('📍 Using device location (after geocoding error):', { latitude, longitude });
+        } catch (locationError) {
+          console.error('❌ Location error:', locationError);
+          setOrderError('Unable to get location. Please enable location services and try again.');
+          setIsPlacingOrder(false);
+          return;
+        }
+      }
+
+      // Get customer details from apiConfigManager
+      const { default: apiConfigManager } = await import('../../../services/apiConfig');
+      const customerDetails = apiConfigManager.getCustomerDetails();
+      
+      console.log('📦 Customer details for order:', {
+        customerCode: customerDetails?.customer_code,
+        customerName: customerDetails?.customer_name,
+        fullDetails: customerDetails
       });
+      
+      if (!customerDetails || !customerDetails.customer_code) {
+        console.error('❌ Customer code not found. Please select a customer first.');
+        alert('Please select a customer first');
+        setIsPlacingOrder(false);
+        return;
+      }
 
-      const { latitude, longitude } = position.coords;
+      const customerCode = customerDetails.customer_code;
 
-      // Get user data from localStorage
+      // Get user data from localStorage — sales_executive_id is the employee id
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      const customerCode = userData.customer_code || 'PFR_000100';
-      const employeeId = userData.employee_id || '51164060';
+      const employeeId = userData.sales_executive_id;
 
       // Generate transaction track ID
       const now = new Date();
@@ -78,9 +209,9 @@ const Shipping = () => {
         parts_no: item.partNumber || item.parts_no,
         parts_name: item.itemDescription || item.parts_name,
         quantity: item.quantity,
-        warehouse: item.warehouse || 'KMS_WHG',
+        warehouse: item.warehouse ,
         item_price: parseFloat(item.listPrice || item.item_price).toFixed(2),
-        brand_name: item.brandName || item.brand_name || 'DELPHI TECH',
+        brand_name: item.brandName || item.brand_name ,
         sub_total: parseFloat(item.listPrice * item.quantity).toFixed(0),
         tax_price: (parseFloat(item.listPrice * item.quantity) * 0.18).toFixed(2),
         total_price: parseFloat(item.listPrice * item.quantity).toFixed(1),
@@ -97,7 +228,7 @@ const Shipping = () => {
       // Build order payload
       const orderPayload = {
         validity_date: formattedValidityDate,
-        customer_code: customerCode,
+        customer_code: customerCode, // Using customer_code from customer details
         employee_id: employeeId,
         purchase_order_no: null,
         purchase_order_date: null,
@@ -114,17 +245,21 @@ const Shipping = () => {
         part_details: partDetails
       };
 
-      console.log('Placing order:', orderPayload);
+      console.log('📦 Placing order:', orderPayload);
+      console.log('📦 Customer code being sent:', customerCode);
 
       // Call API
       const response = await createOrderAPI(orderPayload);
 
-      if (response) {
+      if (response && response.success) {
+        console.log('✅ Order placed successfully:', response);
         setOrderSuccess(true);
         // Clear cart after successful order
         // contextCartItems will be cleared by CartContext
       } else {
-        setOrderError('Failed to place order. Please try again.');
+        const errorMessage = response?.error?.message || response?.message || 'Failed to place order. Please try again.';
+        console.error('❌ Order placement failed:', errorMessage);
+        setOrderError(errorMessage);
       }
     } catch (error) {
       console.error('Order placement error:', error);
@@ -196,11 +331,17 @@ const Shipping = () => {
                     Change ✎
                   </button>
                 </div>
-                <div className="address-details">
-                  <p className="customer-name">{shippingAddress.name}</p>
-                  <p className="customer-phone">{shippingAddress.phone}</p>
-                  <p className="customer-address">{shippingAddress.address}</p>
-                </div>
+                {loadingCustomer ? (
+                  <div className="address-details">
+                    <p>Loading customer details...</p>
+                  </div>
+                ) : (
+                  <div className="address-details">
+                    <p className="customer-name">{shippingAddress.name || 'N/A'}</p>
+                    <p className="customer-phone">{shippingAddress.phone || 'N/A'}</p>
+                    <p className="customer-address">{shippingAddress.address || 'N/A'}</p>
+                  </div>
+                )}
               </div>
 
               {/* Order Summary */}

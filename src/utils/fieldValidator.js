@@ -28,11 +28,20 @@ const fetchMasterData = async (fieldType, filters = {}) => {
   try {
     console.log(`🔍 Fetching master data for ${fieldType} with filters:`, filters);
     
+    // Get unit_code from apiConfigManager
+    const { default: apiConfigManager } = await import('../services/apiConfig');
+    const unitCode = apiConfigManager.getUnitCode();
+    
+    if (!unitCode) {
+      console.error('❌ Unit code not found. Please select a customer first.');
+      return [];
+    }
+    
     // Use masterListAPI for all field types
     const requestBody = {
       partNumber: null,
       sortOrder: "ASC",
-      customerCode: "0046",
+      customerCode: unitCode, // Using unit_code instead of hardcoded value
       aggregate: filters.aggregate || null,
       brand: null,
       fuelType: filters.fuelType || null,
@@ -47,7 +56,7 @@ const fetchMasterData = async (fieldType, filters = {}) => {
       year: filters.year || null,
     };
     
-    console.log(`📤 Master list request for ${fieldType}:`, requestBody);
+    console.log(`📤 Master list request for ${fieldType} with unit_code ${unitCode}:`, requestBody);
     
     const response = await masterListAPI(requestBody);
     

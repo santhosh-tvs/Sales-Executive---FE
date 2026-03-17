@@ -12,6 +12,10 @@ import SalesHome from "./Sales-Executive/Sales/Home1/Home_Page.jsx";
 // Sales History
 import Consolidate_Report from "./Sales-Executive/Sales/History/Consolidate_Report.jsx";
 
+// Reports
+import VisitReport from "./Sales-Executive/Reports/VisitReport.jsx";
+import CheckInOutReport from "./Sales-Executive/Reports/CheckInOutReport.jsx";
+
 // Sales Orders
 import Create_Order from "./Sales-Executive/Sales/Create_Order/Create_Order.jsx";
 import S_BulkOrder from "./Sales-Executive/S-orders/S-bulk-order.jsx";
@@ -23,7 +27,6 @@ import S_OrderView from "./Sales-Executive/S-orders/S-order-view.jsx";
 // Sales Reports - Using Receipt module instead
 import ReceiptPage from "./Sales-Executive/Receipt/Components/receipt.jsx";
 import ReceiptHistory from "./Sales-Executive/Receipt/Components/ReceiptHistory.jsx";
-import ExportReport from "./Sales-Executive/Receipt/Components/ExportReport.jsx";
 
 // Sales Beat
 import Locate from "./Sales-Executive/Sales/Beat/Locate.jsx";
@@ -102,13 +105,11 @@ function App() {
           <Route path="/s-order-view" element={<S_OrderView />} />
 
           {/* Reports - Removed old Report module, using Receipt module */}
-          <Route
-            path="/consolidate-report"
-            element={<Consolidate_Report />}
-          />
+          <Route path="/consolidate-report" element={<Consolidate_Report />} />
+          <Route path="/report/visit-report" element={<VisitReport />} />
+          <Route path="/report/checkin-checkout-report" element={<CheckInOutReport />} />
           <Route path="/receipt" element={<ReceiptPage />} />
           <Route path="/receipt-history" element={<ReceiptHistory />} />
-          <Route path="/receipt-export" element={<ExportReport />} />
 
           {/* Beat */}
           <Route path="/locate" element={<Locate />} />

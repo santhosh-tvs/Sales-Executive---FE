@@ -34,14 +34,15 @@
 }
 
 .report-select {
-  border: 1px solid #ffffff;
-  border-radius: 4px;
+  width: 280px;
+  height: 36px;
   padding: 8px 12px;
-  font-size: 14px;
-  background-color: white;
-  min-width: 200px;
-  height: 40px;
-  cursor: pointer;
+  border: 1px solid #ffffff;
+  border-radius: 6px;
+  outline: none;
+  font-size: 13px;
+  background: #ffffff;
+  transition: all 0.2s ease;
 }
 
 .date-control,
@@ -72,7 +73,6 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #FF6B35;
 }
 
 /* Make Calendar input same height */

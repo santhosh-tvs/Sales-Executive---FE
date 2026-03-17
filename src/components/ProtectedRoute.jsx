@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiservice';
+import LoadingSpinner from './LoadingSpinner/LoadingSpinner';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
@@ -47,18 +48,7 @@ const ProtectedRoute = ({ children }) => {
 
   // Show loading or nothing while validating
   if (isValidating || isAuthenticated === null) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        fontSize: '18px',
-        color: '#666'
-      }}>
-        Verifying authentication...
-      </div>
-    );
+    return <LoadingSpinner message="Verifying Authorization..." />;
   }
 
   // If not authenticated, redirect to login

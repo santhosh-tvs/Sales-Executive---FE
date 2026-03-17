@@ -4,114 +4,121 @@ import Swal from 'sweetalert2';
 import { apiService } from '../../services/apiservice';
 import './beatplan.css';
 
+// Utils and Templates
+import {
+  formatDate,
+  formatDateTime,
+  determineStatus,
+  getEndpoint,
+  getCurrentDateTime,
+  getCurrentLocation,
+  saveCheckInData,
+  getCheckInData
+} from './utils/beatPlanUtils';
+import {
+  getCustomerDetailsHTML,
+  getCheckInDetailsHTML,
+  getCheckInFormHTML,
+  getCheckOutFormHTML,
+  popupConfig
+} from './templates/popupTemplates';
+
 // Asset Imports
 import DeleteIcon from "../../assets/Assets/Beat/delete.png";
-import ExportIcon from "../../assets/Assets/Beat/export.png";
 import ArrowIcon from "../../assets/Assets/Beat/arrow-down.png";
 import EyeIcon from "../../assets/Assets/Beat/eye.png";
 
 const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) => {
   const navigate = useNavigate();
-
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
   const [visitCounts, setVisitCounts] = useState({ today: 0, week: 0, month: 0 });
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
+  
+  // Sorting states
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState('asc');
+  
+  // Action loading states
+  const [deletingId, setDeletingId] = useState(null);
+  const [checkingInId, setCheckingInId] = useState(null);
+  const [checkingOutId, setCheckingOutId] = useState(null);
 
-  // Fetch beat plans on component mount
   useEffect(() => {
     fetchBeatPlans();
     fetchVisitCounts();
   }, []);
 
-  // Refetch when filter changes
+  useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when filter changes
+    fetchBeatPlans();
+  }, [activeFilter, searchTerm]);
+  
   useEffect(() => {
     fetchBeatPlans();
-  }, [activeFilter]);
+  }, [currentPage]);
 
   const fetchBeatPlans = async () => {
     try {
       setLoading(true);
-
-      // Determine which API to call based on activeFilter
-      let endpoint = '/beat-plan/new-beat-plan-list';
-      if (activeFilter === 'Visited') {
-        endpoint = '/beat-plan/visited-beat-plan-list';
-      } else if (activeFilter === 'Today') {
-        endpoint = '/beat-plan/plan-visits-list';
-      } else if (activeFilter === 'All') {
-        endpoint = '/beat-plan/new-beat-plan-list'; // For now, show new plans for "All"
+      const endpoint = getEndpoint(activeFilter);
+      
+      // Build query parameters
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        pageSize: pageSize.toString()
+      });
+      
+      if (searchTerm) {
+        params.append('search', searchTerm);
       }
-
-      const response = await apiService.get(endpoint);
+      
+      const response = await apiService.get(`${endpoint}?${params.toString()}`);
 
       if (response.success && response.data) {
-        // Map API data to table format
-        const formattedData = response.data.map(plan => {
-          // Determine status based on check_in, check_out, and visited_status
-          let status = 'New';
-          if (plan.visited_status === 'visited') {
-            status = 'Visited';
-          } else if (plan.check_in && !plan.check_out) {
-            status = 'Check in';
-          } else if (plan.check_in && plan.check_out) {
-            status = 'Visited';
-          }
-
-          // Format dates
-          const formatDate = (dateStr) => {
-            if (!dateStr) return '';
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            });
-          };
-
-          const formatDateTime = (dateStr) => {
-            if (!dateStr) return '';
-            const date = new Date(dateStr);
-            const dateFormatted = date.toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            });
-            const timeFormatted = date.toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: true
-            });
-            return `${dateFormatted} & ${timeFormatted}`;
-          };
-
-          return {
-            id: plan.beat_plan_id,
-            planNo: plan.plan_code,
-            customer: plan.garage_name,
-            customerCode: plan.garage_code,
-            customerId: plan.customer_id,
-            location: plan.garage_location,
-            createdDate: formatDate(plan.created_at),
-            planDate: plan.plan_date ? plan.plan_date.replace(' ', ':').substring(0, 16) : '',
-            status: status,
-            flag: 'Beat',
-            isChecked: false,
-            checkInTime: plan.check_in ? formatDateTime(plan.check_in) : null,
-            checkOutTime: plan.check_out ? formatDateTime(plan.check_out) : null,
-            purpose: 'Collection' // Default purpose
-          };
-        });
-
+        const formattedData = response.data.map(plan => ({
+          id: plan.beat_plan_id,
+          planNo: plan.plan_code,
+          customer: plan.garage_name,
+          customerCode: plan.garage_code,
+          customerId: plan.customer_id,
+          location: plan.garage_location,
+          createdDate: formatDate(plan.created_at),
+          planDate: plan.plan_date ? plan.plan_date.replace(' ', ':').substring(0, 16) : '',
+          status: determineStatus(plan),
+          flag: 'Beat',
+          isChecked: false,
+          checkInTime: plan.check_in ? formatDateTime(plan.check_in) : null,
+          checkOutTime: plan.check_out ? formatDateTime(plan.check_out) : null,
+          purpose: plan.target_type || 'N/A',
+          target: plan.target || '0',
+          targetAchieved: plan.target_achieved || '0'
+        }));
         setTableData(formattedData);
+        
+        // Update pagination info
+        if (response.pagination) {
+          setTotalPages(response.pagination.totalPages);
+          setTotalRecords(response.pagination.total);
+        } else {
+          // If no pagination in response, calculate from count
+          setTotalRecords(response.count || formattedData.length);
+          setTotalPages(Math.ceil((response.count || formattedData.length) / pageSize));
+        }
       }
     } catch (error) {
       console.error('Error fetching beat plans:', error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Failed to load beat plans',
+        text: error.response?.data?.message || 'Failed to load beat plans. Please try again.',
         confirmButtonColor: '#20409A'
       });
     } finally {
@@ -132,95 +139,123 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
 
   const handleCheckIn = async (planData) => {
     try {
-      // Get current location
-      if (!navigator.geolocation) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Geolocation is not supported by your browser',
-          confirmButtonColor: '#20409A'
-        });
+      setCheckingInId(planData.id);
+      
+      const { value: formValues } = await Swal.fire({
+        title: 'Check-in Details',
+        html: getCheckInFormHTML(),
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Continue',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#20409A',
+        cancelButtonColor: '#6c757d',
+        preConfirm: () => {
+          const targetType = document.getElementById('swal-target-type').value;
+          const target = document.getElementById('swal-target').value;
+          if (!targetType) {
+            Swal.showValidationMessage('Purpose is required');
+            return false;
+          }
+          return { target_type: targetType, target: target || '0' };
+        }
+      });
+
+      if (!formValues) {
+        setCheckingInId(null);
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const latLong = `${lat},${lng}`;
+      const latLong = await getCurrentLocation();
+      const dateTime = getCurrentDateTime();
 
-            const now = new Date();
-            const dateTime = now.toISOString();
+      const response = await apiService.post('/beat-plan/update-visit', {
+        beat_plan_id: planData.id,
+        type: 'check_in',
+        date_time: dateTime,
+        lat_long: latLong,
+        target: formValues.target,
+        target_type: formValues.target_type
+      });
 
-            const response = await apiService.post('/beat-plan/update-visit', {
-              beat_plan_id: planData.id,
-              type: 'check_in',
-              date_time: dateTime,
-              lat_long: latLong,
-              target: 0,
-              target_type: 'Rs'
-            });
+      if (response.success) {
+        saveCheckInData(planData.id, {
+          beat_plan_id: planData.id,
+          target_type: formValues.target_type,
+          target: formValues.target,
+          check_in_time: dateTime
+        });
 
-            if (response.success) {
-              // Refresh the beat plans list
-              await fetchBeatPlans();
-              await fetchVisitCounts();
+        await fetchBeatPlans();
+        await fetchVisitCounts();
 
-              Swal.fire({
-                icon: 'success',
-                title: 'Checked In!',
-                text: `Successfully checked in to ${planData.customer}`,
-                confirmButtonColor: '#20409A',
-                timer: 2000,
-                showConfirmButton: false
-              });
-            }
-          } catch (apiError) {
-            console.error('API Error:', apiError);
-            Swal.fire({
-              icon: 'error',
-              title: 'Check-in Failed',
-              text: apiError.response?.data?.message || 'Failed to check in. Please try again.',
-              confirmButtonColor: '#20409A'
-            });
-          }
-        },
-        (error) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Location Error',
-            text: 'Unable to get your location. Please enable location services.',
-            confirmButtonColor: '#20409A'
-          });
-        }
-      );
+        Swal.fire({
+          icon: 'success',
+          title: 'Checked In!',
+          text: `Successfully checked in to ${planData.customer}`,
+          confirmButtonColor: '#20409A',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
     } catch (error) {
       console.error('Error checking in:', error);
       Swal.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'Failed to check in',
+        title: error.message || 'Check-in Failed',
+        text: error.response?.data?.message || 'Failed to check in. Please try again.',
         confirmButtonColor: '#20409A'
       });
+    } finally {
+      setCheckingInId(null);
     }
   };
 
   const handleCheckOut = async (planData) => {
     try {
-      const now = new Date();
-      const dateTime = now.toISOString();
+      setCheckingOutId(planData.id);
+      
+      const { value: targetAchieved } = await Swal.fire({
+        title: 'Check-out Details',
+        html: getCheckOutFormHTML(),
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Continue',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#20409A',
+        cancelButtonColor: '#6c757d',
+        preConfirm: () => {
+          const achieved = document.getElementById('swal-target-achieved').value;
+          if (!achieved) {
+            Swal.showValidationMessage('Target achieved amount is required');
+            return false;
+          }
+          return achieved;
+        }
+      });
+
+      if (!targetAchieved) {
+        setCheckingOutId(null);
+        return;
+      }
+
+      const latLong = await getCurrentLocation();
+      const dateTime = getCurrentDateTime();
 
       const response = await apiService.post('/beat-plan/update-visit', {
         beat_plan_id: planData.id,
         type: 'check_out',
         date_time: dateTime,
-        lat_long: '0,0', // Not needed for checkout
-        target_achieved: 0
+        lat_long: latLong,
+        target_achieved: targetAchieved
       });
 
       if (response.success) {
-        // Refresh the beat plans list
+        saveCheckInData(planData.id, {
+          target_achieved: targetAchieved,
+          check_out_time: dateTime
+        });
+
         await fetchBeatPlans();
         await fetchVisitCounts();
 
@@ -237,16 +272,17 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
       console.error('Error checking out:', error);
       Swal.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'Failed to check out',
+        title: error.message || 'Check-out Failed',
+        text: error.response?.data?.message || 'Failed to check out. Please try again.',
         confirmButtonColor: '#20409A'
       });
+    } finally {
+      setCheckingOutId(null);
     }
   };
 
-  // Function to delete a single row
-  const handleDeleteRow = (id) => {
-    Swal.fire({
+  const handleDeleteRow = async (id) => {
+    const result = await Swal.fire({
       title: 'Delete Record?',
       text: 'Are you sure you want to delete this record?',
       icon: 'warning',
@@ -255,341 +291,152 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
       cancelButtonColor: '#6c757d',
       confirmButtonText: 'Yes, delete it',
       cancelButtonText: 'Cancel'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setTableData(tableData.filter(item => item.id !== id));
-        Swal.fire({
-          icon: 'success',
-          title: 'Deleted!',
-          text: 'Record has been deleted.',
-          confirmButtonColor: '#20409A',
-          timer: 1500,
-          showConfirmButton: false
-        });
-      }
     });
+    
+    if (result.isConfirmed) {
+      try {
+        setDeletingId(id);
+        
+        const response = await apiService.post('/beat-plan/delete-beat-plan', {
+          beat_plan_id: id
+        });
+        
+        if (response.success) {
+          await fetchBeatPlans();
+          await fetchVisitCounts();
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Record has been deleted successfully.',
+            confirmButtonColor: '#20409A',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      } catch (error) {
+        console.error('Error deleting beat plan:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Delete Failed',
+          text: error.response?.data?.message || 'Failed to delete record. Please try again.',
+          confirmButtonColor: '#20409A'
+        });
+      } finally {
+        setDeletingId(null);
+      }
+    }
   };
 
-
-  // Function to handle eye icon click - show customer details
-  const handleViewDetails = async (planData) => {
+  const fetchCustomerDetails = async (planData) => {
     try {
-      // Fetch customer details using customer code
-      let customerDetailsData = null;
-      let viewCustomerData = null;
+      const viewCustomerResponse = await apiService.get(`/profile/view-customer/${planData.customerCode}`);
       
-      try {
-        // First get customer details from view-customer API
-        console.log('🔍 Fetching customer with code:', planData.customerCode);
-        console.log('🔍 Plan data:', planData);
-        
-        const viewCustomerResponse = await apiService.get(`/profile/view-customer/${planData.customerCode}`);
-        
-        console.log('📋 View Customer Response:', viewCustomerResponse);
-        
-        if (viewCustomerResponse.success && viewCustomerResponse.user_detail) {
-          viewCustomerData = viewCustomerResponse.user_detail;
-          
-          console.log('✅ View Customer Data:', viewCustomerData);
-          console.log('🔢 Account Number:', viewCustomerData.account_number);
-          
-          // Now fetch financial details using account number
-          if (viewCustomerData.account_number) {
-            const { customerDetails: customerDetailsAPI } = await import('../../services/api');
-            const detailsResponse = await customerDetailsAPI({ 
-              accountNumber: viewCustomerData.account_number.toString() 
-            });
-            
-            console.log('💰 Customer Details Response:', detailsResponse);
-            console.log('💰 Response type:', typeof detailsResponse);
-            console.log('💰 Response keys:', detailsResponse ? Object.keys(detailsResponse) : 'null');
-            
-            if (detailsResponse) {
-              customerDetailsData = detailsResponse;
-              console.log('✅ Customer Details Data:', customerDetailsData);
-              console.log('✅ Available Credit Limit:', customerDetailsData.availablecreditlimit);
-              console.log('✅ Credit Limit:', customerDetailsData.creditLimit);
-              console.log('✅ Overdue Invoices:', customerDetailsData.noofoverdueinvoices);
-            } else {
-              console.warn('⚠️ Customer details API returned null or undefined');
-            }
-          } else {
-            console.warn('⚠️ No account number found in view customer data');
-          }
-        }
-      } catch (apiError) {
-        console.error('❌ Could not fetch customer details from API:', apiError);
+      if (!viewCustomerResponse.success || !viewCustomerResponse.user_detail) {
+        return null;
       }
-      
-      // Build customer details from API data only
-      const customerDetails = {
-        // Basic info from view-customer API
+
+      const viewCustomerData = viewCustomerResponse.user_detail;
+      let customerDetailsData = null;
+
+      if (viewCustomerData.account_number) {
+        const { customerDetails: customerDetailsAPI } = await import('../../services/api');
+        customerDetailsData = await customerDetailsAPI({ 
+          accountNumber: viewCustomerData.account_number.toString() 
+        });
+      }
+
+      return {
         name: viewCustomerData?.customer_name || planData.customer,
         code: viewCustomerData?.customer_code || planData.customerCode || 'N/A',
         location: viewCustomerData?.city || planData.location,
         phone: viewCustomerData?.phone_number || 'N/A',
         email: viewCustomerData?.email_address || 'N/A',
-        address: viewCustomerData ? [
+        address: [
           viewCustomerData.address1,
           viewCustomerData.address2,
           viewCustomerData.address3,
           viewCustomerData.city,
           viewCustomerData.state,
           viewCustomerData.post_code
-        ].filter(Boolean).join(', ') : planData.location,
-        
-        // Financial info from customer details API
-        creditBalance: customerDetailsData?.availablecreditlimit 
-          ? customerDetailsData.availablecreditlimit.toFixed(2) 
-          : '0.00',
-        creditLimit: customerDetailsData?.creditLimit 
-          ? customerDetailsData.creditLimit.toString()
-          : (viewCustomerData?.credit_limit || '0.00'),
+        ].filter(Boolean).join(', '),
+        creditBalance: customerDetailsData?.availablecreditlimit?.toFixed(2) || '0.00',
+        creditLimit: customerDetailsData?.creditLimit?.toString() || viewCustomerData?.credit_limit || '0.00',
         overDueInvoice: customerDetailsData?.noofoverdueinvoices?.toString() || '0',
-        overDueAmount: customerDetailsData?.overdueamount 
-          ? customerDetailsData.overdueamount.toFixed(2) 
-          : '0.00',
-        totalOutstanding: customerDetailsData?.outstandingamount 
-          ? customerDetailsData.outstandingamount.toFixed(2) 
-          : '0.00',
-        
-        // Ship to info from view-customer API
+        overDueAmount: customerDetailsData?.overdueamount?.toFixed(2) || '0.00',
+        totalOutstanding: customerDetailsData?.outstandingamount?.toFixed(2) || '0.00',
         shipToCode: viewCustomerData?.site_number || 'N/A',
         shipToName: viewCustomerData?.site_code || planData.customer,
-        shipToAddress: viewCustomerData ? [
+        shipToAddress: [
           viewCustomerData.address1,
           viewCustomerData.address2,
           viewCustomerData.city,
           viewCustomerData.state,
           viewCustomerData.post_code
-        ].filter(Boolean).join(', ') : planData.location
+        ].filter(Boolean).join(', ')
+      };
+    } catch (error) {
+      console.error('Error fetching customer details:', error);
+      return null;
+    }
+  };
+
+  const handleViewDetails = async (planData) => {
+    try {
+      const storedData = getCheckInData(planData.id);
+      
+      if (storedData) {
+        planData.purpose = storedData.target_type || 'N/A';
+        planData.target = storedData.target || '0';
+        planData.targetAchieved = storedData.target_achieved || '0';
+        
+        if (storedData.check_out_time) {
+          planData.checkOutTime = formatDateTime(storedData.check_out_time);
+        }
+      }
+
+      const customerDetails = await fetchCustomerDetails(planData);
+      if (!customerDetails) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load customer details',
+          confirmButtonColor: '#20409A'
+        });
+        return;
+      }
+
+      const config = {
+        ...popupConfig,
+        showCloseButton: true,
+        showCancelButton: false,
+        showConfirmButton: true,
+        confirmButtonColor: planData.status === 'Visited' ? '#6c757d' : '#20409A'
       };
 
-    // Check if status is "New" - show check in button
-    if (planData.status === 'New') {
-      Swal.fire({
-        html: `
-          <div style="text-align: left; padding: 20px; color: #4A4A4A;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #20409A; margin: 0 0 8px 0; text-transform: uppercase;">
-              ${customerDetails.name}
-            </h2>
-            <p style="font-size: 14px; color: #666; margin: 0 0 4px 0; font-weight: 500;">
-              ${customerDetails.code} / ${customerDetails.location}
-            </p>
-            <p style="font-size: 14px; color: #666; margin: 0 0 4px 0;">
-              ${customerDetails.phone}
-            </p>
-            <p style="font-size: 14px; color: #666; margin: 0 0 16px 0;">
-              ${customerDetails.email}
-            </p>
-            <p style="font-size: 13px; color: #666; line-height: 1.6; margin: 0 0 20px 0;">
-              ${customerDetails.address}
-            </p>
-            
-            <div style="margin-bottom: 20px;">
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>Credit Balance:</strong> <span style="color: #28a745; font-weight: 600;">${customerDetails.creditBalance}</span>
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>Credit Limit:</strong> ${customerDetails.creditLimit}
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>OverDue Invoice:</strong> <span style="color: #dc3545; font-weight: 600;">${customerDetails.overDueInvoice}</span>
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>OverDue Amount:</strong> <span style="color: #dc3545; font-weight: 600;">${customerDetails.overDueAmount}</span>
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 20px 0;">
-                <strong>Total Outstanding Amount:</strong> <span style="font-weight: 600;">${customerDetails.totalOutstanding}</span>
-              </p>
-            </div>
-            
-            <div style="border-top: 1px solid #eee; padding-top: 16px;">
-              <p style="font-size: 14px; color: #666; margin: 0 0 12px 0; font-weight: 600;">
-                Ship To:
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 4px 0; font-weight: 600;">
-                ${customerDetails.shipToCode} | ${customerDetails.shipToName}
-              </p>
-              <p style="font-size: 13px; color: #666; line-height: 1.6; margin: 0;">
-                ${customerDetails.shipToAddress}
-              </p>
-            </div>
-          </div>
-        `,
-        showCancelButton: false,
-        showConfirmButton: true,
-        confirmButtonText: 'Continue to check in',
-        confirmButtonColor: '#20409A',
-        width: '650px',
-        padding: '30px 20px',
-        background: '#fff',
-        customClass: {
-          popup: 'customer-details-popup',
-          htmlContainer: 'customer-details-content',
-          confirmButton: 'customer-details-confirm-btn'
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Call check-in API
-          handleCheckIn(planData);
-        }
-      });
-    }
-    // Check if status is "Check in" - show additional details and check out button
-    else if (planData.status === 'Check in') {
-      Swal.fire({
-        html: `
-          <div style="text-align: left; padding: 20px; color: #4A4A4A;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #20409A; margin: 0 0 8px 0; text-transform: uppercase;">
-              ${customerDetails.name}
-            </h2>
-            <p style="font-size: 14px; color: #666; margin: 0 0 4px 0; font-weight: 500;">
-              ${customerDetails.code} / ${customerDetails.location}
-            </p>
-            <p style="font-size: 14px; color: #666; margin: 0 0 4px 0;">
-              ${customerDetails.phone}
-            </p>
-            <p style="font-size: 14px; color: #666; margin: 0 0 16px 0;">
-              ${customerDetails.email}
-            </p>
-            <p style="font-size: 13px; color: #666; line-height: 1.6; margin: 0 0 20px 0;">
-              ${customerDetails.address}
-            </p>
-            
-            <div style="margin-bottom: 20px;">
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>Credit Balance:</strong> <span style="color: #28a745; font-weight: 600;">${customerDetails.creditBalance}</span>
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>Credit Limit:</strong> ${customerDetails.creditLimit}
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>OverDue Invoice:</strong> <span style="color: #dc3545; font-weight: 600;">${customerDetails.overDueInvoice}</span>
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>OverDue Amount:</strong> <span style="color: #dc3545; font-weight: 600;">${customerDetails.overDueAmount}</span>
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 20px 0;">
-                <strong>Total Outstanding Amount:</strong> <span style="font-weight: 600;">${customerDetails.totalOutstanding}</span>
-              </p>
-            </div>
-            
-            <div style="border-top: 1px solid #eee; padding-top: 16px; margin-bottom: 20px;">
-              <p style="font-size: 14px; color: #666; margin: 0 0 12px 0; font-weight: 600;">
-                Ship To:
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 4px 0; font-weight: 600;">
-                ${customerDetails.shipToCode} | ${customerDetails.shipToName}
-              </p>
-              <p style="font-size: 13px; color: #666; line-height: 1.6; margin: 0;">
-                ${customerDetails.shipToAddress}
-              </p>
-            </div>
-            
-            <div style="background: #fff8f0; padding: 16px; border-radius: 8px; border-left: 4px solid #ff6b35;">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <p style="font-size: 14px; color: #ff6b35; margin: 0; font-weight: 600;">
-                  Purpose: <span style="color: #4A4A4A; font-weight: 500;">${planData.purpose || 'Collection'}</span>
-                </p>
-                <p style="font-size: 14px; color: #ff6b35; margin: 0; font-weight: 600;">
-                  Created Date: <span style="color: #4A4A4A; font-weight: 500;">${planData.createdDate} & ${planData.planDate.split(':')[1]}:${planData.planDate.split(':')[2]}</span>
-                </p>
-                <p style="font-size: 14px; color: #ff6b35; margin: 0; font-weight: 600;">
-                  Check in time: <span style="color: #4A4A4A; font-weight: 500;">${planData.checkInTime || 'N/A'}</span>
-                </p>
-                <p style="font-size: 14px; color: #ff6b35; margin: 0; font-weight: 600;">
-                  Check Out time: <span style="color: #4A4A4A; font-weight: 500;">${planData.checkOutTime || 'N/A'}</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        `,
-        showCancelButton: false,
-        showConfirmButton: true,
-        confirmButtonText: 'Continue to check out',
-        confirmButtonColor: '#20409A',
-        width: '650px',
-        padding: '30px 20px',
-        background: '#fff',
-        customClass: {
-          popup: 'customer-details-popup',
-          htmlContainer: 'customer-details-content',
-          confirmButton: 'customer-details-confirm-btn'
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Call check-out API
-          handleCheckOut(planData);
-        }
-      });
-    }
-    // If status is "Visited" - show details only (no button)
-    else if (planData.status === 'Visited') {
-      Swal.fire({
-        html: `
-          <div style="text-align: left; padding: 20px; color: #4A4A4A;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #20409A; margin: 0 0 8px 0; text-transform: uppercase;">
-              ${customerDetails.name}
-            </h2>
-            <p style="font-size: 14px; color: #666; margin: 0 0 4px 0; font-weight: 500;">
-              ${customerDetails.code} / ${customerDetails.location}
-            </p>
-            <p style="font-size: 14px; color: #666; margin: 0 0 4px 0;">
-              ${customerDetails.phone}
-            </p>
-            <p style="font-size: 14px; color: #666; margin: 0 0 16px 0;">
-              ${customerDetails.email}
-            </p>
-            <p style="font-size: 13px; color: #666; line-height: 1.6; margin: 0 0 20px 0;">
-              ${customerDetails.address}
-            </p>
-            
-            <div style="margin-bottom: 20px;">
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>Credit Balance:</strong> <span style="color: #28a745; font-weight: 600;">${customerDetails.creditBalance}</span>
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>Credit Limit:</strong> ${customerDetails.creditLimit}
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>OverDue Invoice:</strong> <span style="color: #dc3545; font-weight: 600;">${customerDetails.overDueInvoice}</span>
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 8px 0;">
-                <strong>OverDue Amount:</strong> <span style="color: #dc3545; font-weight: 600;">${customerDetails.overDueAmount}</span>
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 20px 0;">
-                <strong>Total Outstanding Amount:</strong> <span style="font-weight: 600;">${customerDetails.totalOutstanding}</span>
-              </p>
-            </div>
-            
-            <div style="border-top: 1px solid #eee; padding-top: 16px;">
-              <p style="font-size: 14px; color: #666; margin: 0 0 12px 0; font-weight: 600;">
-                Ship To:
-              </p>
-              <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 4px 0; font-weight: 600;">
-                ${customerDetails.shipToCode} | ${customerDetails.shipToName}
-              </p>
-              <p style="font-size: 13px; color: #666; line-height: 1.6; margin: 0;">
-                ${customerDetails.shipToAddress}
-              </p>
-            </div>
-          </div>
-        `,
-        showCancelButton: false,
-        showConfirmButton: true,
-        confirmButtonText: 'Close',
-        confirmButtonColor: '#6c757d',
-        width: '650px',
-        padding: '30px 20px',
-        background: '#fff',
-        customClass: {
-          popup: 'customer-details-popup',
-          htmlContainer: 'customer-details-content',
-          confirmButton: 'customer-details-confirm-btn'
-        }
-      });
-    }
+      if (planData.status === 'New') {
+        Swal.fire({
+          ...config,
+          html: getCustomerDetailsHTML(customerDetails),
+          confirmButtonText: 'Continue to check in'
+        }).then((result) => {
+          if (result.isConfirmed) handleCheckIn(planData);
+        });
+      } else if (planData.status === 'Check in') {
+        Swal.fire({
+          ...config,
+          html: getCheckInDetailsHTML(customerDetails, planData),
+          confirmButtonText: 'Continue to check out'
+        }).then((result) => {
+          if (result.isConfirmed) handleCheckOut(planData);
+        });
+      } else if (planData.status === 'Visited') {
+        Swal.fire({
+          ...config,
+          html: getCustomerDetailsHTML(customerDetails),
+          confirmButtonText: 'Close'
+        });
+      }
     } catch (error) {
       console.error('Error showing customer details:', error);
       Swal.fire({
@@ -601,17 +448,50 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
     }
   };
 
-  // Function to toggle checkbox
   const toggleCheck = (id) => {
     setTableData(tableData.map(item => item.id === id ? { ...item, isChecked: !item.isChecked } : item));
   };
 
-  // Master checkbox toggle
   const toggleAll = (checked) => {
     setTableData(tableData.map(item => ({ ...item, isChecked: checked })));
   };
+  
+  // Sorting handler
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      // Toggle direction if same column
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // New column, default to ascending
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+  
+  // Search handler with debounce
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
+  
+  // Pagination handlers
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+  
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
-  // Export selected records to Excel using backend API
   const handleExport = async () => {
     const selectedData = tableData.filter(item => item.isChecked);
 
@@ -626,12 +506,10 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
     }
 
     try {
-      // Call backend export API
       const response = await apiService.get('/beat-plan/export-beat-plans-excel', {
         responseType: 'blob'
       });
 
-      // Create download link
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement('a');
       link.href = url;
@@ -664,90 +542,90 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
     }
   };
 
-  // Expose handleExport to parent component
-  useImperativeHandle(ref, () => ({
-    handleExport
-  }));
+  useImperativeHandle(ref, () => ({ handleExport }));
 
-  // Filter and Search Logic
+  // Apply sorting to data
+  const getSortedData = (data) => {
+    if (!sortColumn) return data;
+    
+    return [...data].sort((a, b) => {
+      let aVal = a[sortColumn];
+      let bVal = b[sortColumn];
+      
+      // Handle different data types
+      if (sortColumn === 'createdDate' || sortColumn === 'planDate') {
+        aVal = new Date(aVal);
+        bVal = new Date(bVal);
+      } else if (typeof aVal === 'string') {
+        aVal = aVal.toLowerCase();
+        bVal = bVal.toLowerCase();
+      }
+      
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
   const filteredData = tableData.filter((item) => {
     const matchesSearch = item.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.planNo.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = activeFilter === 'All' || item.status === activeFilter;
-
     return matchesSearch && matchesFilter;
   });
+  
+  const sortedData = getSortedData(filteredData);
+
+  const filterButtons = ['All Plans', 'New Plans', 'Visited Plans', "Today's Visits"];
+  const filterValues = ['All', 'New', 'Visited', 'Today'];
 
   return (
     <div className="beat-container">
-      {/* VIEW PLAN */}
       <div className="white-card mt-25">
-        {/* Filter Buttons */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', padding: '0 20px', paddingTop: '20px' }}>
-          <button
-            onClick={() => setActiveFilter('All')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '8px',
-              border: activeFilter === 'All' ? '2px solid #20409A' : '2px solid #e0e0e0',
-              background: activeFilter === 'All' ? '#20409A' : 'white',
-              color: activeFilter === 'All' ? 'white' : '#666',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            All Plans
-          </button>
-          <button
-            onClick={() => setActiveFilter('New')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '8px',
-              border: activeFilter === 'New' ? '2px solid #20409A' : '2px solid #e0e0e0',
-              background: activeFilter === 'New' ? '#20409A' : 'white',
-              color: activeFilter === 'New' ? 'white' : '#666',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            New Plans
-          </button>
-          <button
-            onClick={() => setActiveFilter('Visited')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '8px',
-              border: activeFilter === 'Visited' ? '2px solid #20409A' : '2px solid #e0e0e0',
-              background: activeFilter === 'Visited' ? '#20409A' : 'white',
-              color: activeFilter === 'Visited' ? 'white' : '#666',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            Visited Plans
-          </button>
-          <button
-            onClick={() => setActiveFilter('Today')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '8px',
-              border: activeFilter === 'Today' ? '2px solid #20409A' : '2px solid #e0e0e0',
-              background: activeFilter === 'Today' ? '#20409A' : 'white',
-              color: activeFilter === 'Today' ? 'white' : '#666',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            Today's Visits
-          </button>
+        {/* Filter Buttons and Search */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '12px', padding: '0 15px', paddingTop: '12px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {filterButtons.map((label, index) => (
+              <button
+                key={filterValues[index]}
+                onClick={() => setActiveFilter(filterValues[index])}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  border: activeFilter === filterValues[index] ? '2px solid #20409A' : '2px solid #e0e0e0',
+                  background: activeFilter === filterValues[index] ? '#20409A' : 'white',
+                  color: activeFilter === filterValues[index] ? 'white' : '#666',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          
+          {/* Search Input */}
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Search by customer or plan number..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: '2px solid #e0e0e0',
+                fontSize: '12px',
+                width: '280px',
+                outline: 'none',
+                transition: 'all 0.2s ease'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#20409A'}
+              onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+            />
+          </div>
         </div>
 
         <div className="table-responsive">
@@ -755,26 +633,102 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
             <thead>
               <tr>
                 <th><input type="checkbox" onChange={(e) => toggleAll(e.target.checked)} /></th>
-                <th>Plan Number <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
-                <th>Customer Name <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
-                <th>Location <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
-                <th>Created Date <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
-                <th>Plan Date <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
-                <th>Plan Status <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
-                <th>Flag <img src={ArrowIcon} className="table-arrow-img" alt="sort" /></th>
+                <th onClick={() => handleSort('planNo')} style={{ cursor: 'pointer' }}>
+                  Plan Number 
+                  <img 
+                    src={ArrowIcon} 
+                    className="table-arrow-img" 
+                    alt="sort"
+                    style={{ 
+                      transform: sortColumn === 'planNo' && sortDirection === 'desc' ? 'rotate(180deg)' : 'none',
+                      opacity: sortColumn === 'planNo' ? 1 : 0.5
+                    }}
+                  />
+                </th>
+                <th onClick={() => handleSort('customer')} style={{ cursor: 'pointer' }}>
+                  Customer Name 
+                  <img 
+                    src={ArrowIcon} 
+                    className="table-arrow-img" 
+                    alt="sort"
+                    style={{ 
+                      transform: sortColumn === 'customer' && sortDirection === 'desc' ? 'rotate(180deg)' : 'none',
+                      opacity: sortColumn === 'customer' ? 1 : 0.5
+                    }}
+                  />
+                </th>
+                <th onClick={() => handleSort('location')} style={{ cursor: 'pointer' }}>
+                  Location 
+                  <img 
+                    src={ArrowIcon} 
+                    className="table-arrow-img" 
+                    alt="sort"
+                    style={{ 
+                      transform: sortColumn === 'location' && sortDirection === 'desc' ? 'rotate(180deg)' : 'none',
+                      opacity: sortColumn === 'location' ? 1 : 0.5
+                    }}
+                  />
+                </th>
+                <th onClick={() => handleSort('createdDate')} style={{ cursor: 'pointer' }}>
+                  Created Date 
+                  <img 
+                    src={ArrowIcon} 
+                    className="table-arrow-img" 
+                    alt="sort"
+                    style={{ 
+                      transform: sortColumn === 'createdDate' && sortDirection === 'desc' ? 'rotate(180deg)' : 'none',
+                      opacity: sortColumn === 'createdDate' ? 1 : 0.5
+                    }}
+                  />
+                </th>
+                <th onClick={() => handleSort('planDate')} style={{ cursor: 'pointer' }}>
+                  Plan Date 
+                  <img 
+                    src={ArrowIcon} 
+                    className="table-arrow-img" 
+                    alt="sort"
+                    style={{ 
+                      transform: sortColumn === 'planDate' && sortDirection === 'desc' ? 'rotate(180deg)' : 'none',
+                      opacity: sortColumn === 'planDate' ? 1 : 0.5
+                    }}
+                  />
+                </th>
+                <th onClick={() => handleSort('status')} style={{ cursor: 'pointer' }}>
+                  Plan Status 
+                  <img 
+                    src={ArrowIcon} 
+                    className="table-arrow-img" 
+                    alt="sort"
+                    style={{ 
+                      transform: sortColumn === 'status' && sortDirection === 'desc' ? 'rotate(180deg)' : 'none',
+                      opacity: sortColumn === 'status' ? 1 : 0.5
+                    }}
+                  />
+                </th>
+                <th>Flag</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="9" style={{ textAlign: 'center', padding: '40px' }}>
-                    Loading beat plans...
+                  <td colSpan="9" style={{ textAlign: 'center', padding: '30px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ 
+                        border: '3px solid #f3f3f3',
+                        borderTop: '3px solid #20409A',
+                        borderRadius: '50%',
+                        width: '40px',
+                        height: '40px',
+                        animation: 'spin 1s linear infinite'
+                      }}></div>
+                      <span>Loading beat plans...</span>
+                    </div>
                   </td>
                 </tr>
-              ) : filteredData.length > 0 ? filteredData.map((data) => (
-                <tr key={data.id}>
-                  <td><input type="checkbox" checked={data.isChecked || false} onChange={() => toggleCheck(data.id)} /></td>
+              ) : sortedData.length > 0 ? sortedData.map((data) => (
+                <tr key={data.id} style={{ opacity: deletingId === data.id ? 0.5 : 1 }}>
+                  <td><input type="checkbox" checked={data.isChecked || false} onChange={() => toggleCheck(data.id)} disabled={deletingId === data.id} /></td>
                   <td className="plan-id">{data.planNo}</td>
                   <td>{data.customer}</td>
                   <td>{data.location}</td>
@@ -783,20 +737,22 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
                   <td><span className={`dot-status ${data.status.toLowerCase()}`}>{data.status}</span></td>
                   <td><span className={`flag-badge ${data.flag.toLowerCase()}`}>{data.flag}</span></td>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <img
                         src={EyeIcon}
                         className="table-eye-img"
                         alt="view"
-                        onClick={() => handleViewDetails(data)}
-                        style={{ cursor: 'pointer' }}
+                        onClick={() => !deletingId && handleViewDetails(data)}
+                        style={{ cursor: deletingId ? 'not-allowed' : 'pointer', opacity: deletingId === data.id ? 0.5 : 1 }}
+                        title="View Details"
                       />
                       <img
                         src={DeleteIcon}
                         className="table-delete-img"
                         alt="delete"
-                        onClick={() => handleDeleteRow(data.id)}
-                        style={{ cursor: 'pointer' }}
+                        onClick={() => !deletingId && handleDeleteRow(data.id)}
+                        style={{ cursor: deletingId ? 'not-allowed' : 'pointer', opacity: deletingId === data.id ? 0.5 : 1 }}
+                        title="Delete"
                       />
                     </div>
                   </td>
@@ -807,6 +763,90 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination Controls */}
+        {!loading && sortedData.length > 0 && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            padding: '12px 15px',
+            borderTop: '1px solid #eee'
+          }}>
+            <div style={{ fontSize: '12px', color: '#666' }}>
+              Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalRecords)} of {totalRecords} records
+            </div>
+            
+            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '4px',
+                  border: '1px solid #e0e0e0',
+                  background: currentPage === 1 ? '#f5f5f5' : 'white',
+                  color: currentPage === 1 ? '#999' : '#333',
+                  fontSize: '12px',
+                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                Previous
+              </button>
+              
+              {[...Array(totalPages)].map((_, index) => {
+                const page = index + 1;
+                // Show first page, last page, current page, and pages around current
+                if (
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      style={{
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        border: currentPage === page ? '2px solid #20409A' : '1px solid #e0e0e0',
+                        background: currentPage === page ? '#20409A' : 'white',
+                        color: currentPage === page ? 'white' : '#333',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        minWidth: '32px'
+                      }}
+                    >
+                      {page}
+                    </button>
+                  );
+                } else if (page === currentPage - 2 || page === currentPage + 2) {
+                  return <span key={page} style={{ padding: '0 5px', color: '#999' }}>...</span>;
+                }
+                return null;
+              })}
+              
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '4px',
+                  border: '1px solid #e0e0e0',
+                  background: currentPage === totalPages ? '#f5f5f5' : 'white',
+                  color: currentPage === totalPages ? '#999' : '#333',
+                  fontSize: '12px',
+                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

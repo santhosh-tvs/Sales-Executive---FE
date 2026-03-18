@@ -90,7 +90,7 @@ function NewLogin() {
           setLoadingMessage("Loading Dashboard...");
           setTimeout(() => {
             navigate("/sales-home");
-          }, 1000); // Keep spinner visible for smooth transition
+          }, 100000); // Keep spinner visible for smooth transition
         }
       } else if (data.message?.includes("already logged in")) {
         // Session conflict - user is already logged in elsewhere

@@ -17,14 +17,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 16px;
 }
 
 /* Tire Loader - Smaller, more realistic vehicle tire */
 .tire-loader {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: 70px;
+    height: 70px;
     animation: tire-roll 2s linear infinite;
 }
 
@@ -44,9 +44,9 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 22px solid #20409A;
+    border: 13px solid #20409A;
     box-sizing: border-box;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(32, 64, 154, 0.3);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2), 0 0 8px rgba(32, 64, 154, 0.3);
 }
 
 /* Middle Tire Ring - Rim with gradient */
@@ -57,10 +57,10 @@
     top: 15%;
     left: 15%;
     border-radius: 50%;
-    border: 8px solid #ffffff;
+    border: 5px solid #ffffff;
     box-sizing: border-box;
     background: linear-gradient(135deg, #20409A 0%, #1a3380 100%);
-    box-shadow: 0 0 15px rgba(243, 111, 33, 0.4);
+    box-shadow: 0 0 8px rgba(243, 111, 33, 0.4);
 }
 
 /* Inner Tire with Spokes - More realistic proportions */
@@ -76,14 +76,14 @@
 /* Tire Spokes - Sleeker design with gradient */
 .tire-spoke {
     position: absolute;
-    width: 6px;
+    width: 4px;
     height: 45%;
     background: linear-gradient(180deg, #ffffff 0%, #20409A 100%);
     top: 27.5%;
     left: 50%;
     transform-origin: center bottom;
     border-radius: 3px 3px 0 0;
-    box-shadow: 0 0 8px rgba(243, 111, 33, 0.6);
+    box-shadow: 0 0 4px rgba(243, 111, 33, 0.6);
 }
 
 .tire-spoke-1 {
@@ -115,14 +115,14 @@
     left: 32.5%;
     border-radius: 50%;
     background: radial-gradient(circle, #ffffff 0%, #20409A 100%);
-    border: 3px solid #20409A;
+    border: 2px solid #20409A;
     box-sizing: border-box;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7), inset 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7), inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Loading Text */
 .loading-spinner-text {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
     color: #20409A;
     margin: 0;
@@ -144,42 +144,42 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .tire-loader {
-        width: 100px;
-        height: 100px;
+        width: 60px;
+        height: 60px;
     }
 
     .tire-outer-ring {
-        border-width: 18px;
+        border-width: 11px;
     }
 
     .tire-middle-ring {
-        border-width: 6px;
+        border-width: 4px;
     }
 
     .loading-spinner-text {
-        font-size: 16px;
+        font-size: 13px;
     }
 }
 
 @media (max-width: 480px) {
     .tire-loader {
-        width: 90px;
-        height: 90px;
+        width: 54px;
+        height: 54px;
     }
 
     .tire-outer-ring {
-        border-width: 16px;
+        border-width: 10px;
     }
 
     .tire-middle-ring {
-        border-width: 5px;
+        border-width: 3px;
     }
 
     .tire-spoke {
-        width: 5px;
+        width: 3px;
     }
 
     .loading-spinner-text {
-        font-size: 14px;
+        font-size: 12px;
     }
 }

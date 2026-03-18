@@ -168,11 +168,8 @@ const Home_Page = () => {
               {trendPct >= 0 ? '↑' : '↓'} {Math.abs(trendPct)}% vs target
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+          <div>
             {getWidgetIcon()}
-            <svg width={sparkW} height={sparkH} style={{ display: 'block' }}>
-              <path d={sparkPath} fill="none" stroke={accent} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-            </svg>
           </div>
         </div>
         <div className="widget-metrics">

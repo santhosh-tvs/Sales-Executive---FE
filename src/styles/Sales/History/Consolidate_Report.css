@@ -16,7 +16,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   flex-wrap: wrap;
   gap: 20px;
 }
@@ -163,6 +163,7 @@
   padding: 10px 8px;
   text-align: left;
   font-weight: 600;
+  width: 200px;
   color: #fff;
   font-size: 11px;
   text-transform: uppercase;
@@ -263,9 +264,15 @@
   cursor: not-allowed;
 }
 
+.pagination-info {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
 .prev-btn,
 .next-btn {
-  font-weight: 500;
+  font-weight: 600;
   min-width: 60px;
 }
 

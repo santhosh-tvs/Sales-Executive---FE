@@ -178,17 +178,17 @@
 
 .create-beat-btn {
   background: #20409a;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 3px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .create-beat-btn:hover {
@@ -197,17 +197,17 @@
 
 .apply-leave-btn {
   background: #20409a;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 3px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .apply-leave-btn:hover {
@@ -216,17 +216,17 @@
 
 .import-beat-btn {
   background: #20409a;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 3px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .import-beat-btn:hover {
@@ -235,17 +235,17 @@
 
 .export-btnn {
   background: #28a745;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 3px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .export-btn:hover {
@@ -327,55 +327,52 @@
 
 .table-responsive {
   overflow-x: auto;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   margin-bottom: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
 }
 
 .table-responsive::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
+  height: 6px;
+  width: 6px;
 }
 
 .table-responsive::-webkit-scrollbar-track {
-  background: linear-gradient(90deg, #f1f3f4 0%, #e8eaed 100%);
+  background: #f1f3f4;
   border-radius: 10px;
 }
 
 .table-responsive::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #FF6B35 0%, #e55a25 100%);
+  background: #c7d2fe;
   border-radius: 10px;
-  border: 2px solid #f1f3f4;
 }
 
 .table-responsive::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #e55a25 0%, #d14d1f 100%);
-  transform: scale(1.1);
+  background: #20409A;
 }
 
 .beat-table {
   width: 100%;
-  border-collapse: separate;
+  border-collapse: collapse;
   border-spacing: 0;
   min-width: 850px;
   background: transparent;
+  font-size: 13px;
 }
 
 .beat-table th {
   text-align: left;
-  padding: 10px 12px;
-  color: #ffffff;
+  padding: 10px 8px;
+  color: #fff;
   border-bottom: none;
   font-size: 11px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #20409A 0%, #1a3580 100%);
+  font-weight: 600;
+  background: #20409A;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
 }
 
 .beat-table th:first-child {
@@ -387,57 +384,28 @@
   border-top-right-radius: 0;
 }
 
-.beat-table th::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, #FF6B35 50%, transparent 100%);
-}
-
 .beat-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 10px 8px;
+  border-bottom: 1px solid #f3f4f6;
   font-size: 12px;
-  color: #2c3e50;
-  background: rgba(255, 255, 255, 0.7);
-  transition: all 0.3s ease;
-  font-weight: 500;
+  color: #374151;
+  vertical-align: middle;
 }
 
 .beat-table tbody tr {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
+  transition: background 0.15s;
 }
 
 .beat-table tbody tr:hover {
-  background: linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(255, 107, 53, 0.04) 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.15);
-}
-
-.beat-table tbody tr:hover td {
-  background: transparent;
-  color: #1a202c;
-  font-weight: 600;
+  background: #f8f9ff;
 }
 
 .beat-table tbody tr:nth-child(even) td {
-  background: rgba(248, 250, 252, 0.8);
+  background: #fafafa;
 }
 
 .beat-table tbody tr:last-child td {
   border-bottom: none;
-}
-
-.beat-table tbody tr:last-child td:first-child {
-  border-bottom-left-radius: 0;
-}
-
-.beat-table tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 0;
 }
 
 .dot-status::before {
@@ -522,6 +490,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -533,6 +502,7 @@
     opacity: 1;
     transform: scale(1);
   }
+
   to {
     opacity: 0;
     transform: scale(0.9);
@@ -551,6 +521,7 @@
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
@@ -846,8 +817,13 @@
 
 /* Loading Spinner Animation */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design for Beat Plan */
@@ -855,17 +831,17 @@
   .beat-plan-content {
     padding: 16px;
   }
-  
+
   .top-action-buttons {
     gap: 12px;
   }
-  
+
   .action-btn {
     width: 130px;
     padding: 10px 14px;
     font-size: 11px;
   }
-  
+
   .search-bar {
     width: 220px !important;
   }
@@ -875,50 +851,50 @@
   .beat-plan-content {
     padding: 12px;
   }
-  
+
   .breadcrumb-actions-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .top-action-buttons {
     width: 100%;
     justify-content: flex-start;
     gap: 10px;
   }
-  
+
   .action-btn {
     width: auto;
     min-width: 120px;
     padding: 10px 12px;
     font-size: 11px;
   }
-  
+
   .search-wrapper {
     width: 100%;
   }
-  
+
   .search-bar {
     width: 100% !important;
     max-width: 100%;
   }
-  
+
   .table-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .action-bar {
     width: 100%;
     justify-content: flex-start;
   }
-  
+
   .beat-table {
     min-width: 750px;
   }
-  
+
   .beat-table th,
   .beat-table td {
     padding: 12px 10px;
@@ -930,44 +906,44 @@
   .beat-plan-content {
     padding: 10px;
   }
-  
+
   .white-card {
     padding: 12px;
     margin-bottom: 16px;
   }
-  
+
   .top-action-buttons {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }
-  
+
   .action-btn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .search-wrapper {
     order: -1;
   }
-  
+
   .beat-table {
     min-width: 650px;
   }
-  
+
   .beat-table th,
   .beat-table td {
     padding: 10px 8px;
     font-size: 11px;
   }
-  
+
   .text-action,
   .export-bordered {
     padding: 6px 12px;
     font-size: 11px;
     height: 32px;
   }
-  
+
   .btn-icon {
     width: 14px;
     height: 14px;

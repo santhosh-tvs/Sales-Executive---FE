@@ -6,7 +6,8 @@
 }
 
 .view-plan-2-content {
-  padding: 100px 20px 20px 20px; /* Top padding for fixed header */
+  padding: 100px 20px 20px 20px;
+  /* Top padding for fixed header */
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -259,30 +260,39 @@
 .customer-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .customer-table th {
-  background-color: #FF6B35;
-  color: white;
-  padding: 12px 8px;
+  background: linear-gradient(135deg, #20409A, #1a3580);
+  color: #fff;
+  padding: 10px 8px;
   text-align: left;
   font-weight: 600;
-  border: 1px solid #ddd;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .customer-table td {
   padding: 10px 8px;
-  border: 1px solid #ddd;
+  border-bottom: 1px solid #f3f4f6;
   vertical-align: middle;
+  font-size: 12px;
+  color: #374151;
 }
 
-.customer-table tbody tr:nth-child(even) {
-  background-color: #f8f9fa;
+.customer-table tbody tr:nth-child(even) td {
+  background: #fafafa;
 }
 
 .customer-table tbody tr:hover {
-  background-color: #e8f4f8;
+  background: #f8f9ff;
+}
+
+.customer-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .customer-checkbox {
@@ -354,11 +364,12 @@
 
 /* Responsive Design */
 @media (max-width: 1200px) {
+
   .control-item,
   .control-item-2 {
     min-width: 180px;
   }
-  
+
   .view-plan-2-content {
     max-width: 100%;
   }
@@ -369,16 +380,16 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .header-buttons {
     justify-content: center;
   }
-  
+
   .control-row,
   .control-row-2 {
     gap: 15px;
   }
-  
+
   .control-item,
   .control-item-2 {
     min-width: 150px;
@@ -389,63 +400,63 @@
   .view-plan-2-content {
     padding: 100px 15px 20px 15px;
   }
-  
+
   .form-section,
   .form-section-2,
   .customer-selection-section {
     padding: 15px;
   }
-  
+
   .control-row,
   .control-row-2 {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .control-item,
   .control-item-2 {
     min-width: auto;
     width: 100%;
   }
-  
+
   .control-item-2.button-group {
     align-self: flex-start;
   }
-  
+
   .create-button {
     width: 100%;
     max-width: 200px;
   }
-  
+
   .header-buttons {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .header-btn {
     width: 100%;
   }
-  
+
   .customer-table {
     font-size: 12px;
   }
-  
+
   .customer-table th,
   .customer-table td {
     padding: 8px 4px;
   }
-  
+
   .target-type-select,
   .unit-select {
     font-size: 12px;
     padding: 4px 6px;
   }
-  
+
   .customer-action-buttons {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .cancel-btn,
   .add-plan-btn {
     width: 100%;
@@ -456,12 +467,12 @@
   .page-title {
     font-size: 20px;
   }
-  
+
   .control-label,
   .control-label-2 {
     font-size: 13px;
   }
-  
+
   .date-input,
   .employee-input,
   .mobile-input,
@@ -470,7 +481,7 @@
     font-size: 13px;
     padding: 9px 10px;
   }
-  
+
   .create-button {
     font-size: 13px;
     padding: 10px 20px;

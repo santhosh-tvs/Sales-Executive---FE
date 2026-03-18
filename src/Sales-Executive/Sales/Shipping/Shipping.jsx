@@ -18,7 +18,6 @@ const Shipping = () => {
   const [useCoins, setUseCoins] = useState(false);
   const [showAddressPopup, setShowAddressPopup] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderError, setOrderError] = useState('');
   const [shippingAddress, setShippingAddress] = useState({
     name: '',
@@ -251,15 +250,29 @@ const Shipping = () => {
       // Call API
       const response = await createOrderAPI(orderPayload);
 
-      if (response && response.success) {
+      if (response && (response.order_number || response.id)) {
         console.log('✅ Order placed successfully:', response);
-        setOrderSuccess(true);
-        // Clear cart after successful order
-        // contextCartItems will be cleared by CartContext
+        navigate('/order-success', {
+          state: {
+            orderResponse: response,
+            orderPayload,
+            cartItems,
+            shippingAddress,
+            totals: { basicTotal, gst, total },
+          }
+        });
       } else {
         const errorMessage = response?.error?.message || response?.message || 'Failed to place order. Please try again.';
         console.error('❌ Order placement failed:', errorMessage);
-        setOrderError(errorMessage);
+        navigate('/order-failed', {
+          state: {
+            errorMessage,
+            orderPayload,
+            cartItems,
+            shippingAddress,
+            totals: { basicTotal, gst, total },
+          }
+        });
       }
     } catch (error) {
       console.error('Order placement error:', error);
@@ -291,31 +304,6 @@ const Shipping = () => {
   return (
     <>
       <Header />
-      {orderSuccess ? (
-        <div className="order-success-container">
-          <div className="order-success-card">
-            <div className="success-icon">
-              <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                <circle cx="40" cy="40" r="38" stroke="#4CAF50" strokeWidth="4"/>
-                <path d="M25 40L35 50L55 30" stroke="#4CAF50" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <h2 className="success-message">Your order is successfully place</h2>
-            <div className="success-buttons">
-              <button className="btn-go-home" onClick={() => navigate('/home')}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                GO TO HOME
-              </button>
-              <button className="btn-view-order" onClick={() => navigate('/orders')}>
-                VIEW ORDER →
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : (
       <div className="shipping-page">
         <div className="shipping-container">
           <PageNavigate />
@@ -436,7 +424,6 @@ const Shipping = () => {
           </div>
         </div>
       </div>
-      )}
 
       {/* Address Change Popup */}
       {showAddressPopup && (

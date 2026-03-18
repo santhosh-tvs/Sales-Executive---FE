@@ -43,6 +43,8 @@ import SalesProfile from "./Sales-Executive/Profile/sales-Profile.jsx";
 import Cart from "./Sales-Executive/Sales/Cart/Cart.jsx";
 import Wishlist from "./Sales-Executive/Sales/Wishlist/Wishlist.jsx";
 import Shipping from "./Sales-Executive/Sales/Shipping/Shipping.jsx";
+import OrderSuccess from "./Sales-Executive/Sales/OrderStatus/OrderSuccess.jsx";
+import OrderFailed from "./Sales-Executive/Sales/OrderStatus/OrderFailed.jsx";
 
 // Brands
 import Brands from "./Sales-Executive/Sales/Brands/Brands.jsx";
@@ -127,6 +129,8 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/shipping" element={<Shipping />} />
           <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/order-failed" element={<OrderFailed />} />
 
           {/* Brands */}
           <Route path="/brands" element={<Brands />} />

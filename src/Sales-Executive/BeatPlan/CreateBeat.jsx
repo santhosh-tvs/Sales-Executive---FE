@@ -24,6 +24,7 @@ const CreateBeat = () => {
     location: beatData.location || '',
     remarks: beatData.remarks || '',
     repeatType: beatData.repeatData?.repeatType || '',
+    customDate: beatData.repeatData?.customDate || '',
     fromDate: beatData.repeatData?.fromDate || '',
     toDate: beatData.repeatData?.toDate || '',
     weekdays: beatData.repeatData?.weekdays || []
@@ -121,15 +122,9 @@ const CreateBeat = () => {
           <div id="custom-date-section" style="display: ${beatInfo.repeatType === 'custom' ? 'block' : 'none'};">
             <div style="margin-bottom: 15px;">
               <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-                From Date
+                Date
               </label>
-              <input type="date" id="repeat-from-date" value="${beatInfo.fromDate || ''}" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none;" />
-            </div>
-            <div style="margin-bottom: 15px;">
-              <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-                To Date
-              </label>
-              <input type="date" id="repeat-to-date" value="${beatInfo.toDate || ''}" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none;" />
+              <input type="date" id="repeat-custom-date" value="${beatInfo.customDate || ''}" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none;" />
             </div>
           </div>
 
@@ -169,8 +164,6 @@ const CreateBeat = () => {
         const repeatTypeSelect = document.getElementById('repeat-type');
         const customDateSection = document.getElementById('custom-date-section');
         const weeklySection = document.getElementById('weekly-section');
-        const fromDateInput = document.getElementById('repeat-from-date');
-        const toDateInput = document.getElementById('repeat-to-date');
         
         let selectedWeekdays = beatInfo.weekdays || [];
 
@@ -186,13 +179,6 @@ const CreateBeat = () => {
           } else {
             customDateSection.style.display = 'none';
             weeklySection.style.display = 'none';
-          }
-        });
-
-        // Handle from date change
-        fromDateInput.addEventListener('change', () => {
-          if (fromDateInput.value) {
-            toDateInput.min = fromDateInput.value;
           }
         });
 
@@ -230,15 +216,14 @@ const CreateBeat = () => {
         }
 
         if (repeatType === 'custom') {
-          const fromDate = document.getElementById('repeat-from-date').value;
-          const toDate = document.getElementById('repeat-to-date').value;
+          const customDate = document.getElementById('repeat-custom-date').value;
           
-          if (!fromDate || !toDate) {
-            Swal.showValidationMessage('Please select both from and to dates');
+          if (!customDate) {
+            Swal.showValidationMessage('Please select a date');
             return false;
           }
 
-          return { repeatType: 'custom', fromDate, toDate };
+          return { repeatType: 'custom', customDate };
         } else if (repeatType === 'weekly') {
           const selectedWeekdays = window.selectedWeekdays || [];
           
@@ -257,6 +242,7 @@ const CreateBeat = () => {
       setBeatInfo({
         ...beatInfo,
         repeatType: repeatData.repeatType,
+        customDate: repeatData.customDate || '',
         fromDate: repeatData.fromDate || '',
         toDate: repeatData.toDate || '',
         weekdays: repeatData.weekdays || []
@@ -320,24 +306,20 @@ const CreateBeat = () => {
       return;
     }
 
-    // Validate weekly repeat requires date range
+    // Validate custom repeat requires a date
+    if (beatInfo.repeatType === 'custom' && !beatInfo.customDate) {
+      Swal.fire({ icon: 'error', title: 'Missing Date', text: 'Please provide a date for custom repeat', confirmButtonColor: '#20409A' });
+      return;
+    }
+
+    // Validate weekly repeat requires date range and weekdays
     if (beatInfo.repeatType === 'weekly') {
       if (!beatInfo.fromDate || !beatInfo.toDate) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Missing Date Range',
-          text: 'Please provide start and end dates for weekly repeat',
-          confirmButtonColor: '#20409A',
-        });
+        Swal.fire({ icon: 'error', title: 'Missing Date Range', text: 'Please provide start and end dates for weekly repeat', confirmButtonColor: '#20409A' });
         return;
       }
       if (!beatInfo.weekdays || beatInfo.weekdays.length === 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Missing Weekdays',
-          text: 'Please select at least one weekday for weekly repeat',
-          confirmButtonColor: '#20409A',
-        });
+        Swal.fire({ icon: 'error', title: 'Missing Weekdays', text: 'Please select at least one weekday for weekly repeat', confirmButtonColor: '#20409A' });
         return;
       }
     }
@@ -363,12 +345,10 @@ const CreateBeat = () => {
           repeat_on: beatInfo.repeatType || 'custom'
         };
 
-        // Add optional date range if provided (for custom repeat type)
-        if (beatInfo.repeatType === 'custom' && beatInfo.fromDate) {
-          payload.startDate = beatInfo.fromDate;
-        }
-        if (beatInfo.repeatType === 'custom' && beatInfo.toDate) {
-          payload.endDate = beatInfo.toDate;
+        // Add optional date for custom repeat type
+        if (beatInfo.repeatType === 'custom' && beatInfo.customDate) {
+          payload.startDate = beatInfo.customDate;
+          payload.endDate = beatInfo.customDate;
         }
 
         // Add weekdays and date range if provided (for weekly repeat type)
@@ -532,16 +512,10 @@ const CreateBeat = () => {
               <label>Repeat Type</label>
               <div className="info-value">{beatInfo.repeatType || '-'}</div>
             </div>
-            {beatInfo.repeatType === 'custom' && beatInfo.fromDate && (
+            {beatInfo.repeatType === 'custom' && beatInfo.customDate && (
               <div className="info-display-item">
-                <label>From Date</label>
-                <div className="info-value">{beatInfo.fromDate}</div>
-              </div>
-            )}
-            {beatInfo.repeatType === 'custom' && beatInfo.toDate && (
-              <div className="info-display-item">
-                <label>To Date</label>
-                <div className="info-value">{beatInfo.toDate}</div>
+                <label>Date</label>
+                <div className="info-value">{beatInfo.customDate}</div>
               </div>
             )}
             {beatInfo.repeatType === 'weekly' && beatInfo.weekdays && beatInfo.weekdays.length > 0 && (

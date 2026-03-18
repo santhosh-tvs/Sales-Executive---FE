@@ -5,6 +5,7 @@ import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import CustomerDetails from '../../components/CustomerDetails/CustomerDetails';
 import '../../../styles/Sales/Create_Order/Create_Order.css';
 import { apiService } from '../../../services/apiservice';
+import apiConfigManager from '../../../services/apiConfig';
 
 const Create_Order = () => {
   const navigate = useNavigate();
@@ -94,10 +95,97 @@ const Create_Order = () => {
     setSearchTerm(e.target.value);
   };
 
-  // Handle customer selection - show CustomerDetails component
-  const handleCustomerSelect = (customer) => {
-    setSelectedCustomer(customer);
-    setShowCustomerDetail(true);
+  // Handle customer selection - fetch complete details from both APIs
+  const handleCustomerSelect = async (customer) => {
+    try {
+      console.log('🔍 Fetching details for customer:', customer.customer_code);
+      
+      // First, set the basic customer data
+      setSelectedCustomer(customer);
+      setShowCustomerDetail(true);
+      
+      // Fetch complete customer details from view-customer API
+      const viewCustomerResponse = await apiService.get(`/profile/view-customer/${customer.customer_code}`);
+      console.log('📋 View Customer Response:', viewCustomerResponse);
+      
+      if (viewCustomerResponse.success && viewCustomerResponse.user_detail) {
+        const viewCustomerData = viewCustomerResponse.user_detail;
+        console.log('✅ View Customer Data:', viewCustomerData);
+        
+        // Store unit_code and API config from customer data
+        apiConfigManager.updateFromCustomer(viewCustomerResponse);
+        console.log('✅ API config updated, unit_code:', apiConfigManager.getUnitCode());
+        
+        // Now fetch financial details using account number
+        let customerDetailsData = null;
+        if (viewCustomerData.account_number) {
+          console.log('🔢 Account Number:', viewCustomerData.account_number);
+          
+          const { customerDetails: customerDetailsAPI } = await import('../../../services/api');
+          const detailsResponse = await customerDetailsAPI({ 
+            accountNumber: viewCustomerData.account_number.toString() 
+          });
+          
+          console.log('💰 Customer Details Response:', detailsResponse);
+          
+          if (detailsResponse) {
+            customerDetailsData = detailsResponse;
+            console.log('✅ Customer Details Data:', customerDetailsData);
+          }
+        }
+        
+        // Merge all data into selectedCustomer
+        const completeCustomerData = {
+          ...customer,
+          ...viewCustomerData,
+          // Financial data from customer details API
+          creditBalance: customerDetailsData?.availablecreditlimit 
+            ? customerDetailsData.availablecreditlimit.toFixed(2) 
+            : '0.00',
+          creditLimit: customerDetailsData?.creditLimit 
+            ? customerDetailsData.creditLimit.toString()
+            : (viewCustomerData.credit_limit || '0.00'),
+          overDueInvoice: customerDetailsData?.noofoverdueinvoices?.toString() || '0',
+          overDueAmount: customerDetailsData?.overdueamount 
+            ? customerDetailsData.overdueamount.toFixed(2) 
+            : '0.00',
+          totalOutstanding: customerDetailsData?.outstandingamount 
+            ? customerDetailsData.outstandingamount.toFixed(2) 
+            : '0.00',
+          // Format address
+          fullAddress: [
+            viewCustomerData.address1,
+            viewCustomerData.address2,
+            viewCustomerData.address3,
+            viewCustomerData.city,
+            viewCustomerData.state,
+            viewCustomerData.post_code
+          ].filter(Boolean).join(', '),
+          // Ship to options (can be multiple in future)
+          shipToOptions: [{
+            code: viewCustomerData.site_number || 'N/A',
+            name: viewCustomerData.site_code || customer.customer_name,
+            address: [
+              viewCustomerData.address1,
+              viewCustomerData.address2,
+              viewCustomerData.city,
+              viewCustomerData.state,
+              viewCustomerData.post_code
+            ].filter(Boolean).join(', ')
+          }]
+        };
+        
+        // Set default ship-to to null (user must select)
+        
+        setSelectedCustomer(completeCustomerData);
+        console.log('✅ Complete Customer Data:', completeCustomerData);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching customer details:', error);
+      // Still show the basic customer data even if API fails
+      setSelectedCustomer(customer);
+      setShowCustomerDetail(true);
+    }
   };
 
   // Handle back to search
@@ -107,9 +195,14 @@ const Create_Order = () => {
   };
 
   // Handle continue to brands page
-  const handleContinueToBrands = () => {
-    // Navigate to brands page
-    navigate('/brands');
+  const handleContinueToBrands = (customerDetails, selectedShipTo) => {
+    navigate('/brands', {
+      state: {
+        customerCode: selectedCustomer?.customer_code,
+        customerName: selectedCustomer?.customer_name,
+        shipTo: selectedShipTo,
+      }
+    });
   };
 
   return (

@@ -966,13 +966,6 @@ const BeatPlanPage = () => {
         <div className="breadcrumb-actions-row">
           <Breadcrumb currentPage="Beat Plan" />
           <div className="top-action-buttons">
-            <div className="search-wrapper">
-              <input
-                type="text"
-                className="search-bar"
-                placeholder="Search Customer Name / Code"
-              />
-            </div>
             <button className="create-beat-btn" onClick={handleCreateBeat}>
               <img src={DateIcon} alt="Create" className="btn-icon" />
               Create Beat

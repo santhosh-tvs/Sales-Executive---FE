@@ -22,6 +22,14 @@ const Home_Page = () => {
   const [beatPieData, setBeatPieData] = useState([]);
   const [beatLoading, setBeatLoading] = useState(true);
 
+  // Sales API state
+  const [salesCounts, setSalesCounts] = useState(null);
+  const [salesBarData, setSalesBarData] = useState([]);
+  const [salesPieData, setSalesPieData] = useState([]);
+  const [salesLoading, setSalesLoading] = useState(true);
+
+  // Enquiry API state — removed (no enquiry in this app)
+
   // Chart interaction state
   const [chartTooltip, setChartTooltip] = useState(null);
   const [hoveredSlice, setHoveredSlice] = useState(null);
@@ -31,24 +39,38 @@ const Home_Page = () => {
   const [expandedChart, setExpandedChart] = useState(null);
 
   useEffect(() => {
-    const fetchBeatData = async () => {
+    const fetchAllDashboardData = async () => {
       setBeatLoading(true);
+      setSalesLoading(true);
+
       try {
-        const [countsRes, graphRes, pieRes] = await Promise.all([
+        const [
+          beatCountsRes, beatGraphRes, beatPieRes,
+          salesCountsRes, salesBarRes, salesPieRes,
+        ] = await Promise.all([
           apiService.get('/dashboard/plan-visited-counts'),
           apiService.get('/dashboard/my-visit-day-wise-visited-graph'),
           apiService.get('/dashboard/my-visit-pie-chart-data'),
+          apiService.get('/dashboard/my-sales-counts'),
+          apiService.get('/dashboard/my-sales-bar-chart'),
+          apiService.get('/dashboard/my-sales-pie-chart'),
         ]);
-        if (countsRes.success) setBeatCounts(countsRes.data);
-        if (graphRes.success) setBeatGraphData(graphRes.data || []);
-        if (pieRes.success) setBeatPieData(pieRes.customers || []);
+
+        if (beatCountsRes.success) setBeatCounts(beatCountsRes.data);
+        if (beatGraphRes.success) setBeatGraphData(beatGraphRes.data || []);
+        if (beatPieRes.success) setBeatPieData(beatPieRes.customers || []);
+
+        if (salesCountsRes.success) setSalesCounts(salesCountsRes.data);
+        if (salesBarRes.success) setSalesBarData(salesBarRes.data || []);
+        if (salesPieRes.success) setSalesPieData(salesPieRes.data || []);
       } catch (e) {
-        console.error('Beat dashboard fetch error:', e);
+        console.error('Dashboard fetch error:', e);
       } finally {
         setBeatLoading(false);
+        setSalesLoading(false);
       }
     };
-    fetchBeatData();
+    fetchAllDashboardData();
   }, []);
 
   // Navigation functions
@@ -64,20 +86,22 @@ const Home_Page = () => {
     navigate('/my-customers');
   };
 
-  // Sample data for widgets
-  const widgetData = {
-    sales: {
-      ctd: { value: 2500, target: 3000 },
-      wtd: { value: 28300, target: 35000 },
-      mtd: { value: 115400, target: 130000 },
-      ytd: { value: 2000000, target: 2130000 }
-    },
-    receipt: {
-      ctd: { value: 2500, target: 3000 },
-      wtd: { value: 18300, target: 20500 },
-      mtd: { value: 75400, target: 85000 },
-      ytd: { value: 2554000, target: 2700000 }
-    }
+  // Sales widget data from API (with fallback)
+  const salesWidgetData = salesCounts
+    ? {
+        ctd: { value: salesCounts.today.actual, target: salesCounts.today.target },
+        wtd: { value: salesCounts.week.actual,  target: salesCounts.week.target  },
+        mtd: { value: salesCounts.month.actual, target: salesCounts.month.target },
+      }
+    : { ctd: { value: 0, target: 0 }, wtd: { value: 0, target: 0 }, mtd: { value: 0, target: 0 } };
+
+  // Enquiry widget data — removed
+
+  // Receipt widget — static/dummy data
+  const receiptWidgetData = {
+    ctd: { value: 0, target: 0 },
+    wtd: { value: 0, target: 0 },
+    mtd: { value: 0, target: 0 },
   };
 
   // Beat widget data from API (with fallback)
@@ -95,10 +119,11 @@ const Home_Page = () => {
         ytd: { value: 0, target: 0 },
       };
 
-  // Sample chart data (Sales/Receipt tabs — static for now)
-  const chartData = {
-    target: [1000, 950, 900, 850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800, 1850, 1900, 1950, 2000, 2050, 2100, 2150],
-    actual: [950, 850, 800, 750, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300]
+  // Sales chart data from API
+  const salesChartData = {
+    target: salesBarData.map(d => d.target),
+    actual: salesBarData.map(d => d.actual),
+    labels: salesBarData.map(d => d.day),
   };
 
   // Beat chart data from API
@@ -108,16 +133,15 @@ const Home_Page = () => {
     labels: beatGraphData.map(d => d.day),
   };
 
-  const customerData = [
-    { name: 'DIVYA MOTORS', value: 35, color: '#FFD700' },
-    { name: 'NMP CARS LLP', value: 25, color: '#FF6B35' },
-    { name: 'SAMARTH AUTOCARE', value: 20, color: '#4ECDC4' },
-    { name: 'NEHAL MOTOR BODY WORKS', value: 15, color: '#45B7D1' },
-    { name: 'DWITY CARZ', value: 5, color: '#96CEB4' }
-  ];
-
-  // Pie chart colours for beat customers
+  // Pie chart colours
   const PIE_COLORS = ['#FFD700', '#FF6B35', '#4ECDC4', '#45B7D1', '#96CEB4', '#A78BFA', '#F87171', '#34D399'];
+
+  // Sales pie data from API
+  const salesCustomerData = salesPieData.slice(0, 8).map((c, i) => ({
+    name: c.customer_name,
+    value: c.actual,
+    color: PIE_COLORS[i % PIE_COLORS.length],
+  }));
 
   const beatCustomerData = beatPieData.slice(0, 8).map((c, i) => ({
     name: c.customer_name || c.garage_code || `Customer ${i + 1}`,
@@ -252,14 +276,36 @@ const Home_Page = () => {
 
   const renderMainChart = () => {
     const isBeat = activeTab === 'Beat';
-    const activeChart = isBeat ? beatChartData : chartData;
-    const activeLabels = isBeat ? beatChartData.labels : Array.from({ length: 30 }, (_, i) => i + 1);
+    const isReceipt = activeTab === 'Receipt';
 
-    if (isBeat && beatLoading) {
-      return <div className="main-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>Loading beat data...</div>;
+    if (isReceipt) {
+      return (
+        <div className="main-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>
+          Receipt chart data coming soon.
+        </div>
+      );
     }
-    if (isBeat && beatGraphData.length === 0) {
-      return <div className="main-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>No beat visit data for this month.</div>;
+
+    let activeChart, activeLabels, isLoading, emptyMsg;
+
+    if (isBeat) {
+      activeChart = beatChartData;
+      activeLabels = beatChartData.labels;
+      isLoading = beatLoading;
+      emptyMsg = 'No beat visit data for this month.';
+    } else {
+      // Sales (default) or Receipt
+      activeChart = salesChartData;
+      activeLabels = salesChartData.labels;
+      isLoading = salesLoading;
+      emptyMsg = 'No sales data for this month.';
+    }
+
+    if (isLoading) {
+      return <div className="main-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>Loading data...</div>;
+    }
+    if (!activeChart.actual || activeChart.actual.length === 0) {
+      return <div className="main-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>{emptyMsg}</div>;
     }
 
     const W = 820;
@@ -329,7 +375,7 @@ const Home_Page = () => {
         <div className="chart-header">
           <div>
             <div className="chart-title">
-              {isBeat ? 'Day wise Beat Visits — MTD' : 'Day wise Target vs Actuals — MTD'}
+              {isBeat ? 'Day wise Beat Visits — MTD' : 'Day wise Sales — MTD'}
             </div>
             <div style={{ fontSize: '12px', color: '#9aa3b8', marginTop: '2px' }}>
               {isBeat
@@ -468,13 +514,37 @@ const Home_Page = () => {
 
   const renderPieChart = () => {
     const isBeat = activeTab === 'Beat';
-    const activeData = isBeat ? beatCustomerData : customerData;
+    const isReceipt = activeTab === 'Receipt';
 
-    if (isBeat && beatLoading) {
+    if (isReceipt) {
+      return (
+        <div className="pie-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>
+          Receipt pie chart data coming soon.
+        </div>
+      );
+    }
+
+    let activeData, isLoading, emptyMsg, totalLabel, valueLabel;
+
+    if (isBeat) {
+      activeData = beatCustomerData;
+      isLoading = beatLoading;
+      emptyMsg = 'No customer visit data for this month.';
+      totalLabel = 'Visits';
+      valueLabel = 'visits';
+    } else {
+      activeData = salesCustomerData;
+      isLoading = salesLoading;
+      emptyMsg = 'No sales data for this month.';
+      totalLabel = 'Sales';
+      valueLabel = 'sales';
+    }
+
+    if (isLoading) {
       return <div className="pie-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>Loading...</div>;
     }
-    if (isBeat && beatCustomerData.length === 0) {
-      return <div className="pie-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>No customer visit data for this month.</div>;
+    if (activeData.length === 0) {
+      return <div className="pie-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>{emptyMsg}</div>;
     }
 
     const total = activeData.reduce((sum, item) => sum + item.value, 0);
@@ -547,9 +617,11 @@ const Home_Page = () => {
     return (
       <div className="pie-chart-container">
         <div className="pie-chart-header">
-          <h3>{isBeat ? 'Customer wise Beat Visits — MTD' : 'Customer wise Trend — MTD'}</h3>
+          <h3>
+            {isBeat ? 'Customer wise Beat Visits — MTD' : 'Customer wise Sales — MTD'}
+          </h3>
           <div className="pie-chart-total">
-            <span className="pie-total-badge">{isBeat ? `${total} Visits` : 'Collection: ₹1,800'}</span>
+            <span className="pie-total-badge">{`${total} ${totalLabel}`}</span>
           </div>
         </div>
         {showWarning && (
@@ -568,7 +640,7 @@ const Home_Page = () => {
                   <text x={cx} y={cy + 10} textAnchor="middle" fontSize="9" fill="#9aa3b8" fontWeight="600">
                     {centerItem.name.length > 14 ? centerItem.name.slice(0, 14) + '…' : centerItem.name}
                   </text>
-                  <text x={cx} y={cy + 26} textAnchor="middle" fontSize="11" fill="#F36F21" fontWeight="700">{centerItem.value} visits</text>
+                  <text x={cx} y={cy + 26} textAnchor="middle" fontSize="11" fill="#F36F21" fontWeight="700">{centerItem.value} {valueLabel}</text>
                 </>
               ) : (
                 <>
@@ -594,7 +666,7 @@ const Home_Page = () => {
                 >
                   <div className="pie-legend-color" style={{ backgroundColor: item.color, flexShrink: 0 }}></div>
                   {rankEmoji && <span className="pie-rank-badge">{rankEmoji}</span>}
-                  <span style={{ flex: 1, fontSize: '13px' }}>{item.name}{isBeat ? ` (${item.value})` : ''}</span>
+                  <span style={{ flex: 1, fontSize: '13px' }}>{item.name}{isBeat ? ` (${item.value})` : ` (${item.value})`}</span>
                   <span className="pie-legend-pct" style={{ backgroundColor: item.color + '22', color: item.color }}>{pct}%</span>
                 </div>
               );
@@ -637,8 +709,8 @@ const Home_Page = () => {
 
         {/* Widgets Row */}
         <div className="widgets-row">
-          {renderWidget('Sales', widgetData.sales, 'sales')}
-          {renderWidget('Receipt', widgetData.receipt, 'receipt')}
+          {renderWidget('Sales', salesWidgetData, 'sales')}
+          {renderWidget('Receipt', receiptWidgetData, 'receipt')}
           {renderBeatWidget('Beat', beatWidgetData)}
         </div>
 

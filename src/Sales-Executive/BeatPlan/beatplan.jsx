@@ -29,18 +29,18 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
-    fetchBeatPlans();
     fetchVisitCounts();
   }, []);
 
   useEffect(() => {
+    // Reset to page 1 when filter or search changes
+    // The currentPage effect below will handle the actual fetch
     setCurrentPage(1);
-    fetchBeatPlans();
   }, [activeFilter, searchTerm]);
 
   useEffect(() => {
     fetchBeatPlans();
-  }, [currentPage]);
+  }, [currentPage, activeFilter, searchTerm]);
 
   const fetchBeatPlans = async () => {
     try {
@@ -260,11 +260,8 @@ const BeatPlan = forwardRef(({ onCreateBeat, onApplyLeave, onImportBeat }, ref) 
     });
   };
 
-  const filteredData = tableData.filter(item => {
-    const matchesSearch = item.customer.toLowerCase().includes(searchTerm.toLowerCase()) || item.planNo.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = activeFilter === 'All' || item.status === activeFilter;
-    return matchesSearch && matchesFilter;
-  });
+  // Server already handles search and filter; just use tableData directly
+  const filteredData = tableData;
 
   const sortedData = getSortedData(filteredData);
   const filterButtons = ['All Plans', 'New Plans', 'Visited Plans', "Today's Visits"];

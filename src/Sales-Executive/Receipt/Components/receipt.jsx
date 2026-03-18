@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import Header from '../../header/Header';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import CustomerDetails from '../../components/CustomerDetails/CustomerDetails';
@@ -42,13 +44,10 @@ const ReceiptPage = () => {
     try {
       setLoading(true);
       setError(null);
-      
       const params = search ? { search } : {};
       const response = await apiService.get('/profile/sales-executive-customers', params);
-      
       if (response.success && response.data) {
-        // Transform API data to match component structure
-        const transformedCustomers = response.data.map(customer => ({
+        setCustomers(response.data.map(customer => ({
           id: customer.customer_id,
           name: customer.customer_name,
           code: customer.customer_code,
@@ -58,12 +57,10 @@ const ReceiptPage = () => {
           email: customer.email || 'N/A',
           creditLimit: customer.credit_limit || 'N/A',
           outstandingAmount: customer.outstanding_amount || '₹0'
-        }));
-        
-        setCustomers(transformedCustomers);
+        })));
       } else {
         setCustomers([]);
-        setError('No customers found');
+        if (search) setError('No customers found');
       }
     } catch (err) {
       console.error('Error fetching customers:', err);
@@ -74,38 +71,16 @@ const ReceiptPage = () => {
     }
   };
 
-  const handleSearch = async () => {
-    try {
-      setLoading(true);
-      const response = await apiService.get('/profile/sales-executive-customers', {
-        search: searchQuery
-      });
-      
-      if (response.success && response.data) {
-        const transformedCustomers = response.data.map(customer => ({
-          name: customer.customer_name,
-          code: customer.customer_code,
-          customer_id: customer.customer_id,
-          address: [
-            customer.address1,
-            customer.address2,
-            customer.city,
-            customer.state,
-            customer.post_code
-          ].filter(Boolean).join(', '),
-          gst: customer.gst || "N/A",
-          mobile: customer.phone_number || "N/A",
-          email: customer.email_address || "N/A",
-          creditLimit: customer.credit_limit || "N/A",
-          outstandingAmount: customer.outstanding_amount || "N/A"
-        }));
-        setCustomers(transformedCustomers);
-      }
-    } catch (error) {
-      console.error('Error searching customers:', error);
-    } finally {
-      setLoading(false);
-    }
+  // Debounced search on input change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchCustomers(searchQuery);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const handleSearch = () => {
+    fetchCustomers(searchQuery);
   };
 
   const handleCustomerSelect = async (customer) => {
@@ -318,6 +293,96 @@ const ReceiptPage = () => {
     }
   };
 
+  const handleExportReceipts = async () => {
+    try {
+      // Fetch employee/company info from profile
+      let employeeCode = '-';
+      let employeeName = '-';
+      let companyName = '-';
+      try {
+        const profileRes = await apiService.get('/profile/user-details');
+        if (profileRes.success && profileRes.data?.profile) {
+          const p = profileRes.data.profile;
+          employeeCode = p.sales_executive_code || '-';
+          employeeName = p.name || '-';
+          companyName = p.company_name || '-';
+        }
+      } catch {
+        const userData = JSON.parse(localStorage.getItem('user') || '{}');
+        employeeName = userData.name || '-';
+      }
+
+      // Fetch all receipts
+      const listRes = await apiService.get('/receipt/receipt-list', { page: 1, limit: 1000 });
+      if (!listRes.success || !listRes.data) {
+        alert('No receipts found to export');
+        return;
+      }
+
+      const flat = [];
+      listRes.data.forEach(group => {
+        if (group.list) group.list.forEach(r => flat.push(r));
+      });
+
+      if (flat.length === 0) {
+        alert('No receipts found to export');
+        return;
+      }
+
+      // Fetch full details for each receipt
+      const fullReceipts = await Promise.all(
+        flat.map(async (r) => {
+          try {
+            const res = await apiService.get(`/receipt/view-receipt/${r.customer_receipt_id}`);
+            return res.success && res.data ? res.data : r;
+          } catch {
+            return r;
+          }
+        })
+      );
+
+      const exportData = fullReceipts.map(r => ({
+        'COMPANY NAME': companyName,
+        'CUSTOMER CODE': r.customer_number || '-',
+        'CUSTOMER NAME': r.customer_name || '-',
+        'EMPLOYEE CODE': employeeCode,
+        'EMPLOYEE NAME': employeeName,
+        'RECEIPT NUMBER': r.receipt_ref_number || '-',
+        'PAYMENT FOR': 'FIFO',
+        'PAYMENT MODE': r.receipt_mode || r.receipt_method || '-',
+        'TOTAL AMOUNT': '-',
+        'PAID AMOUNT': '-',
+        'CHEQUE DD NUMBER': r.challan_dd_cheque_number || r.cheque_no || '-',
+        'CHEQUE DD DATE': r.challan_dd_cheque_date
+          ? new Date(r.challan_dd_cheque_date).toLocaleDateString('en-IN')
+          : '-',
+        'BANK NAME': r.bank || r.drawee_bank || '-',
+        'PLACE': r.place || '-',
+        'CREATED AT': r.created_at
+          ? new Date(r.created_at).toLocaleString('en-IN')
+          : '-',
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Receipts');
+
+      const colWidths = Object.keys(exportData[0] || {}).map(key => ({
+        wch: Math.max(key.length, ...exportData.map(row => String(row[key] || '').length)) + 2,
+      }));
+      ws['!cols'] = colWidths;
+
+      const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      saveAs(
+        new Blob([buffer], { type: 'application/octet-stream' }),
+        `Receipt_Export_${new Date().toISOString().slice(0, 10)}.xlsx`
+      );
+    } catch (err) {
+      console.error('Export error:', err);
+      alert('Failed to export receipts. Please try again.');
+    }
+  };
+
   // Payment Methods Array with Images
   const paymentMethods = [
     { name: 'Cash', img: MoneyImg },
@@ -363,7 +428,7 @@ const ReceiptPage = () => {
                 </svg>
                 Receipt History
               </button>
-              <button className="quick-nav-btn" onClick={() => window.location.href = '/receipt-export'}>
+              <button className="quick-nav-btn" onClick={handleExportReceipts}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

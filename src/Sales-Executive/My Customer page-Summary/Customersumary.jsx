@@ -1,225 +1,269 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Header from '../header/Header';
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
+import { apiService } from "../../services/apiservice";
 import "./CustomerSummary.css";
 
 const CustomerSummary = () => {
+  const { state } = useLocation();
+  const customer = state?.customer || {};
+  const customerDetails = state?.customerDetails || {};
+
   const [activeTab, setActiveTab] = useState("DashBoard");
+
+  // Dashboard data
+  const [salesData, setSalesData] = useState(null);
+  const [enquiryData, setEnquiryData] = useState(null);
+  const [visitData, setVisitData] = useState(null);
+  const [dashLoading, setDashLoading] = useState(true);
+
+  // Orders tab data
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+
+  // Collections tab data
+  const [collections, setCollections] = useState([]);
+  const [collectionsLoading, setCollectionsLoading] = useState(false);
+
+  const customerCode = customer?.code || customerDetails?.customer_code || "";
+  const customerName = customer?.name || customerDetails?.customer_name || "Customer";
+  const address = [
+    customerDetails?.address1,
+    customerDetails?.address2,
+    customerDetails?.city,
+    customerDetails?.state,
+    customerDetails?.post_code,
+  ].filter(Boolean).join(", ");
+
+  // Load dashboard data on mount
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      setDashLoading(true);
+      try {
+        const [sales, enquiry, visits] = await Promise.allSettled([
+          apiService.get("/dashboard/my-sales-counts"),
+          apiService.get("/dashboard/enquiry-counts"),
+          apiService.get("/dashboard/plan-visited-counts"),
+        ]);
+        if (sales.status === "fulfilled" && sales.value?.success) setSalesData(sales.value.data);
+        if (enquiry.status === "fulfilled" && enquiry.value?.success) setEnquiryData(enquiry.value.data);
+        if (visits.status === "fulfilled" && visits.value?.success) setVisitData(visits.value.data);
+      } catch (e) {
+        console.error("Dashboard fetch error:", e);
+      } finally {
+        setDashLoading(false);
+      }
+    };
+    fetchDashboard();
+  }, []);
+
+  // Load orders when Orders tab is selected
+  useEffect(() => {
+    if (activeTab !== "Orders") return;
+    const fetchOrders = async () => {
+      setOrdersLoading(true);
+      try {
+        const res = await apiService.get("/receipt/receipt-list", {
+          search: customerCode,
+          limit: 50,
+        });
+        if (res?.success && res.data) {
+          const flat = [];
+          res.data.forEach(group => group.list?.forEach(r => flat.push(r)));
+          setOrders(flat);
+        }
+      } catch (e) {
+        console.error("Orders fetch error:", e);
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+    fetchOrders();
+  }, [activeTab, customerCode]);
+
+  // Load collections when Collections tab is selected
+  useEffect(() => {
+    if (activeTab !== "Collections") return;
+    const fetchCollections = async () => {
+      setCollectionsLoading(true);
+      try {
+        const res = await apiService.get("/receipt/receipt-list", {
+          search: customerCode,
+          limit: 50,
+        });
+        if (res?.success && res.data) {
+          const flat = [];
+          res.data.forEach(group => group.list?.forEach(r => flat.push(r)));
+          setCollections(flat);
+        }
+      } catch (e) {
+        console.error("Collections fetch error:", e);
+      } finally {
+        setCollectionsLoading(false);
+      }
+    };
+    fetchCollections();
+  }, [activeTab, customerCode]);
+
+  const fmt = (val) => val !== undefined && val !== null ? val.toLocaleString("en-IN") : "—";
 
   return (
     <div className="summary-page">
       <Header />
-      <Breadcrumb 
-        currentPage={activeTab === "DashBoard" ? "Customer Summary" : "Repeat Orders"} 
+      <Breadcrumb
+        currentPage="Customer Summary"
         parentPage="My Customers"
         parentPath="/my-customers"
       />
-      
-      {/* 2. Customer Header */}
+
+      {/* Customer Header */}
       <div className="customer-header-box">
         <div className="header-top-row">
-          <span className="cust-name">BHALLA MOTORS</span>
+          <span className="cust-name">{customerName}</span>
           <span className="cust-divider">|</span>
-          <span className="cust-id">EOTN000182</span>
+          <span className="cust-id">{customerCode}</span>
         </div>
-        <p className="cust-address">
-          D.NO.5800 S.NO.122/6C1 BYE PASS SERVICE ROAD WARD NO.9 EAST
-          MEENAKSHINAYAKENPATTI KURUMBAPATTI DINDIGUL. TAMIL NADU, 624002.
-        </p>
+        {address && <p className="cust-address">{address}</p>}
+        {(customerDetails?.credit_limit || customerDetails?.outstanding_amount) && (
+          <div style={{ display: "flex", gap: "24px", marginTop: "8px", fontSize: "13px" }}>
+            {customerDetails?.credit_limit && (
+              <span style={{ color: "#555" }}>
+                Credit Limit: <strong>₹{fmt(customerDetails.credit_limit)}</strong>
+              </span>
+            )}
+            {customerDetails?.outstanding_amount && (
+              <span style={{ color: "#c0392b" }}>
+                Outstanding: <strong>₹{fmt(customerDetails.outstanding_amount)}</strong>
+              </span>
+            )}
+          </div>
+        )}
       </div>
-      {/* 3. Navigation Tabs */}
+
+      {/* Navigation Tabs */}
       <div className="nav-tabs-wrapper">
-        {["DashBoard", "Insights", "Orders", "Collections", "Visits"].map(
-          (tab) => (
-            <button
-              key={tab}
-              className={`nav-tab-btn ${activeTab === tab ? "active" : ""}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ),
-        )}
+        {["DashBoard", "Insights", "Orders", "Collections", "Visits"].map((tab) => (
+          <button
+            key={tab}
+            className={`nav-tab-btn ${activeTab === tab ? "active" : ""}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
-      {/* 4. Dashboard Content */}
+
       <div className="dashboard-sections">
-        {/* ENQUIRY SECTION */}
-        {(activeTab === "DashBoard" || activeTab === "Enquiry") && (
-          <div className="data-group">
-            <h3 className="group-heading">Enquiry</h3>
-            <div className="cards-row-4">
-              <StatCard label="Target vs Actual" value="20/10" icon="🎯" />
-              <StatCard label="Enquiry Value" value="15,000" icon="💰" />
-              <StatCard label="Confirmed Count" value="15,000" icon="✅" />
-              <StatCard label="Confirmed Value" value="7800" icon="💳" />
-            </div>
-          </div>
-        )}
-        {/* VISITS SECTION */}
-        {(activeTab === "DashBoard" || activeTab === "Visits") && (
-          <div className="data-group">
-            <h3 className="group-heading">Visits</h3>
-            <div className="cards-row-2">
-              <StatCard label="Target Visits" value="15" icon="📍" />
-              <StatCard label="Actual Visits" value="9" icon="👤" />
-            </div>
-          </div>
-        )}
-        {/* SALES SECTION */}
-        {(activeTab === "DashBoard" || activeTab === "Sales") && (
-          <div className="data-group">
-            <h3 className="group-heading">Sales</h3>
-            <div className="cards-row-4">
-              <StatCard label="Sales Target" value="1,00,000" icon="📊" />
-              <StatCard label="Actual" value="22,000" icon="🛒" />
-              <StatCard label="% Primary Brands" value="1500" icon="🛍️" />
-              <StatCard label="Target Achieved %" value="12" icon="📈" />
-            </div>
-          </div>
+
+        {/* DASHBOARD TAB */}
+        {activeTab === "DashBoard" && (
+          dashLoading ? (
+            <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>Loading...</div>
+          ) : (
+            <>
+              {/* Enquiry */}
+              <div className="data-group">
+                <h3 className="group-heading">Enquiry</h3>
+                <div className="cards-row-4">
+                  <StatCard label="Today Target" value={fmt(enquiryData?.today?.target)} icon="🎯" />
+                  <StatCard label="Today Actual" value={fmt(enquiryData?.today?.actual)} icon="📋" />
+                  <StatCard label="Month Open" value={fmt(enquiryData?.month?.open)} icon="📂" />
+                  <StatCard label="Month Closed" value={fmt(enquiryData?.month?.closed)} icon="✅" />
+                </div>
+              </div>
+
+              {/* Visits */}
+              <div className="data-group">
+                <h3 className="group-heading">Visits</h3>
+                <div className="cards-row-2">
+                  <StatCard label="This Month Target" value={fmt(visitData?.month?.target)} icon="📍" />
+                  <StatCard label="This Month Visited" value={fmt(visitData?.month?.visited)} icon="👤" />
+                </div>
+              </div>
+
+              {/* Sales */}
+              <div className="data-group">
+                <h3 className="group-heading">Sales</h3>
+                <div className="cards-row-4">
+                  <StatCard label="Monthly Target" value={`₹${fmt(salesData?.month?.target)}`} icon="📊" />
+                  <StatCard label="Monthly Actual" value={`₹${fmt(salesData?.month?.actual)}`} icon="🛒" />
+                  <StatCard label="Weekly Target" value={`₹${fmt(salesData?.week?.target)}`} icon="📅" />
+                  <StatCard label="Weekly Actual" value={`₹${fmt(salesData?.week?.actual)}`} icon="📈" />
+                </div>
+              </div>
+
+              {/* Collections summary */}
+              <div className="data-group">
+                <h3 className="group-heading">Collections</h3>
+                <div className="cards-row-2">
+                  <StatCard
+                    label="Credit Limit"
+                    value={customerDetails?.credit_limit ? `₹${fmt(customerDetails.credit_limit)}` : "—"}
+                    icon="�"
+                  />
+                  <StatCard
+                    label="Outstanding Amount"
+                    value={customerDetails?.outstanding_amount ? `₹${fmt(customerDetails.outstanding_amount)}` : "—"}
+                    icon="⏳"
+                  />
+                </div>
+              </div>
+            </>
+          )
         )}
 
-        {/* COLLECTIONS SUMMARY (Dashboard click panna mattum idhu theriyum) */}
-        {activeTab === "DashBoard" && (
-          <div className="data-group">
-            <h3 className="group-heading">Collections</h3>
-            <div className="cards-row-4">
-              <StatCard label="Sales Target" value="25,000/1,000" icon="📉" />
-              <StatCard label="Total Due" value="40,000" icon="📅" />
-              <StatCard label="Over Due Today" value="2,5000" icon="⏳" />
-              <StatCard
-                label="Over Due in Next 7 Days"
-                value="5,800"
-                icon="🗓️"
-              />
-            </div>
-          </div>
-        )}
-        {/* INSIGHTS SECTION */}
+        {/* INSIGHTS TAB — static, no API */}
         {activeTab === "Insights" && (
           <div className="insights-outer-box">
             <div className="insights-list-box">
-              <div className="insight-row">
-                <div className="insight-left">
-                  <div className="info-circle-blue">i</div>
-                  <p className="insight-text">
-                    Your visit frequency has decreased(4 Visits) compared to
-                    last month(12 visits) on the same day. So, we have created a
-                    plan for this customer to visit on tomorrow.
-                  </p>
-                </div>
-                <button className="insight-action-btn">➥ Visits</button>
-              </div>
-              <div className="insight-row">
-                <div className="insight-left">
-                  <div className="info-circle-blue">i</div>
-                  <p className="insight-text">
-                    This month's sales are lower than last month. Your average
-                    order value this month is 1,200. Pls increase avg order
-                    value to achieve the target.
-                  </p>
-                </div>
-                <button className="insight-action-btn">➥ Create Orders</button>
-              </div>
-              <div className="insight-row">
-                <div className="insight-left">
-                  <div className="info-circle-blue">i</div>
-                  <p className="insight-text">
-                    PMTD is 5 lakhs, While MTD is only 2.1 lakhs. So, we have
-                    create a plan for tomorrow to visit the customer.
-                  </p>
-                </div>
-                <button className="insight-action-btn">➥ View</button>
-              </div>
-              <div className="insight-row">
-                <div className="insight-left">
-                  <div className="info-circle-blue">i</div>
-                  <p className="insight-text">
-                    The customer has four pending invoices totalling 8 lakhs.
-                    One invoice for 1.1 lakhs is due to become overdue next
-                    Monday. A reminder message and mobile app notification have
-                    been sent.
-                  </p>
-                </div>
-                <button className="insight-action-btn">➥ Make Payment</button>
-              </div>
-              <div className="insight-row">
-                <div className="insight-left">
-                  <div className="info-circle-blue">i</div>
-                  <p className="insight-text">
-                    Four back orders for this customer have been pending for a
-                    week. The delivery date was yesterday, and as stock is
-                    available, we’ve notified the warehouse team for action.
-                  </p>
-                </div>
-                <button className="insight-action-btn">➥ Visits</button>
-              </div>
-            </div>
-          </div>
-        )}
-        {/* COLLECTIONS TAB - Individual List View */}
-        {activeTab === "Collections" && (
-          <div className="orders-section-container">
-            {/* Filter Row */}
-            <div className="orders-header-actions">
-              <select className="month-dropdown">
-                <option>Current month</option>
-              </select>
-              <button className="blue-submit-btn">Submit</button>
-              <button className="refresh-circular-btn">🔄</button>
-            </div>
-
-            {/* Collections Main List (Image-la irukura data) */}
-            <div className="orders-main-list">
-              {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="order-item-row">
-                  <div className="order-item-left">
+              {[
+                { text: "Your visit frequency has decreased compared to last month. A plan has been created to visit this customer tomorrow.", action: "➥ Visits" },
+                { text: "This month's sales are lower than last month. Please increase avg order value to achieve the target.", action: "➥ Create Orders" },
+                { text: "The customer has pending invoices. A reminder has been sent.", action: "➥ Make Payment" },
+              ].map((item, i) => (
+                <div key={i} className="insight-row">
+                  <div className="insight-left">
                     <div className="info-circle-blue">i</div>
-                    <div className="order-info-stack">
-                      <span className="text-light-grey">Orders Created</span>
-                      <span className="text-bold-id">I0F25190045361</span>
-                      <span className="text-light-grey">Order ID</span>
-                    </div>
+                    <p className="insight-text">{item.text}</p>
                   </div>
-                  <div className="order-item-right">
-                    <span className="order-item-date">13/11/2025</span>
-                    <div className="price-stack">
-                      <span className="text-light-grey">Total Price</span>
-                      <span className="text-bold-amt">₹ 1598</span>
-                    </div>
-                  </div>
+                  <button className="insight-action-btn">{item.action}</button>
                 </div>
               ))}
             </div>
           </div>
         )}
+
+        {/* ORDERS TAB */}
         {activeTab === "Orders" && (
           <div className="orders-section-container">
-            {/* Filter Row - Tabs line-kku straight-ah align aagum */}
             <div className="orders-header-actions">
-              <select className="month-dropdown">
-                <option>Current month</option>
-              </select>
-              <button className="blue-submit-btn">Submit</button>
-              <button className="refresh-circular-btn">🔄</button>
+              <span style={{ fontSize: "13px", color: "#666" }}>
+                Showing receipts for <strong>{customerName}</strong>
+              </span>
             </div>
-
-            {/* Orders List Box */}
             <div className="orders-main-list">
-              {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="order-item-row">
+              {ordersLoading ? (
+                <div style={{ textAlign: "center", padding: "30px", color: "#666" }}>Loading orders...</div>
+              ) : orders.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "30px", color: "#999" }}>No orders found.</div>
+              ) : orders.map((r, i) => (
+                <div key={i} className="order-item-row">
                   <div className="order-item-left">
                     <div className="info-circle-blue">i</div>
                     <div className="order-info-stack">
-                      <span className="text-light-grey">Orders Created</span>
-                      <span className="text-bold-id">I0F25190045361</span>
-                      <span className="text-light-grey">Order ID</span>
+                      <span className="text-light-grey">Receipt Ref</span>
+                      <span className="text-bold-id">{r.receipt_ref_number || "—"}</span>
+                      <span className="text-light-grey">{r.receipt_mode || r.receipt_method || "—"}</span>
                     </div>
                   </div>
                   <div className="order-item-right">
-                    <span className="order-item-date">13/11/2025</span>
+                    <span className="order-item-date">
+                      {r.created_at ? new Date(r.created_at).toLocaleDateString("en-IN") : "—"}
+                    </span>
                     <div className="price-stack">
-                      <span className="text-light-grey">Total Price</span>
-                      <span className="text-bold-amt">₹ 1598</span>
+                      <span className="text-light-grey">Amount</span>
+                      <span className="text-bold-amt">₹{fmt(r.receipt_amount)}</span>
                     </div>
                   </div>
                 </div>
@@ -227,8 +271,55 @@ const CustomerSummary = () => {
             </div>
           </div>
         )}
-      </div>{" "}
-      {/* dashboard-sections end */}
+
+        {/* COLLECTIONS TAB */}
+        {activeTab === "Collections" && (
+          <div className="orders-section-container">
+            <div className="orders-header-actions">
+              <span style={{ fontSize: "13px", color: "#666" }}>
+                Collections for <strong>{customerName}</strong>
+              </span>
+            </div>
+            <div className="orders-main-list">
+              {collectionsLoading ? (
+                <div style={{ textAlign: "center", padding: "30px", color: "#666" }}>Loading collections...</div>
+              ) : collections.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "30px", color: "#999" }}>No collections found.</div>
+              ) : collections.map((r, i) => (
+                <div key={i} className="order-item-row">
+                  <div className="order-item-left">
+                    <div className="info-circle-blue">i</div>
+                    <div className="order-info-stack">
+                      <span className="text-light-grey">Receipt Ref</span>
+                      <span className="text-bold-id">{r.receipt_ref_number || "—"}</span>
+                      <span className="text-light-grey">{r.customer_name || customerName}</span>
+                    </div>
+                  </div>
+                  <div className="order-item-right">
+                    <span className="order-item-date">
+                      {r.created_at ? new Date(r.created_at).toLocaleDateString("en-IN") : "—"}
+                    </span>
+                    <div className="price-stack">
+                      <span className="text-light-grey">Amount</span>
+                      <span className="text-bold-amt">₹{fmt(r.receipt_amount)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* VISITS TAB — no API, static placeholder */}
+        {activeTab === "Visits" && (
+          <div className="orders-section-container">
+            <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
+              Visit history for this customer is not available yet.
+            </div>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 };

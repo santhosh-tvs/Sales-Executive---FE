@@ -10,6 +10,7 @@ import "./Mycustomer.css";
 const MyCustomer = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingCustomers, setLoadingCustomers] = useState(true);
 
@@ -22,6 +23,7 @@ const MyCustomer = () => {
       setLoadingCustomers(true);
       const response = await apiService.get('/profile/sales-executive-customers');
       if (response.success && response.data) {
+        setTotalCount(response.total_count ?? response.data.length);
         setCustomers(response.data.map(c => ({ name: c.customer_name, code: c.customer_code })));
       }
     } catch (error) {
@@ -61,12 +63,12 @@ const MyCustomer = () => {
 
   const handleCollectionsClick = async (customer) => {
     await fetchAndSetCustomerConfig(customer.code);
-    navigate('/my-collections');
+    navigate('/my-collections', { state: { customer } });
   };
 
   const handleVisitClick = async (customer) => {
     await fetchAndSetCustomerConfig(customer.code);
-    navigate('/view-plan');
+    navigate('/view-plan', { state: { customer } });
   };
 
   const handleDetailsClick = async (customer) => {
@@ -86,7 +88,7 @@ const MyCustomer = () => {
 
       <div className="stat-card-customer">
         <div className="stat-text">
-          <h3>{customers.length}</h3>
+          <h3>{totalCount}</h3>
           <p>Total Customers Count</p>
         </div>
       </div>

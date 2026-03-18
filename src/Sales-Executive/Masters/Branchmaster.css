@@ -180,35 +180,30 @@
 
 .masters-table {
     width: 100%;
-    border-collapse: separate;
+    border-collapse: collapse;
     border-spacing: 0;
     min-width: 1200px;
     table-layout: fixed;
     background: transparent;
+    font-size: 13px;
 }
 
 .masters-table thead {
-    background: linear-gradient(135deg, #20409A 0%, #1a3580 100%);
+    background: linear-gradient(135deg, #20409A, #1a3580);
     position: sticky;
     top: 0;
     z-index: 10;
-    box-shadow: 0 4px 12px rgba(32, 64, 154, 0.15);
 }
 
 .masters-table th {
-    padding: 18px 16px;
-    text-align: left;
-    font-weight: 700;
-    color: #ffffff;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    white-space: nowrap;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    width: auto;
-    position: relative;
-    background: linear-gradient(135deg, #20409A 0%, #1a3580 100%);
+    padding: 10px 8px;
     text-align: center;
+    font-weight: 600;
+    color: #fff;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 .masters-table th:first-child {
@@ -220,62 +215,34 @@
     border-top-right-radius: 0;
 }
 
-.masters-table th::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, #FF6B35 50%, transparent 100%);
-}
-
 .masters-table td {
-    padding: 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    font-size: 13px;
-    color: #2c3e50;
+    padding: 10px 8px;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 12px;
+    color: #374151;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background: rgba(255, 255, 255, 0.7);
-    transition: all 0.3s ease;
-    font-weight: 500;
+    vertical-align: middle;
     text-align: center;
 }
 
 .masters-table tbody tr {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+    transition: background 0.15s;
 }
 
 .masters-table tbody tr:hover {
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(255, 107, 53, 0.04) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.15);
-}
-
-.masters-table tbody tr:hover td {
-    background: transparent;
-    color: #1a202c;
-    font-weight: 600;
-}
-
-.masters-table tbody tr:nth-child(even) td {
-    background: rgba(248, 250, 252, 0.8);
+    background: #f8f9ff;
 }
 
 .masters-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-.masters-table tbody tr:last-child td:first-child {
-    border-bottom-left-radius: 12px;
+.masters-table tbody tr:nth-child(even) td {
+    background: #fafafa;
 }
 
-.masters-table tbody tr:last-child td:last-child {
-    border-bottom-right-radius: 12px;
-}
 
 /* Status Badge */
 .status-badge {

@@ -7,7 +7,6 @@
 }
 
 .vr-content {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 16px;
 }
@@ -111,10 +110,11 @@
 /* Table Wrapper — horizontal scroll only here */
 .vr-table-wrapper {
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   overflow-x: auto;
   margin-bottom: 14px;
+  border: 1px solid #e5e7eb;
 }
 
 .vr-table {
@@ -125,24 +125,27 @@
   font-size: 13px;
 }
 
-.vr-table thead tr {
-  background: #20409A;
-  color: #fff;
+.vr-table thead {
+  background: linear-gradient(135deg, #20409A, #1a3580);
 }
 
 .vr-table th {
-  padding: 10px 12px;
+  padding: 10px 8px;
   text-align: left;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   white-space: nowrap;
 }
 
 .vr-table td {
-  padding: 9px 12px;
-  border-bottom: 1px solid #f0f0f0;
-  color: #333;
+  padding: 10px 8px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
   vertical-align: middle;
+  font-size: 12px;
 }
 
 .vr-table tbody tr:last-child td {
@@ -167,46 +170,49 @@
   align-items: center;
   background: #fff;
   border-radius: 8px;
-  padding: 10px 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 12px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
   flex-wrap: wrap;
   gap: 8px;
 }
 
 .vr-pagination-info {
   font-size: 12px;
-  color: #666;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .vr-pagination-controls {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .vr-page-btn {
   height: 30px;
-  min-width: 30px;
+  min-width: 34px;
   padding: 0 8px;
-  border: 1px solid #ddd;
+  border: 1.5px solid #e5e7eb;
   background: #fff;
-  color: #333;
-  border-radius: 4px;
+  color: #374151;
+  border-radius: 6px;
   font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s;
 }
 
 .vr-page-btn:hover:not(:disabled) {
   border-color: #20409A;
+  background: #f8f9ff;
   color: #20409A;
 }
 
 .vr-page-btn.active {
-  background: #20409A;
+  background: linear-gradient(135deg, #20409A, #1a3580);
   color: #fff;
   border-color: #20409A;
-  font-weight: 600;
 }
 
 .vr-page-btn:disabled {

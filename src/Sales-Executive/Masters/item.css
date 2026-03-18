@@ -55,7 +55,7 @@
     border-bottom: 3px solid transparent !important;
     white-space: nowrap;
     min-width: 120px;
-    
+
 }
 
 .master-tab.active {
@@ -134,13 +134,12 @@
 
 /* Enhanced Table Section */
 .table-container {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 16px;
+    background: #fff;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-    margin-bottom: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
 }
 
 .table-wrapper {
@@ -150,64 +149,54 @@
     width: 100%;
     position: relative;
     background: white;
-    border: 1px solid #eee;
-    border-radius: 12px;
-    padding: 4px;
-    margin-bottom: 25px;
 }
 
-/* Enhanced scrollbar styling */
+/* scrollbar styling */
 .table-wrapper::-webkit-scrollbar {
-    height: 10px;
-    width: 10px;
+    height: 6px;
+    width: 6px;
 }
 
 .table-wrapper::-webkit-scrollbar-track {
-    background: linear-gradient(90deg, #f1f3f4 0%, #e8eaed 100%);
+    background: #f1f3f4;
     border-radius: 10px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #FF6B35 0%, #e55a25 100%);
+    background: #c7d2fe;
     border-radius: 10px;
-    border: 2px solid #f1f3f4;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #e55a25 0%, #d14d1f 100%);
-    transform: scale(1.1);
+    background: #20409A;
 }
 
 .masters-table {
     width: 100%;
-    border-collapse: separate;
+    border-collapse: collapse;
     border-spacing: 0;
     min-width: 1200px;
     table-layout: fixed;
     background: transparent;
+    font-size: 13px;
 }
 
 .masters-table thead {
-    background: linear-gradient(135deg, #20409A 0%, #1a3580 100%);
+    background: linear-gradient(135deg, #20409A, #1a3580);
     position: sticky;
     top: 0;
     z-index: 10;
-    box-shadow: 0 4px 12px rgba(32, 64, 154, 0.15);
 }
 
 .masters-table th {
-   padding: 18px 16px;
+    padding: 10px 8px;
     text-align: left;
-    font-weight: 700;
-    color: #ffffff;
-    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.5px;
     white-space: nowrap;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    width: auto;
-    position: relative;
-    background: linear-gradient(135deg, #20409A 0%, #1a3580 100%);
     text-align: center;
 }
 
@@ -216,66 +205,37 @@
 }
 
 .masters-table th:last-child {
-       border-right: none;
+    border-right: none;
     border-top-right-radius: 0;
     width: 134px;
 }
 
-.masters-table th::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, #FF6B35 50%, transparent 100%);
-}
-
 .masters-table td {
-    padding: 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    font-size: 13px;
-    color: #2c3e50;
+    padding: 10px 8px;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 12px;
+    color: #374151;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background: rgba(255, 255, 255, 0.7);
-    transition: all 0.3s ease;
-    font-weight: 500;
-        text-align: center;
+    vertical-align: middle;
+    text-align: center;
 }
 
 .masters-table tbody tr {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+    transition: background 0.15s;
 }
 
 .masters-table tbody tr:hover {
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(255, 107, 53, 0.04) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.15);
-}
-
-.masters-table tbody tr:hover td {
-    background: transparent;
-    color: #1a202c;
-    font-weight: 600;
-}
-
-.masters-table tbody tr:nth-child(even) td {
-    background: rgba(248, 250, 252, 0.8);
+    background: #f8f9ff;
 }
 
 .masters-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-.masters-table tbody tr:last-child td:first-child {
-    border-bottom-left-radius: 12px;
-}
-
-.masters-table tbody tr:last-child td:last-child {
-    border-bottom-right-radius: 12px;
+.masters-table tbody tr:nth-child(even) td {
+    background: #fafafa;
 }
 
 /* Status Badge */
@@ -302,17 +262,18 @@
 
 /* Pagination Section */
 .pagination-container {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 16px;
+    padding: 12px 18px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e7eb;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 8px;
     flex-shrink: 0;
-    border-top: 1px solid #f0f0f0;
 }
 
 .pagination-right {
@@ -323,39 +284,37 @@
 .pagination-controls {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .pagination-btn {
-    border: 1px solid #ddd;
-    background-color: white;
-    color: #555;
-    padding: 8px 12px;
-    border-radius: 4px;
+    padding: 6px 12px;
+    border: 1.5px solid #e5e7eb;
+    background: #fff;
+    color: #374151;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
-    min-width: 40px;
-    transition: all 0.2s ease;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 34px;
+    transition: all 0.2s;
 }
 
 .pagination-btn:hover:not(:disabled) {
-    background-color: #f0f8ff;
-    border-color: #FF6B35;
-    color: #FF6B35;
+    border-color: #20409A;
+    background: #f8f9ff;
+    color: #20409A;
 }
 
 .pagination-btn.active {
-    background-color: #FF6B35;
-    border-color: #FF6B35;
-    color: white;
-    font-weight: 600;
+    background: linear-gradient(135deg, #20409A, #1a3580);
+    color: #fff;
+    border-color: #20409A;
 }
 
 .pagination-btn:disabled {
-    background-color: #f8f9fa;
-    color: #ccc;
+    opacity: 0.4;
     cursor: not-allowed;
-    border-color: #eee;
 }
 
 .prev-btn,

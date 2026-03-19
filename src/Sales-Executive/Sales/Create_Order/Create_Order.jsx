@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../header/Header';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
+import CustomerDetails from '../../components/CustomerDetails/CustomerDetails';
 import '../../../styles/Sales/Create_Order/Create_Order.css';
-import searchIcon from '../../../assets/Icons/MagnifyingGlass.png';
 import { apiService } from '../../../services/apiservice';
 import apiConfigManager from '../../../services/apiConfig';
 
@@ -15,8 +15,7 @@ const Create_Order = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
-  const [selectedShipTo, setSelectedShipTo] = useState(null);
-  const [showShipToDropdown, setShowShipToDropdown] = useState(false);
+
 
   // Fetch customers from API
   useEffect(() => {
@@ -177,7 +176,6 @@ const Create_Order = () => {
         };
         
         // Set default ship-to to null (user must select)
-        setSelectedShipTo(null);
         
         setSelectedCustomer(completeCustomerData);
         console.log('✅ Complete Customer Data:', completeCustomerData);
@@ -197,7 +195,7 @@ const Create_Order = () => {
   };
 
   // Handle continue to brands page
-  const handleContinueToBrands = () => {
+  const handleContinueToBrands = (customerDetails, selectedShipTo) => {
     navigate('/brands', {
       state: {
         customerCode: selectedCustomer?.customer_code,
@@ -285,170 +283,13 @@ const Create_Order = () => {
           </>
         ) : (
           <>
-            {/* Customer Detail View */}
-            <div className="customer-detail-card">
-              <div className="customer-detail-header-info">
-                <div className="customer-detail-header-content">
-                  <h2 className="customer-detail-title">{selectedCustomer?.customer_name}</h2>
-                  <p className="customer-detail-code">{selectedCustomer?.customer_code} / {selectedCustomer?.city || 'KMS'}</p>
-                </div>
-              </div>
-              
-              <div className="customer-detail-content">
-                <div className="detail-row">
-                  <div className="detail-item">
-                    <span className="detail-label">Customer ID</span>
-                    <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.customer_id}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-label">Customer Email</span>
-                    <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.email_address || 'N/A'}</span>
-                  </div>
-                </div>
-
-                <div className="detail-row">
-                  <div className="detail-item">
-                    <span className="detail-label">Credit Balance</span>
-                    <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.creditBalance || '0.00'}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-label">Credit Limit</span>
-                    <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.creditLimit || '0.00'}</span>
-                  </div>
-                </div>
-
-                <div className="detail-row">
-                  <div className="detail-item">
-                    <span className="detail-label">Over Due Invoice</span>
-                    <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.overDueInvoice || '0'}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-label">Over Due Amount</span>
-                    <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.overDueAmount || '0.00'}</span>
-                  </div>
-                </div>
-
-                <div className="detail-row">
-                  <div className="detail-item full-width">
-                    <span className="detail-label">Total Outstanding Amount</span>
-                    <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.totalOutstanding || '0.00'}</span>
-                  </div>
-                </div>
-
-                <div className="detail-row">
-                  <div className="detail-item full-width">
-                    <span className="detail-label">Customer Address</span>
-                    <span className="detail-colon">:</span>
-                    <span className="detail-value">{selectedCustomer?.fullAddress || 'N/A'}</span>
-                  </div>
-                </div>
-
-                <div className="detail-row">
-                  <div className="detail-item full-width" style={{ position: 'relative' }}>
-                    <span className="detail-label">Ship To</span>
-                    <span className="detail-colon">:</span>
-                    <div style={{ flex: 1, position: 'relative' }}>
-                      <div 
-                        className="ship-to-dropdown-trigger"
-                        onClick={() => setShowShipToDropdown(!showShipToDropdown)}
-                        style={{
-                          padding: '10px 12px',
-                          border: '1px solid #e0e0e0',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          backgroundColor: '#fff',
-                          minHeight: '40px'
-                        }}
-                      >
-                        <span style={{ color: selectedShipTo ? '#333' : '#999' }}>
-                          {selectedShipTo ? `${selectedShipTo.code} / ${selectedShipTo.name}` : 'Select Ship To Address'}
-                        </span>
-                        <span style={{ fontSize: '12px', transform: showShipToDropdown ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
-                      </div>
-                      
-                      {showShipToDropdown && (
-                        <div 
-                          className="ship-to-dropdown-menu"
-                          style={{
-                            position: 'absolute',
-                            top: '100%',
-                            left: '0',
-                            right: '0',
-                            backgroundColor: '#fff',
-                            border: '1px solid #e0e0e0',
-                            borderRadius: '4px',
-                            marginTop: '4px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            zIndex: 1000,
-                            maxHeight: '250px',
-                            overflowY: 'auto'
-                          }}
-                        >
-                          {selectedCustomer?.shipToOptions?.map((option, index) => (
-                            <div
-                              key={index}
-                              onClick={() => {
-                                setSelectedShipTo(option);
-                                setShowShipToDropdown(false);
-                              }}
-                              style={{
-                                padding: '14px 16px',
-                                cursor: 'pointer',
-                                borderBottom: index < selectedCustomer.shipToOptions.length - 1 ? '1px solid #f0f0f0' : 'none',
-                                backgroundColor: selectedShipTo?.code === option.code ? '#f0f7ff' : '#fff',
-                                transition: 'background-color 0.2s'
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f7ff'}
-                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = selectedShipTo?.code === option.code ? '#f0f7ff' : '#fff'}
-                            >
-                              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#20409A', fontSize: '14px' }}>
-                                {option.code} / {option.name}
-                              </div>
-                              <div style={{ fontSize: '13px', color: '#666', lineHeight: '1.4' }}>
-                                {option.address}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {selectedShipTo && !showShipToDropdown && (
-                  <div className="detail-row">
-                    <div className="detail-item full-width">
-                      <span className="detail-label"></span>
-                      <span className="detail-colon"></span>
-                      <span className="detail-value" style={{ color: '#666', fontSize: '14px' }}>
-                        {selectedShipTo.address}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="customer-detail-footer">
-                <div className="continue-button-container">
-                  <button 
-                    className="continue-button"
-                    onClick={handleContinueToBrands}
-                  >
-                    Continue
-                  </button>
-                </div>
-              </div>
-            </div>
+            {/* Customer Detail View - uses same component as Receipt page */}
+            <CustomerDetails
+              customer={selectedCustomer}
+              onContinue={handleContinueToBrands}
+              continueButtonText="Continue to Create Order"
+              showShipTo={true}
+            />
           </>
         )}
       </div>

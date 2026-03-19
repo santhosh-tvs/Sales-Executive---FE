@@ -32,7 +32,9 @@
   gap: 15px;
 }
 
-.myaction-btn, .mycollection-btn,.mycustomer-btn {
+.myaction-btn,
+.mycollection-btn,
+.mycustomer-btn {
   color: white;
   border: none;
   border-radius: 3px;
@@ -114,7 +116,7 @@
   font-size: 12px;
   color: #666;
   font-weight: 500;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   text-align: left;
 }
 
@@ -122,7 +124,7 @@
   font-size: 16px;
   font-weight: 700;
   color: #FF6B35;
-  margin-bottom: 3px;
+  margin-bottom: 10px;
   text-align: left;
 }
 
@@ -217,8 +219,13 @@
   border-radius: 50%;
 }
 
-.legend-dot.target { background-color: #FFA500; }
-.legend-dot.actual { background-color: #2563eb; }
+.legend-dot.target {
+  background-color: #FFA500;
+}
+
+.legend-dot.actual {
+  background-color: #2563eb;
+}
 
 .chart-stats {
   display: flex;
@@ -227,7 +234,10 @@
   font-size: 12px;
 }
 
-.chart-value { font-weight: 600; color: #333; }
+.chart-value {
+  font-weight: 600;
+  color: #333;
+}
 
 .chart-growth {
   color: #28a745;
@@ -237,8 +247,16 @@
   font-size: 11px;
   font-weight: 600;
 }
-.chart-growth.warn  { color: #856404; background: #fff3cd; }
-.chart-growth.danger { color: #721c24; background: #f8d7da; }
+
+.chart-growth.warn {
+  color: #856404;
+  background: #fff3cd;
+}
+
+.chart-growth.danger {
+  color: #721c24;
+  background: #f8d7da;
+}
 
 /* Tooltip */
 .chart-tooltip {
@@ -252,8 +270,9 @@
   pointer-events: none;
   white-space: nowrap;
   z-index: 20;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
+
 .chart-tooltip::after {
   content: '';
   position: absolute;
@@ -264,6 +283,7 @@
   border-right: 5px solid transparent;
   border-top: 5px solid #1a2340;
 }
+
 .chart-tooltip-day {
   font-weight: 700;
   margin-bottom: 4px;
@@ -272,6 +292,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
 .chart-tooltip-row {
   display: flex;
   align-items: center;
@@ -286,13 +307,18 @@
   align-items: center;
   margin-bottom: 14px;
 }
+
 .pie-chart-header h3 {
   font-size: 14px;
   font-weight: 700;
   color: #1a2340;
   margin: 0;
 }
-.pie-chart-total { font-size: 13px; color: #666; }
+
+.pie-chart-total {
+  font-size: 13px;
+  color: #666;
+}
 
 .pie-total-badge {
   background: #eef2ff;
@@ -314,8 +340,11 @@
   border-radius: 6px;
   transition: background 0.15s;
 }
+
 .pie-legend-item:hover,
-.pie-legend-active { background: #f4f6fb; }
+.pie-legend-active {
+  background: #f4f6fb;
+}
 
 .pie-legend-pct {
   font-size: 10px;
@@ -337,27 +366,27 @@
   background: white;
   border-radius: 12px;
   padding: 20px 24px 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border: 1.5px solid #e8ecf4;
   position: relative;
   cursor: pointer;
   /* default: equal halves */
   flex: 1 1 50%;
   min-width: 0;
-  transition: flex 0.4s cubic-bezier(0.4,0,0.2,1),
-              box-shadow 0.25s ease,
-              border-color 0.25s ease;
+  transition: flex 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
   overflow: hidden;
 }
 
 .chart-panel:hover {
   border-color: #20409A44;
-  box-shadow: 0 4px 20px rgba(32,64,154,0.12);
+  box-shadow: 0 4px 20px rgba(32, 64, 154, 0.12);
 }
 
 .chart-panel--expanded {
   flex: 0 0 64%;
-  box-shadow: 0 6px 28px rgba(32,64,154,0.14);
+  box-shadow: 0 6px 28px rgba(32, 64, 154, 0.14);
   border-color: #20409A66;
 }
 
@@ -513,23 +542,50 @@
 }
 
 @media (max-width: 480px) {
-  .dashboard-content { padding: 10px; }
-  .widget-card { padding: 14px; }
-  .chart-tab { padding: 10px 8px !important; font-size: 11px !important; }
-  .chart-title, .pie-chart-header h3 { font-size: 13px; }
+  .dashboard-content {
+    padding: 10px;
+  }
+
+  .widget-card {
+    padding: 14px;
+  }
+
+  .chart-tab {
+    padding: 10px 8px !important;
+    font-size: 11px !important;
+  }
+
+  .chart-title,
+  .pie-chart-header h3 {
+    font-size: 13px;
+  }
 }
 
 /* ── Widget trend badge ── */
 .widget-trend {
-  font-size: 11px;
-  font-weight: 600;
-  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 200;
   padding: 2px 7px;
-  border-radius: 20px;
+  border-radius: 3px;
   display: inline-block;
 }
-.widget-trend.up   { color: #15803d; background: #dcfce7; }
-.widget-trend.down { color: #b91c1c; background: #fee2e2; }
+
+.widget-trend.up {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.widget-trend.down {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.widget-header>div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
 /* ── Progress track ── */
 .metric-progress-track {
@@ -558,20 +614,69 @@
   background: #f4f6fb;
   border: 1px solid #e8ecf4;
 }
-.chart-stat-chip .chip-label { color: #9aa3b8; font-weight: 500; }
-.chart-stat-chip .chip-value { color: #1a2340; }
-.chart-stat-chip.planned { background: #eff6ff; border-color: #bfdbfe; }
-.chart-stat-chip.planned .chip-value { color: #2563eb; }
-.chart-stat-chip.visited { background: #f0fdf4; border-color: #bbf7d0; }
-.chart-stat-chip.visited .chip-value { color: #15803d; }
-.chart-stat-chip.missed  { background: #fff7ed; border-color: #fed7aa; }
-.chart-stat-chip.missed  .chip-value { color: #c2410c; }
-.chart-stat-chip.rate.good { background: #f0fdf4; border-color: #bbf7d0; }
-.chart-stat-chip.rate.good .chip-value { color: #15803d; }
-.chart-stat-chip.rate.warn { background: #fff7ed; border-color: #fed7aa; }
-.chart-stat-chip.rate.warn .chip-value { color: #c2410c; }
-.chart-stat-chip.rate.bad  { background: #fef2f2; border-color: #fecaca; }
-.chart-stat-chip.rate.bad  .chip-value { color: #b91c1c; }
+
+.chart-stat-chip .chip-label {
+  color: #9aa3b8;
+  font-weight: 500;
+}
+
+.chart-stat-chip .chip-value {
+  color: #1a2340;
+}
+
+.chart-stat-chip.planned {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.chart-stat-chip.planned .chip-value {
+  color: #2563eb;
+}
+
+.chart-stat-chip.visited {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.chart-stat-chip.visited .chip-value {
+  color: #15803d;
+}
+
+.chart-stat-chip.missed {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.chart-stat-chip.missed .chip-value {
+  color: #c2410c;
+}
+
+.chart-stat-chip.rate.good {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.chart-stat-chip.rate.good .chip-value {
+  color: #15803d;
+}
+
+.chart-stat-chip.rate.warn {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.chart-stat-chip.rate.warn .chip-value {
+  color: #c2410c;
+}
+
+.chart-stat-chip.rate.bad {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.chart-stat-chip.rate.bad .chip-value {
+  color: #b91c1c;
+}
 
 /* ── Pie ranking badge ── */
 .pie-rank-badge {

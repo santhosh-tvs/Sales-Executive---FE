@@ -987,15 +987,15 @@ const BeatPlanPage = () => {
         
         {/* Visit Counts Dashboard */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', margin: '20px 0' }}>
-          <div style={{ background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)', padding: '20px', borderRadius: '12px', border: '1px solid #a5d6a7' }}>
+          <div style={{ background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', padding: '20px', borderRadius: '3px', border: '1px solid #a5d6a7' }}>
             <p style={{ fontSize: '14px', color: '#2e7d32', margin: '0 0 8px 0', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Today Visited</p>
             <p style={{ fontSize: '32px', color: '#1b5e20', margin: '0', fontWeight: '700' }}>{visitCounts.today}</p>
           </div>
-          <div style={{ background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)', padding: '20px', borderRadius: '12px', border: '1px solid #90caf9' }}>
+          <div style={{ background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', padding: '20px', borderRadius: '3px', border: '1px solid #90caf9' }}>
             <p style={{ fontSize: '14px', color: '#1565c0', margin: '0 0 8px 0', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>This Week Visited</p>
             <p style={{ fontSize: '32px', color: '#0d47a1', margin: '0', fontWeight: '700' }}>{visitCounts.week}</p>
           </div>
-          <div style={{ background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)', padding: '20px', borderRadius: '12px', border: '1px solid #ffcc80' }}>
+          <div style={{ background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', padding: '20px', borderRadius: '3px', border: '1px solid #ffcc80' }}>
             <p style={{ fontSize: '14px', color: '#e65100', margin: '0 0 8px 0', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>This Month Visited</p>
             <p style={{ fontSize: '32px', color: '#bf360c', margin: '0', fontWeight: '700' }}>{visitCounts.month}</p>
           </div>

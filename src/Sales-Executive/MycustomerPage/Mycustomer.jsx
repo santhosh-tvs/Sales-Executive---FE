@@ -84,7 +84,10 @@ const MyCustomer = () => {
   return (
     <div className="page-container">
       <Header />
-      <Breadcrumb currentPage="My Customers" />
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'My Customers' },
+      ]} />
 
       <div className="stat-card-customer">
         <div className="stat-text">

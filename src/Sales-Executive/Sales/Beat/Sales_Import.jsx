@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../header/Header';
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import '../../../styles/Sales/Beat/Sales_Import.css';
 
 const Sales_Import = () => {
@@ -222,7 +223,11 @@ const Sales_Import = () => {
   return (
     <div className="sales-import-container">
       <Header />
-      
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Beat Plan', path: '/beatplan' },
+        { label: 'Sales Import' },
+      ]} />
       <div className="sales-import-content">
         <div className="sales-import-header">
           <h2 className="page-title">Sales Import</h2>

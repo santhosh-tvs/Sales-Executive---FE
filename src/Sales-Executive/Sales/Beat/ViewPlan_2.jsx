@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import Header from "../../header/Header";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "../../../styles/Sales/Beat/ViewPlan_2.css";
 
 const ViewPlan_2 = () => {
@@ -273,7 +274,11 @@ const ViewPlan_2 = () => {
   return (
     <div className="view-plan-2-container">
       <Header />
-
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Beat Plan', path: '/beatplan' },
+        { label: 'View Plan' },
+      ]} />
       <div className="view-plan-2-content">
         <div className="view-plan-2-header">
           <h2 className="page-title">View Plan</h2>

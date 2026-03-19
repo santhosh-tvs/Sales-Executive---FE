@@ -14,7 +14,10 @@ const MyCollection = () => {
   return (
     <div className="collections-container">
       <Header />
-      <Breadcrumb currentPage="My Collections" />
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'My Collections' },
+      ]} />
       
       <div className="stats-row">
         <div className="stat-card">

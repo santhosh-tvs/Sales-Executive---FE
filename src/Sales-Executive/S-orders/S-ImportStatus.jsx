@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Header from "../header/Header";
+import Breadcrumb from "../components/Breadcrumb/Breadcrumb";
 import "../../styles/S-orders/importStatus.css";
 
 const ImportStatus = () => {
@@ -250,7 +251,11 @@ const ImportStatus = () => {
   return (
     <div className="import-status-page">
       <Header />
-      
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Import Orders', path: '/s-import' },
+        { label: 'Import Status' },
+      ]} />
       <div className="import-status-content">
         <div className="import-status-header">
           <h1 className="import-status-title">Import Status</h1>

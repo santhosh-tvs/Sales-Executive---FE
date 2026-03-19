@@ -259,7 +259,11 @@ const BulkOrder = () => {
   return (
     <div className="bulk-order-page">
       <Header />
-      <Breadcrumb currentPage="Bulk Order Management" />
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Orders', path: '/s-bulk' },
+        { label: 'Bulk Order Management' },
+      ]} />
       
       <div className="bulk-order-content">
         {/* Page Header */}

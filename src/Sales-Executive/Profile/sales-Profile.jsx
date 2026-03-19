@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../header/Header";
+import Breadcrumb from "../components/Breadcrumb/Breadcrumb";
 import manIcon from "../../assets/Icons/man-icon.png";
 import mailIcon from "../../assets/Icons/mail-icon.png";
 import profileBanner from "../../assets/Icons/profile-banner.png";
@@ -115,7 +116,10 @@ const SalesProfile = () => {
   return (
     <div>
       <Header />
-
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'My Profile' },
+      ]} />
       <div className="Sales-profile-container">
         <div className="profile-banner">
           <img

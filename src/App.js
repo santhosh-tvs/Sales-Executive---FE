@@ -154,7 +154,6 @@ function App() {
           <Route path="/customer-summary" element={<CustomerSummary />} />
 
           {/* Masters */}
-          <Route path="/masters" element={<Masters />} />
           <Route path="/masters/view" element={<MasterViewPage />} />
           <Route path="/masters/edit" element={<MasterEditPage />} />
           <Route path="/masters/item" element={<Item />} />

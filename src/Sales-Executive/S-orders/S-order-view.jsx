@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Header from "../header/Header";
+import Breadcrumb from "../components/Breadcrumb/Breadcrumb";
 import OrderViewDetails from "./S-order-view-details";
 import Download from "../../assets/Icons/Import.png";
 import "../../styles/S-orders/order-view.css";
@@ -81,6 +82,10 @@ const OrderView = () => {
   return (
     <div>
       <Header />
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Order View' },
+      ]} />
       <div className="order-view-container">
         <div className="order-view-header">
           <div className="order-title">

@@ -112,9 +112,11 @@ const CustomerSummary = () => {
     <div className="summary-page">
       <Header />
       <Breadcrumb
-        currentPage="Customer Summary"
-        parentPage="My Customers"
-        parentPath="/my-customers"
+        crumbs={[
+          { label: 'Home', path: '/sales-home' },
+          { label: 'My Customers', path: '/my-customers' },
+          { label: 'Customer Summary' },
+        ]}
       />
 
       {/* Customer Header */}

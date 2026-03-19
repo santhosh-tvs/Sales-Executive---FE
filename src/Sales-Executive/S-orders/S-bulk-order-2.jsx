@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AiOutlinePlus, AiOutlineClose } from "react-icons/ai";
 import Header from "../header/Header";
+import Breadcrumb from "../components/Breadcrumb/Breadcrumb";
 import BulkOrderSearch from "./S-bulk-order-search";
 import maginfyingglass from "../../assets/Icons/MagnifyingGlass.png";
 import mappin from "../../assets/Icons/MapPin.png";
@@ -95,6 +96,11 @@ const BulkOrder2 = () => {
   return (
     <div>
       <Header />
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Bulk Order', path: '/s-bulk' },
+        { label: 'Bulk Order Details' },
+      ]} />
       <BulkOrderSearch />
 
       <div className="bulk-2-order-container">

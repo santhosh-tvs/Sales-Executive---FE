@@ -147,7 +147,10 @@ const Consolidate_Report = () => {
       <div className="consolidate-report-content">
         {/* Header Section with Navigation and Controls */}
         <div className="consolidate-report-header">
-          <Breadcrumb currentPage="History" />
+          <Breadcrumb crumbs={[
+            { label: 'Home', path: '/sales-home' },
+            { label: 'Sales History' },
+          ]} />
           
           <div className="header-controls-group">
             <div className="report-dropdown">

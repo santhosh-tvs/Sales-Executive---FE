@@ -461,7 +461,11 @@ const CreateBeat = () => {
   return (
     <div className="create-beat-container">
       <Header />
-      <Breadcrumb currentPage="Create Beat" />
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Beat Plan', path: '/beatplan' },
+        { label: 'Create Beat' },
+      ]} />
 
       <div className="create-beat-content">
         <div className="create-beat-header">

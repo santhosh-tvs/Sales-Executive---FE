@@ -174,7 +174,6 @@
   width: 24px;
   height: 24px;
   object-fit: contain;
-  opacity: 0.8;
   transition: opacity 0.2s ease;
   filter: none;
 }

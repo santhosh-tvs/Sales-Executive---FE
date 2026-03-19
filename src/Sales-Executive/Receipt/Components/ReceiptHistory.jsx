@@ -159,7 +159,11 @@ const ReceiptHistory = () => {
         <div className="receipt-history-content">
           {/* Header Section */}
           <div className="receipt-history-header">
-            <Breadcrumb currentPage="Receipt History" />
+            <Breadcrumb crumbs={[
+              { label: 'Home', path: '/sales-home' },
+              { label: 'Receipt', path: '/receipt' },
+              { label: 'Receipt History' },
+            ]} />
             <div className="header-actions">
               <input
                 type="text"

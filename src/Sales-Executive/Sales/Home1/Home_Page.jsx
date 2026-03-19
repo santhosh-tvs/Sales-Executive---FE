@@ -241,11 +241,6 @@ const Home_Page = () => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
             <img src={BeatIcon} alt="Beat" className="widget-icon" />
-            {!beatLoading && vals.some(v => v > 0) && (
-              <svg width={sparkW} height={sparkH} style={{ display: 'block' }}>
-                <path d={sparkPath} fill="none" stroke="#10b981" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-              </svg>
-            )}
           </div>
         </div>
         {beatLoading ? (
@@ -374,7 +369,7 @@ const Home_Page = () => {
             <div className="chart-title">
               {isBeat ? 'Day wise Beat Visits — MTD' : 'Day wise Sales — MTD'}
             </div>
-            <div style={{ fontSize: '12px', color: '#9aa3b8', marginTop: '2px' }}>
+            <div style={{ fontSize: '12px', color: '#001f66ff', marginTop: '15px' }}>
               {isBeat
                 ? `Total Planned: ${totalTarget} · Visited: ${totalActual}`
                 : `Total Target: ₹${totalTarget.toLocaleString()} · Actual: ₹${totalActual.toLocaleString()}`}

@@ -98,7 +98,11 @@ const VisitReport = () => {
       <div className="vr-container">
         <div className="vr-content">
           <div className="vr-top-bar">
-            <Breadcrumb currentPage="Visit Report" />
+            <Breadcrumb crumbs={[
+              { label: 'Home', path: '/sales-home' },
+              { label: 'Reports', path: '/consolidate-report' },
+              { label: 'Visit Report' },
+            ]} />
             <div className="vr-actions">
               <input
                 type="text"

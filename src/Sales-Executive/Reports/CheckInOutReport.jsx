@@ -102,7 +102,11 @@ const CheckInOutReport = () => {
       <div className="vr-container">
         <div className="vr-content">
           <div className="vr-top-bar">
-            <Breadcrumb currentPage="Check In & Check Out Report" />
+            <Breadcrumb crumbs={[
+              { label: 'Home', path: '/sales-home' },
+              { label: 'Reports', path: '/consolidate-report' },
+              { label: 'Check In & Out Report' },
+            ]} />
             <div className="vr-actions">
               <input
                 type="text"

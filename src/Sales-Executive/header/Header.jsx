@@ -13,8 +13,14 @@ const Header = () => {
       <div className="header-center-nav">
         {/* Center Navigation - Direct Links */}
         <div className="nav-group">
-          <div className="nav-item">
-            <Link to="/consolidate-report" className="nav-btn">History</Link>
+          <div className="nav-item dropdown">
+            <button className="nav-btn">History</button>
+            <div className="dropdown-content">
+              <Link to="/history/sales-order">Sales Order</Link>
+              <Link to="/history/hold-order">Hold Order</Link>
+              <Link to="/history/consolidate-order">Consolidate Order</Link>
+              <Link to="/history/receipt">Receipt</Link>
+            </div>
           </div>
           <div className="nav-item mega-dropdown">
             <button className="nav-btn">Beat</button>
@@ -26,7 +32,7 @@ const Header = () => {
                 <div className="mega-menu-item has-submenu">
                   <span className="mega-menu-main-link">Report</span>
                   <div className="mega-submenu">
-                    <Link to="/report/plan-report" className="mega-submenu-link">Plan Report</Link>
+                    <Link to="/report/beat-plan-report" className="mega-submenu-link">Plan Report</Link>
                     <Link to="/report/visit-report" className="mega-submenu-link">Visit Report</Link>
                     <Link to="/report/checkin-checkout-report" className="mega-submenu-link">Check In &amp; Check Out Report</Link>
                     <Link to="/report/consolidate-report" className="mega-submenu-link">Consolidate Report</Link>

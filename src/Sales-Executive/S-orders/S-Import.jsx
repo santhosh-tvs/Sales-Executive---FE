@@ -148,7 +148,11 @@ const Import = () => {
   return (
     <div className="import-page">
       <Header />
-      <Breadcrumb currentPage="Import Orders" />
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Orders', path: '/s-bulk' },
+        { label: 'Import Orders' },
+      ]} />
       
       {/* Alert Message */}
       {showAlert && (

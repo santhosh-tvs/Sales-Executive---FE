@@ -10,19 +10,23 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import SalesHome from "./Sales-Executive/Sales/Home1/Home_Page.jsx";
 
 // Sales History
-import Consolidate_Report from "./Sales-Executive/Sales/History/Consolidate_Report.jsx";
+import Consolidate_Report from "./Sales-Executive/Reports/ConsolidateReport.jsx";
+import SalesOrderHistory from "./Sales-Executive/Reports/History/SalesOrderHistory.jsx";
+import HoldOrderHistory from "./Sales-Executive/Reports/History/HoldOrderHistory.jsx";
+import ConsolidateOrderReport from "./Sales-Executive/Reports/History/ConsolidateOrderReport.jsx";
+import HistoryReceiptPage from "./Sales-Executive/Reports/History/HistoryReceiptPage.jsx";
 
 // Reports
 import VisitReport from "./Sales-Executive/Reports/VisitReport.jsx";
 import CheckInOutReport from "./Sales-Executive/Reports/CheckInOutReport.jsx";
+import BeatPlanReport from "./Sales-Executive/Reports/BeatPlanReport.jsx";
 
 // Sales Orders
 import Create_Order from "./Sales-Executive/Sales/Create_Order/Create_Order.jsx";
 import S_BulkOrder from "./Sales-Executive/S-orders/S-bulk-order.jsx";
 import S_ImportOrder from "./Sales-Executive/S-orders/S-Import.jsx";
-import S_BulkOrder2 from "./Sales-Executive/S-orders/S-bulk-order-2.jsx";
-import S_ImportStatus from "./Sales-Executive/S-orders/S-ImportStatus.jsx";
 import S_OrderView from "./Sales-Executive/S-orders/S-order-view.jsx";
+import S_ImportStatus from "./Sales-Executive/S-orders/S-ImportStatus.jsx";
 
 // Sales Reports - Using Receipt module instead
 import ReceiptPage from "./Sales-Executive/Receipt/Components/receipt.jsx";
@@ -101,15 +105,22 @@ function App() {
           {/* Orders */}
           <Route path="/create-order" element={<Create_Order />} />
           <Route path="/s-bulk" element={<S_BulkOrder />} />
-          <Route path="/s-bulk-order-2" element={<S_BulkOrder2 />} />
           <Route path="/s-import" element={<S_ImportOrder />} />
           <Route path="/s-import-status" element={<S_ImportStatus />} />
           <Route path="/s-order-view" element={<S_OrderView />} />
 
           {/* Reports - Removed old Report module, using Receipt module */}
           <Route path="/consolidate-report" element={<Consolidate_Report />} />
+          <Route path="/report/consolidate-report" element={<Consolidate_Report />} />
+
+          {/* History Routes */}
+          <Route path="/history/sales-order" element={<SalesOrderHistory />} />
+          <Route path="/history/hold-order" element={<HoldOrderHistory />} />
+          <Route path="/history/consolidate-order" element={<ConsolidateOrderReport />} />
+          <Route path="/history/receipt" element={<HistoryReceiptPage />} />
           <Route path="/report/visit-report" element={<VisitReport />} />
           <Route path="/report/checkin-checkout-report" element={<CheckInOutReport />} />
+          <Route path="/report/beat-plan-report" element={<BeatPlanReport />} />
           <Route path="/receipt" element={<ReceiptPage />} />
           <Route path="/receipt-history" element={<ReceiptHistory />} />
 
@@ -154,7 +165,6 @@ function App() {
           <Route path="/customer-summary" element={<CustomerSummary />} />
 
           {/* Masters */}
-          <Route path="/masters" element={<Masters />} />
           <Route path="/masters/view" element={<MasterViewPage />} />
           <Route path="/masters/edit" element={<MasterEditPage />} />
           <Route path="/masters/item" element={<Item />} />

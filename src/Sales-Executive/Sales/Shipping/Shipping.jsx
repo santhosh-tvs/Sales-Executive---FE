@@ -99,84 +99,14 @@ const Shipping = () => {
     setOrderError('');
 
     try {
-      // Convert address to latitude and longitude using geocoding
+      // Geocode using customer location data (city + state + pincode)
       let latitude, longitude;
 
-      try {
-        // Build a more complete address string for better geocoding
-        const fullAddress = `${shippingAddress.address}, India`;
-        
-        console.log('🔍 Geocoding address:', fullAddress);
-        
-        const geocodeResponse = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=1&countrycodes=in`,
-          {
-            headers: {
-              'User-Agent': 'MyTVS-Sales-App'
-            }
-          }
-        );
-
-        const geocodeData = await geocodeResponse.json();
-        console.log('📍 Geocoding response:', geocodeData);
-
-        if (geocodeData && geocodeData.length > 0) {
-          latitude = parseFloat(geocodeData[0].lat);
-          longitude = parseFloat(geocodeData[0].lon);
-          console.log('✅ Address geocoded successfully:', { 
-            latitude, 
-            longitude, 
-            address: fullAddress,
-            display_name: geocodeData[0].display_name 
-          });
-        } else {
-          // Fallback to device location if geocoding fails
-          console.warn('⚠️ Geocoding returned no results, using device location as fallback');
-          const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              enableHighAccuracy: true,
-              timeout: 10000,
-              maximumAge: 0
-            });
-          });
-          latitude = position.coords.latitude;
-          longitude = position.coords.longitude;
-          console.log('📍 Using device location:', { latitude, longitude });
-        }
-      } catch (geocodeError) {
-        console.error('❌ Geocoding error:', geocodeError);
-        // Fallback to device location
-        try {
-          const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              enableHighAccuracy: true,
-              timeout: 10000,
-              maximumAge: 0
-            });
-          });
-          latitude = position.coords.latitude;
-          longitude = position.coords.longitude;
-          console.log('📍 Using device location (after geocoding error):', { latitude, longitude });
-        } catch (locationError) {
-          console.error('❌ Location error:', locationError);
-          setOrderError('Unable to get location. Please enable location services and try again.');
-          setIsPlacingOrder(false);
-          return;
-        }
-      }
-
-      // Get customer details from apiConfigManager
+      // Get customer details first so we can use structured location fields
       const { default: apiConfigManager } = await import('../../../services/apiConfig');
       const customerDetails = apiConfigManager.getCustomerDetails();
-      
-      console.log('📦 Customer details for order:', {
-        customerCode: customerDetails?.customer_code,
-        customerName: customerDetails?.customer_name,
-        fullDetails: customerDetails
-      });
-      
+
       if (!customerDetails || !customerDetails.customer_code) {
-        console.error('❌ Customer code not found. Please select a customer first.');
         alert('Please select a customer first');
         setIsPlacingOrder(false);
         return;
@@ -184,9 +114,43 @@ const Shipping = () => {
 
       const customerCode = customerDetails.customer_code;
 
+      // Build progressively simpler queries until one works
+      const geocodeQueries = [
+        [customerDetails.city, customerDetails.state, customerDetails.post_code].filter(Boolean).join(', ') + ', India',
+        customerDetails.post_code ? `${customerDetails.post_code}, India` : null,
+        customerDetails.city ? `${customerDetails.city}, ${customerDetails.state || 'India'}` : null,
+      ].filter(Boolean);
+
+      let geocoded = false;
+      for (const query of geocodeQueries) {
+        try {
+          console.log('🔍 Geocoding query:', query);
+          const resp = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=in`,
+            { headers: { 'User-Agent': 'MyTVS-Sales-App' } }
+          );
+          const data = await resp.json();
+          if (data && data.length > 0) {
+            latitude = parseFloat(data[0].lat);
+            longitude = parseFloat(data[0].lon);
+            console.log('✅ Geocoded successfully:', { query, latitude, longitude });
+            geocoded = true;
+            break;
+          }
+        } catch (e) {
+          console.warn('Geocode attempt failed for query:', query, e);
+        }
+      }
+
+      if (!geocoded) {
+        setOrderError('Unable to determine location from customer address. Please verify the customer city/pincode.');
+        setIsPlacingOrder(false);
+        return;
+      }
+
       // Get user data from localStorage — sales_executive_id is the employee id
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      const employeeId = userData.sales_executive_id;
+      const employeeCode = localStorage.getItem('sales_executive_code') || userData.sales_executive_code || null;
 
       // Generate transaction track ID
       const now = new Date();
@@ -217,30 +181,34 @@ const Shipping = () => {
         cgst: (parseFloat(item.listPrice * item.quantity) * 0.09).toFixed(2),
         sgst: (parseFloat(item.listPrice * item.quantity) * 0.09).toFixed(2),
         igst: (parseFloat(item.listPrice * item.quantity) * 0.18).toFixed(2),
-        mrp: parseFloat(item.listPrice || item.mrp)
+        mrp: parseFloat(item.listPrice || item.mrp).toFixed(2)
       }));
 
       // Calculate totals
       const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
       const totalPrice = cartItems.reduce((sum, item) => sum + (item.listPrice * item.quantity * 1.18), 0).toFixed(1);
 
-      // Build order payload
+      // Extract city and pincode from address for ship_to fields
+      const addressParts = shippingAddress.address ? shippingAddress.address.split(',') : [];
+      const shipToLocation = customerDetails.city || (addressParts.length > 0 ? addressParts[addressParts.length - 3]?.trim() : null) || null;
+      const shipToPincode = customerDetails.post_code ? String(customerDetails.post_code) : null;
+
+      // Build order payload matching the createOrder API contract
       const orderPayload = {
         validity_date: formattedValidityDate,
-        customer_code: customerCode, // Using customer_code from customer details
-        employee_id: employeeId,
+        customer_code: customerCode,
+        employee_code: employeeCode,
         purchase_order_no: null,
         purchase_order_date: null,
-        latitude: latitude.toFixed(8),
-        longitude: longitude.toFixed(8),
+        latitude: latitude.toFixed(3),
+        longitude: longitude.toFixed(3),
         transaction_track_id: trackId,
         total_price: totalPrice,
         total_quantity: totalQuantity.toString(),
-        customer_name: shippingAddress.name,
         mobile_number: shippingAddress.phone,
-        ship_to_location: null,
-        ship_to_pincode: null,
-        site_number: null,
+        ship_to_location: shipToLocation,
+        ship_to_pincode: shipToPincode,
+        site_number: customerDetails.site_number || null,
         part_details: partDetails
       };
 

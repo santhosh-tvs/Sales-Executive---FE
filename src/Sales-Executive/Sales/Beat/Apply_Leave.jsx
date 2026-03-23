@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../header/Header';
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import '../../../styles/Sales/Beat/Apply_Leave.css';
 
 const Apply_Leave = () => {
@@ -214,7 +215,11 @@ const Apply_Leave = () => {
   return (
     <div className="apply-leave-container">
       <Header />
-      
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Beat Plan', path: '/beatplan' },
+        { label: 'Apply Leave' },
+      ]} />
       <div className="apply-leave-content">
         <div className="apply-leave-header">
           <h2 className="page-title">Apply Leave</h2>

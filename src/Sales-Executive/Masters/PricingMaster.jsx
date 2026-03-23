@@ -49,7 +49,11 @@ const PricingMaster = () => {
         <div className="masters-content">
           {/* Header Section */}
           <div className="masters-header">
-            <Breadcrumb currentPage="Pricing Master" />
+          <Breadcrumb crumbs={[
+            { label: 'Home', path: '/sales-home' },
+            { label: 'Masters', path: '/masters' },
+            { label: 'Pricing Master' },
+          ]} />
             <div className="masters-actions">
               <input
                 type="text"

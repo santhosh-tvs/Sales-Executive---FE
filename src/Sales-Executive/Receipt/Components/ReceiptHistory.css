@@ -126,7 +126,8 @@
 /* ===== TABLE ===== */
 .receipt-history-container .table-container {
     background: #fff;
-    border-radius: 8px;
+    border-radius: 2px;
+    padding: 3px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     overflow-x: auto;
     overflow-y: visible;
@@ -414,9 +415,9 @@
 }
 
 .receipt-history-container .pagination-btn.active {
-    background: linear-gradient(135deg, #20409A, #1a3580);
+    background: linear-gradient(135deg, #ff6b35, #ff6b35);
     color: #fff;
-    border-color: #20409A;
+    border-color: #ff6b35;
 }
 
 .receipt-history-container .pagination-btn:disabled {

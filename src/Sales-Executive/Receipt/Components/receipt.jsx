@@ -400,7 +400,10 @@ const ReceiptPage = () => {
       <div className="receipt-page-container">
         <div className="receipt-content">
           <div className="receipt-header">
-            <Breadcrumb currentPage="Receipt" />
+            <Breadcrumb crumbs={[
+              { label: 'Home', path: '/sales-home' },
+              { label: 'Receipt' },
+            ]} />
             {view === 'list' && (
               <div className="header-controls">
                 <input 

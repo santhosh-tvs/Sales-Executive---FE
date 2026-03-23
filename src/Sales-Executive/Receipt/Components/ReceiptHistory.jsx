@@ -5,6 +5,7 @@ import Header from '../../header/Header';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import apiService from '../../../services/apiservice';
 import './ReceiptHistory.css';
+import myTVSLogo from '../../../assets/login/myTVS_Partart_logo.png';
 
 const ReceiptHistory = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -130,9 +131,305 @@ const ReceiptHistory = () => {
     saveAs(blob, `Receipt_History_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  const handlePrintReceipt = (receipt) => {
-    console.log('Printing receipt:', receipt);
-    // Add print functionality here
+  // Converts an image URL to a base64 data URI for embedding in print windows
+  const toBase64 = (url) =>
+    fetch(url)
+      .then(r => r.blob())
+      .then(blob => new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      }))
+      .catch(() => '');
+
+  const handlePrintReceipt = async (receipt) => {
+    try {
+      // If called from table row, fetch full details first
+      // If called from modal, selectedReceipt already has full data
+      let data = receipt;
+
+      const isFullData = receipt.receipt_ref_number !== undefined && receipt.customer_number !== undefined;
+
+      if (!isFullData) {
+        const receiptId = receipt.id || receipt.customer_receipt_id;
+        const response = await apiService.get(`/receipt/view-receipt/${receiptId}`);
+        if (!response.success || !response.data) {
+          alert('Failed to fetch receipt details for printing');
+          return;
+        }
+        data = response.data;
+      }
+
+      // Convert logo to base64 so it works in the standalone print window
+      const logoBase64 = await toBase64(myTVSLogo);
+
+      // Fetch user/company info from localStorage (cached)
+      let companyName = 'MyTVS';
+      let companyAddress = '';
+      let salesExecName = '';
+      try {
+        const userData = JSON.parse(localStorage.getItem('user') || '{}');
+        salesExecName = userData.name || '';
+        companyName = userData.company_name || 'MyTVS';
+        companyAddress = userData.address || '';
+      } catch (_) {}
+
+      const receiptDate = data.receipt_date
+        ? new Date(data.receipt_date).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })
+        : 'N/A';
+
+      const createdAt = data.created_at
+        ? new Date(data.created_at).toLocaleString('en-IN')
+        : 'N/A';
+
+      const amount = parseFloat(data.receipt_amount || 0);
+      const amountInWords = numberToWords(amount);
+
+      const paymentMode = data.receipt_mode || data.receipt_method || 'N/A';
+      const isChequeDDChallan = ['Cheque', 'DD', 'Challan'].includes(paymentMode);
+
+      const chequeSection = isChequeDDChallan ? `
+        <tr>
+          <td class="label">${paymentMode} Number</td>
+          <td class="value">${data.challan_dd_cheque_number || data.cheque_no || 'N/A'}</td>
+          <td class="label">Bank</td>
+          <td class="value">${data.bank || data.drawee_bank || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td class="label">${paymentMode} Date</td>
+          <td class="value">${data.challan_dd_cheque_date ? new Date(data.challan_dd_cheque_date).toLocaleDateString('en-IN') : 'N/A'}</td>
+          <td class="label">Place</td>
+          <td class="value">${data.place || 'N/A'}</td>
+        </tr>
+      ` : '';
+
+      const utrSection = data.utr_number ? `
+        <tr>
+          <td class="label">UTR Number</td>
+          <td class="value" colspan="3">${data.utr_number}</td>
+        </tr>
+      ` : '';
+
+      const printHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Receipt - ${data.receipt_ref_number || 'N/A'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Arial', sans-serif; font-size: 12px; color: #1a1a1a; background: #fff; }
+    .page { width: 210mm; min-height: 148mm; margin: 0 auto; padding: 10mm 12mm; }
+
+    /* Header */
+    .receipt-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2.5px solid #20409A; padding-bottom: 8px; margin-bottom: 10px; }
+    .company-block { display: flex; flex-direction: column; gap: 3px; }
+    .company-block img { height: 38px; width: auto; object-fit: contain; display: block; }
+    .company-block p { font-size: 10px; color: #555; margin-top: 2px; }
+    .receipt-title-block { text-align: right; }
+    .receipt-title-block h2 { font-size: 16px; font-weight: 700; color: #20409A; text-transform: uppercase; letter-spacing: 1px; }
+    .receipt-title-block .ref-no { font-size: 11px; font-weight: 700; color: #374151; margin-top: 4px; }
+    .receipt-title-block .status-badge { display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .status-completed { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .status-pending { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+    /* Amount Banner */
+    .amount-banner { background: linear-gradient(135deg, #20409A, #1a3580); color: #fff; border-radius: 6px; padding: 10px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .amount-banner .label { font-size: 10px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; }
+    .amount-banner .amount-value { font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
+    .amount-banner .amount-words { font-size: 9px; opacity: 0.8; margin-top: 2px; font-style: italic; }
+    .amount-banner .payment-mode-badge { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 4px 10px; font-size: 11px; font-weight: 700; text-align: center; }
+
+    /* Info Table */
+    .info-section { margin-bottom: 8px; }
+    .section-heading { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #20409A; border-bottom: 1px solid #e5e7eb; padding-bottom: 3px; margin-bottom: 5px; }
+    table.info-table { width: 100%; border-collapse: collapse; }
+    table.info-table td { padding: 4px 6px; font-size: 11px; vertical-align: top; }
+    table.info-table td.label { font-weight: 700; color: #6b7280; width: 22%; white-space: nowrap; }
+    table.info-table td.value { color: #111827; font-weight: 500; width: 28%; }
+
+    /* Two column layout */
+    .two-col { display: flex; gap: 10px; margin-bottom: 8px; }
+    .two-col .col { flex: 1; }
+
+    /* Footer */
+    .receipt-footer { border-top: 1.5px solid #e5e7eb; margin-top: 12px; padding-top: 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .footer-note { font-size: 9px; color: #9ca3af; }
+    .signature-block { text-align: center; }
+    .signature-line { width: 120px; border-top: 1px solid #374151; margin: 0 auto; }
+    .signature-label { font-size: 9px; color: #6b7280; margin-top: 3px; }
+
+    /* Watermark for pending */
+    .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 72px; font-weight: 900; color: rgba(255, 107, 53, 0.08); pointer-events: none; z-index: 0; text-transform: uppercase; letter-spacing: 8px; white-space: nowrap; }
+
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .page { padding: 8mm 10mm; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  ${data.process_flag !== 'completed' ? '<div class="watermark">Pending</div>' : ''}
+  <div class="page">
+
+    <!-- Header -->
+    <div class="receipt-header">
+      <div class="company-block">
+        ${logoBase64 ? `<img src="${logoBase64}" alt="MyTVS" />` : `<h1>${companyName}</h1>`}
+        ${companyAddress ? `<p>${companyAddress}</p>` : ''}
+        <p>Business Unit: ${data.business_unit || 'N/A'}</p>
+      </div>
+      <div class="receipt-title-block">
+        <h2>Payment Receipt</h2>
+        <div class="ref-no">${data.receipt_ref_number || 'N/A'}</div>
+        <span class="status-badge ${data.process_flag === 'completed' ? 'status-completed' : 'status-pending'}">
+          ${data.process_flag === 'completed' ? 'Completed' : 'Pending'}
+        </span>
+      </div>
+    </div>
+
+    <!-- Amount Banner -->
+    <div class="amount-banner">
+      <div>
+        <div class="label">Amount Received</div>
+        <div class="amount-value">₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+        <div class="amount-words">${amountInWords}</div>
+      </div>
+      <div class="payment-mode-badge">
+        ${paymentMode}
+      </div>
+    </div>
+
+    <!-- Customer & Receipt Info -->
+    <div class="two-col">
+      <div class="col">
+        <div class="info-section">
+          <div class="section-heading">Customer Details</div>
+          <table class="info-table">
+            <tr>
+              <td class="label">Name</td>
+              <td class="value" colspan="3">${data.customer_name || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td class="label">Code</td>
+              <td class="value">${data.customer_number || 'N/A'}</td>
+            </tr>
+            ${data.customer_site_code ? `<tr><td class="label">Site Code</td><td class="value">${data.customer_site_code}</td></tr>` : ''}
+          </table>
+        </div>
+      </div>
+      <div class="col">
+        <div class="info-section">
+          <div class="section-heading">Receipt Details</div>
+          <table class="info-table">
+            <tr>
+              <td class="label">Date</td>
+              <td class="value">${receiptDate}</td>
+            </tr>
+            <tr>
+              <td class="label">Source</td>
+              <td class="value">${data.source || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td class="label">Created By</td>
+              <td class="value">${data.created_by || salesExecName || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td class="label">Created At</td>
+              <td class="value">${createdAt}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Details -->
+    ${isChequeDDChallan || data.utr_number ? `
+    <div class="info-section">
+      <div class="section-heading">Payment Details</div>
+      <table class="info-table">
+        ${chequeSection}
+        ${utrSection}
+      </table>
+    </div>
+    ` : ''}
+
+    <!-- Application Details -->
+    ${data.order_number || data.application_type ? `
+    <div class="info-section">
+      <div class="section-heading">Application Details</div>
+      <table class="info-table">
+        <tr>
+          ${data.order_number ? `<td class="label">Order No.</td><td class="value">${data.order_number}</td>` : '<td></td><td></td>'}
+          ${data.application_type ? `<td class="label">App. Type</td><td class="value">${data.application_type}</td>` : '<td></td><td></td>'}
+        </tr>
+        ${data.applied_amount ? `<tr><td class="label">Applied Amt.</td><td class="value">₹${parseFloat(data.applied_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td><td></td><td></td></tr>` : ''}
+      </table>
+    </div>
+    ` : ''}
+
+    ${data.receipt_remarks ? `
+    <div class="info-section">
+      <div class="section-heading">Remarks</div>
+      <p style="font-size:11px; color:#374151; padding: 4px 6px; background:#fffbeb; border-radius:4px; border:1px solid #fde68a;">${data.receipt_remarks}</p>
+    </div>
+    ` : ''}
+
+    <!-- Footer -->
+    <div class="receipt-footer">
+      <div class="footer-note">
+        <p>Generated on: ${new Date().toLocaleString('en-IN')}</p>
+        <p>This is a computer-generated receipt.</p>
+      </div>
+      <div class="signature-block">
+        <div class="signature-line"></div>
+        <div class="signature-label">Authorised Signatory</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    window.onload = function() { window.print(); };
+  </script>
+</body>
+</html>`;
+
+      const printWindow = window.open('', '_blank', 'width=900,height=700');
+      if (!printWindow) {
+        alert('Please allow popups to print the receipt.');
+        return;
+      }
+      printWindow.document.write(printHTML);
+      printWindow.document.close();
+    } catch (error) {
+      console.error('Print error:', error);
+      alert('Failed to print receipt. Please try again.');
+    }
+  };
+
+  // Converts a number to Indian English words (e.g. 1250.50 → "Rupees One Thousand Two Hundred Fifty and Fifty Paise Only")
+  const numberToWords = (num) => {
+    if (!num || isNaN(num)) return 'Zero Rupees Only';
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+      'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    const toWords = (n) => {
+      if (n === 0) return '';
+      if (n < 20) return ones[n] + ' ';
+      if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 ? ' ' + ones[n % 10] : '') + ' ';
+      if (n < 1000) return ones[Math.floor(n / 100)] + ' Hundred ' + toWords(n % 100);
+      if (n < 100000) return toWords(Math.floor(n / 1000)) + 'Thousand ' + toWords(n % 1000);
+      if (n < 10000000) return toWords(Math.floor(n / 100000)) + 'Lakh ' + toWords(n % 100000);
+      return toWords(Math.floor(n / 10000000)) + 'Crore ' + toWords(n % 10000000);
+    };
+
+    const rupees = Math.floor(num);
+    const paise = Math.round((num - rupees) * 100);
+    let result = 'Rupees ' + toWords(rupees).trim();
+    if (paise > 0) result += ` and ${toWords(paise).trim()} Paise`;
+    return result + ' Only';
   };
 
   const filteredData = receiptHistoryData.filter(item => {
@@ -159,7 +456,11 @@ const ReceiptHistory = () => {
         <div className="receipt-history-content">
           {/* Header Section */}
           <div className="receipt-history-header">
-            <Breadcrumb currentPage="Receipt History" />
+            <Breadcrumb crumbs={[
+              { label: 'Home', path: '/sales-home' },
+              { label: 'Receipt', path: '/receipt' },
+              { label: 'Receipt History' },
+            ]} />
             <div className="header-actions">
               <input
                 type="text"

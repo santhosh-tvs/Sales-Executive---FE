@@ -40,10 +40,8 @@ const ProtectedRoute = ({ children }) => {
 
     validateToken();
 
-    // Re-validate every 5 seconds
-    const interval = setInterval(validateToken, 5000);
-
-    return () => clearInterval(interval);
+    // No polling — validate once on mount only
+    return () => {};
   }, [location.pathname]);
 
   // Show loading or nothing while validating

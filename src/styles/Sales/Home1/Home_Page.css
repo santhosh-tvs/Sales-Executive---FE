@@ -126,6 +126,7 @@
   color: #FF6B35;
   margin-bottom: 10px;
   text-align: left;
+  cursor: default;
 }
 
 .metric-target {
@@ -564,10 +565,14 @@
 /* ── Widget trend badge ── */
 .widget-trend {
   font-size: 10px;
-  font-weight: 200;
+  font-weight: 600;
   padding: 2px 7px;
   border-radius: 3px;
   display: inline-block;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .widget-trend.up {
@@ -575,9 +580,29 @@
   background: #dcfce7;
 }
 
+.widget-trend.excellent {
+  color: #065f46;
+  background: #a7f3d0;
+}
+
+.widget-trend.on-track {
+  color: #1e40af;
+  background: #dbeafe;
+}
+
+.widget-trend.warn {
+  color: #92400e;
+  background: #fef3c7;
+}
+
 .widget-trend.down {
   color: #b91c1c;
   background: #fee2e2;
+}
+
+.widget-trend.neutral {
+  color: #6b7280;
+  background: #f3f4f6;
 }
 
 .widget-header>div:first-child {
@@ -695,4 +720,62 @@
   padding: 6px 10px;
   border-radius: 6px;
   margin-bottom: 10px;
+}
+
+/* ── Metric hover tooltip (portal) ── */
+.metric-hover-tooltip {
+  background: #1a2340;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+  min-width: 160px;
+}
+
+.mht-period {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #7b8ab8;
+  margin-bottom: 6px;
+}
+
+.mht-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.mht-lbl {
+  color: #9aa3c8;
+  font-size: 11px;
+}
+
+.mht-val {
+  font-weight: 700;
+  color: #FF6B35;
+  font-size: 13px;
+}
+
+.mht-tgt {
+  font-weight: 600;
+  color: #a0aec0;
+  font-size: 12px;
+}
+
+.mht-arrow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1a2340;
 }

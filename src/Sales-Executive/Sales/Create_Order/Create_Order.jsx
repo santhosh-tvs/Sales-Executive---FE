@@ -208,7 +208,10 @@ const Create_Order = () => {
   return (
     <div className="create-order-container">
       <Header />
-      <Breadcrumb currentPage="Create Orders" />
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Create Order' },
+      ]} />
       
       {/* Main Content */}
       <div className="create-order-content">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import Header from '../../header/Header';
@@ -10,6 +11,18 @@ import SalesIcon from '../../../assets/Icons/Sales.png';
 import ReceiptIcon from '../../../assets/Icons/Reciept.png';
 import BeatIcon from '../../../assets/Icons/Beat.png';
 import { apiService } from '../../../services/apiservice';
+
+// ── Smart number formatter ─────────────────────────────────────────────────
+// Formats numbers as: 1.2K, 45.6L, 2.3Cr — falls back to plain for small nums
+const fmtNum = (val, isCurrency = false) => {
+  const n = Number(val);
+  if (isNaN(n)) return val;
+  const prefix = isCurrency ? '₹' : '';
+  if (n >= 1_00_00_000) return `${prefix}${(n / 1_00_00_000).toFixed(2)}Cr`;
+  if (n >= 1_00_000)    return `${prefix}${(n / 1_00_000).toFixed(2)}L`;
+  if (n >= 1_000)       return `${prefix}${(n / 1_000).toFixed(1)}K`;
+  return `${prefix}${n % 1 === 0 ? n : n.toFixed(2)}`;
+};
 
 const Home_Page = () => {
   useAuth(); // Check authentication
@@ -28,6 +41,12 @@ const Home_Page = () => {
   const [salesPieData, setSalesPieData] = useState([]);
   const [salesLoading, setSalesLoading] = useState(true);
 
+  // Collection API state
+  const [collectionCounts, setCollectionCounts] = useState(null);
+  const [collectionBarData, setCollectionBarData] = useState([]);
+  const [collectionPieData, setCollectionPieData] = useState([]);
+  const [collectionLoading, setCollectionLoading] = useState(true);
+
   // Enquiry API state — removed (no enquiry in this app)
 
   // Chart interaction state
@@ -38,6 +57,9 @@ const Home_Page = () => {
   // Chart expand state: null | 'line' | 'pie'
   const [expandedChart, setExpandedChart] = useState(null);
 
+  // Metric value hover tooltip: { label, value, target, x, y } | null
+  const [metricTooltip, setMetricTooltip] = useState(null);
+
   useEffect(() => {
     const fetchAllDashboardData = async () => {
       setBeatLoading(true);
@@ -47,6 +69,7 @@ const Home_Page = () => {
         const [
           beatCountsRes, beatGraphRes, beatPieRes,
           salesCountsRes, salesBarRes, salesPieRes,
+          collectionCountsRes, collectionBarRes, collectionPieRes,
         ] = await Promise.all([
           apiService.get('/dashboard/plan-visited-counts'),
           apiService.get('/dashboard/my-visit-day-wise-visited-graph'),
@@ -54,6 +77,9 @@ const Home_Page = () => {
           apiService.get('/dashboard/my-sales-counts'),
           apiService.get('/dashboard/my-sales-bar-chart'),
           apiService.get('/dashboard/my-sales-pie-chart'),
+          apiService.get('/dashboard/my-collection-counts'),
+          apiService.get('/dashboard/my-collection-bar-chart'),
+          apiService.get('/dashboard/my-collection-pie-chart'),
         ]);
 
         if (beatCountsRes.success) setBeatCounts(beatCountsRes.data);
@@ -63,11 +89,16 @@ const Home_Page = () => {
         if (salesCountsRes.success) setSalesCounts(salesCountsRes.data);
         if (salesBarRes.success) setSalesBarData(salesBarRes.data || []);
         if (salesPieRes.success) setSalesPieData(salesPieRes.data || []);
+
+        if (collectionCountsRes.success) setCollectionCounts(collectionCountsRes.data);
+        if (collectionBarRes.success) setCollectionBarData(collectionBarRes.data || []);
+        if (collectionPieRes.success) setCollectionPieData(collectionPieRes.customers || []);
       } catch (e) {
         console.error('Dashboard fetch error:', e);
       } finally {
         setBeatLoading(false);
         setSalesLoading(false);
+        setCollectionLoading(false);
       }
     };
     fetchAllDashboardData();
@@ -97,12 +128,14 @@ const Home_Page = () => {
 
   // Enquiry widget data — removed
 
-  // Receipt widget — static/dummy data
-  const receiptWidgetData = {
-    ctd: { value: 0, target: 0 },
-    wtd: { value: 0, target: 0 },
-    mtd: { value: 0, target: 0 },
-  };
+  // Receipt/Collection widget data from API (with fallback)
+  const receiptWidgetData = collectionCounts
+    ? {
+        ctd: { value: Number(collectionCounts.today_actual || 0), target: Number(collectionCounts.today_target || 0) },
+        wtd: { value: Number(collectionCounts.week_actual  || 0), target: Number(collectionCounts.week_target  || 0) },
+        mtd: { value: Number(collectionCounts.month_actual || 0), target: Number(collectionCounts.month_target || 0) },
+      }
+    : { ctd: { value: 0, target: 0 }, wtd: { value: 0, target: 0 }, mtd: { value: 0, target: 0 } };
 
   // Beat widget data from API (with fallback)
   const beatWidgetData = beatCounts
@@ -133,6 +166,13 @@ const Home_Page = () => {
     labels: beatGraphData.map(d => d.day),
   };
 
+  // Collection chart data from API
+  const collectionChartData = {
+    target: collectionBarData.map(d => d.target),
+    actual: collectionBarData.map(d => d.actual),
+    labels: collectionBarData.map(d => d.day),
+  };
+
   // Pie chart colours
   const PIE_COLORS = ['#FFD700', '#FF6B35', '#4ECDC4', '#45B7D1', '#96CEB4', '#A78BFA', '#F87171', '#34D399'];
 
@@ -146,6 +186,12 @@ const Home_Page = () => {
   const beatCustomerData = beatPieData.slice(0, 8).map((c, i) => ({
     name: c.customer_name || c.garage_code || `Customer ${i + 1}`,
     value: c.visited_count,
+    color: PIE_COLORS[i % PIE_COLORS.length],
+  }));
+
+  const collectionCustomerData = collectionPieData.slice(0, 8).map((c, i) => ({
+    name: c.customer_name,
+    value: Number(c.amount || 0),
     color: PIE_COLORS[i % PIE_COLORS.length],
   }));
 
@@ -169,18 +215,54 @@ const Home_Page = () => {
       return null;
     };
 
-    // Mini sparkline from values
-    const vals = Object.values(data).map(v => v.value);
-    const sparkMax = Math.max(...vals, 1);
-    const sparkW = 60; const sparkH = 28;
-    const sparkPath = vals.map((v, i) => {
-      const x = (i / (vals.length - 1)) * sparkW;
-      const y = sparkH - (v / sparkMax) * sparkH;
-      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-    }).join(' ');
-
+    // ── Smart analytics badge ──────────────────────────────────────────────
+    // Uses MTD achievement % + daily pace to give a meaningful signal
     const mtd = data.mtd || data.ctd;
-    const trendPct = mtd.target > 0 ? Math.round(((mtd.value - mtd.target) / mtd.target) * 100) : 0;
+    const ctd = data.ctd;
+    const wtd = data.wtd;
+
+    const mtdPct  = mtd.target  > 0 ? (mtd.value  / mtd.target)  * 100 : 0;
+    const ctdPct  = ctd?.target > 0 ? (ctd.value  / ctd.target)  * 100 : 0;
+    const wtdPct  = wtd?.target > 0 ? (wtd.value  / wtd.target)  * 100 : 0;
+
+    // Today's day of month → estimate expected MTD progress
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const dayOfMonth  = today.getDate();
+    const expectedPct = (dayOfMonth / daysInMonth) * 100; // how far through month we are
+
+    // Pace: are we ahead or behind where we should be by today?
+    const paceGap = mtdPct - expectedPct; // positive = ahead, negative = behind
+
+    // Momentum: CTD vs WTD daily average
+    const wtdDailyAvg = wtd ? (wtd.value / 7) : 0;
+    const momentum = ctd && wtdDailyAvg > 0
+      ? Math.round(((ctd.value - wtdDailyAvg) / wtdDailyAvg) * 100)
+      : null;
+
+    // Build the badge
+    let badgeText, badgeClass;
+
+    if (mtd.target === 0) {
+      badgeText = 'No target set';
+      badgeClass = 'neutral';
+    } else if (mtdPct >= 100) {
+      badgeText = `✓ Target hit — ${Math.round(mtdPct)}% achieved`;
+      badgeClass = 'excellent';
+    } else if (paceGap >= 10) {
+      badgeText = `↑ Ahead of pace by ${Math.round(paceGap)}%`;
+      badgeClass = 'up';
+    } else if (paceGap >= 0) {
+      badgeText = `→ On track — ${Math.round(mtdPct)}% of MTD`;
+      badgeClass = 'on-track';
+    } else if (paceGap >= -15) {
+      badgeText = `⚠ Slightly behind — ${Math.round(Math.abs(paceGap))}% gap`;
+      badgeClass = 'warn';
+    } else {
+      badgeText = `↓ Behind pace — ${Math.round(mtdPct)}% of MTD`;
+      badgeClass = 'down';
+    }
+
     const accent = getAccentColor();
 
     return (
@@ -188,20 +270,30 @@ const Home_Page = () => {
         <div className="widget-header">
           <div>
             <h3>{title}</h3>
-            <div className={`widget-trend ${trendPct >= 0 ? 'up' : 'down'}`}>
-              {trendPct >= 0 ? '↑' : '↓'} {Math.abs(trendPct)}% vs target
-            </div>
           </div>
-          <div>
-            {getWidgetIcon()}
-          </div>
+          <div>{getWidgetIcon()}</div>
         </div>
         <div className="widget-metrics">
           {Object.entries(data).map(([period, values]) => (
             <div key={period} className="metric-item">
               <div className="metric-label">{period.toUpperCase()}</div>
-              <div className="metric-value">₹{values.value.toLocaleString()}</div>
-              <div className="metric-target">{values.target.toLocaleString()}</div>
+              <div
+                className="metric-value"
+                onMouseEnter={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setMetricTooltip({
+                    value: values.value,
+                    target: values.target,
+                    period: period.toUpperCase(),
+                    x: rect.left + rect.width / 2,
+                    y: rect.top,
+                  });
+                }}
+                onMouseLeave={() => setMetricTooltip(null)}
+              >
+                {fmtNum(values.value, true)}
+              </div>
+              <div className="metric-target">{fmtNum(values.target, true)}</div>
               <div className="metric-progress-track">
                 <div className="metric-progress" style={{
                   backgroundColor: getProgressColor(values.value, values.target),
@@ -216,36 +308,51 @@ const Home_Page = () => {
   };
 
   const renderBeatWidget = (title, data) => {
-    const vals = Object.values(data).map(v => v.value);
-    const sparkMax = Math.max(...vals, 1);
-    const sparkW = 60; const sparkH = 28;
-    const sparkPath = vals.map((v, i) => {
-      const x = (i / Math.max(vals.length - 1, 1)) * sparkW;
-      const y = sparkH - (v / sparkMax) * sparkH;
-      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-    }).join(' ');
-
     const mtd = data.mtd;
-    const trendPct = mtd.target > 0 ? Math.round(((mtd.value - mtd.target) / mtd.target) * 100) : 0;
+    const ctd = data.ctd;
+    const wtd = data.wtd;
+
+    // ── Smart beat analytics badge ─────────────────────────────────────────
+    const mtdPct = mtd.target > 0 ? (mtd.value / mtd.target) * 100 : 0;
+
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const dayOfMonth  = today.getDate();
+    const expectedPct = (dayOfMonth / daysInMonth) * 100;
+    const paceGap = mtdPct - expectedPct;
+
+    // Today's visits vs weekly daily average
+    const wtdDailyAvg = wtd ? (wtd.value / 7) : 0;
+
+    let badgeText, badgeClass;
+    if (mtd.target === 0) {
+      badgeText = 'No target set';
+      badgeClass = 'neutral';
+    } else if (mtdPct >= 100) {
+      badgeText = `✓ All visits done — ${Math.round(mtdPct)}%`;
+      badgeClass = 'excellent';
+    } else if (paceGap >= 10) {
+      badgeText = `↑ Ahead of schedule by ${Math.round(paceGap)}%`;
+      badgeClass = 'up';
+    } else if (paceGap >= 0) {
+      badgeText = `→ On schedule — ${Math.round(mtdPct)}% of MTD`;
+      badgeClass = 'on-track';
+    } else if (paceGap >= -15) {
+      badgeText = `⚠ ${Math.round(Math.abs(paceGap))}% visits pending`;
+      badgeClass = 'warn';
+    } else {
+      badgeText = `↓ Behind — ${Math.round(mtdPct)}% visits done`;
+      badgeClass = 'down';
+    }
 
     return (
       <div className="widget-card" style={{ borderLeft: '4px solid #10b981' }}>
         <div className="widget-header">
           <div>
             <h3>{title}</h3>
-            {!beatLoading && (
-              <div className={`widget-trend ${trendPct >= 0 ? 'up' : 'down'}`}>
-                {trendPct >= 0 ? '↑' : '↓'} {Math.abs(trendPct)}% vs target
-              </div>
-            )}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
             <img src={BeatIcon} alt="Beat" className="widget-icon" />
-            {!beatLoading && vals.some(v => v > 0) && (
-              <svg width={sparkW} height={sparkH} style={{ display: 'block' }}>
-                <path d={sparkPath} fill="none" stroke="#10b981" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-              </svg>
-            )}
           </div>
         </div>
         {beatLoading ? (
@@ -275,14 +382,6 @@ const Home_Page = () => {
     const isBeat = activeTab === 'Beat';
     const isReceipt = activeTab === 'Receipt';
 
-    if (isReceipt) {
-      return (
-        <div className="main-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>
-          Receipt chart data coming soon.
-        </div>
-      );
-    }
-
     let activeChart, activeLabels, isLoading, emptyMsg;
 
     if (isBeat) {
@@ -290,8 +389,13 @@ const Home_Page = () => {
       activeLabels = beatChartData.labels;
       isLoading = beatLoading;
       emptyMsg = 'No beat visit data for this month.';
+    } else if (isReceipt) {
+      activeChart = collectionChartData;
+      activeLabels = collectionChartData.labels;
+      isLoading = collectionLoading;
+      emptyMsg = 'No collection data for this month.';
     } else {
-      // Sales (default) or Receipt
+      // Sales (default)
       activeChart = salesChartData;
       activeLabels = salesChartData.labels;
       isLoading = salesLoading;
@@ -372,12 +476,14 @@ const Home_Page = () => {
         <div className="chart-header">
           <div>
             <div className="chart-title">
-              {isBeat ? 'Day wise Beat Visits — MTD' : 'Day wise Sales — MTD'}
+              {isBeat ? 'Day wise Beat Visits — MTD' : isReceipt ? 'Day wise Collections — MTD' : 'Day wise Sales — MTD'}
             </div>
-            <div style={{ fontSize: '12px', color: '#9aa3b8', marginTop: '2px' }}>
+            <div style={{ fontSize: '12px', color: '#001f66ff', marginTop: '15px' }}>
               {isBeat
                 ? `Total Planned: ${totalTarget} · Visited: ${totalActual}`
-                : `Total Target: ₹${totalTarget.toLocaleString()} · Actual: ₹${totalActual.toLocaleString()}`}
+                : isReceipt
+                ? `Total Target: ${fmtNum(totalTarget, true)} · Collected: ${fmtNum(totalActual, true)}`
+                : `Total Target: ${fmtNum(totalTarget, true)} · Actual: ${fmtNum(totalActual, true)}`}
             </div>
           </div>
           <div className="chart-legend">
@@ -387,7 +493,7 @@ const Home_Page = () => {
             </div>
             <div className="legend-item">
               <div className="legend-dot actual"></div>
-              <span>{isBeat ? 'Visited' : 'Actual'}</span>
+              <span>{isBeat ? 'Visited' : isReceipt ? 'Collected' : 'Actual'}</span>
             </div>
             <div className="chart-stats">
               <span className={`chart-growth ${achievePct >= 90 ? '' : achievePct >= 70 ? 'warn' : 'danger'}`}>
@@ -496,7 +602,7 @@ const Home_Page = () => {
               </div>
               <div className="chart-tooltip-row">
                 <span style={{ color: '#2563eb' }}>●</span>
-                <span>{isBeat ? 'Visited' : 'Actual'}: <b>{activeChart.actual[activeLabels.indexOf(chartTooltip.label)] ?? '—'}</b></span>
+                <span>{isBeat ? 'Visited' : isReceipt ? 'Collected' : 'Actual'}: <b>{activeChart.actual[activeLabels.indexOf(chartTooltip.label)] ?? '—'}</b></span>
               </div>
             </div>
           )}
@@ -513,14 +619,6 @@ const Home_Page = () => {
     const isBeat = activeTab === 'Beat';
     const isReceipt = activeTab === 'Receipt';
 
-    if (isReceipt) {
-      return (
-        <div className="pie-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>
-          Receipt pie chart data coming soon.
-        </div>
-      );
-    }
-
     let activeData, isLoading, emptyMsg, totalLabel, valueLabel;
 
     if (isBeat) {
@@ -529,6 +627,12 @@ const Home_Page = () => {
       emptyMsg = 'No customer visit data for this month.';
       totalLabel = 'Visits';
       valueLabel = 'visits';
+    } else if (isReceipt) {
+      activeData = collectionCustomerData;
+      isLoading = collectionLoading;
+      emptyMsg = 'No collection data for this month.';
+      totalLabel = 'Collections';
+      valueLabel = '₹';
     } else {
       activeData = salesCustomerData;
       isLoading = salesLoading;
@@ -615,10 +719,10 @@ const Home_Page = () => {
       <div className="pie-chart-container">
         <div className="pie-chart-header">
           <h3>
-            {isBeat ? 'Customer wise Beat Visits — MTD' : 'Customer wise Sales — MTD'}
+            {isBeat ? 'Customer wise Beat Visits — MTD' : isReceipt ? 'Customer wise Collections — MTD' : 'Customer wise Sales — MTD'}
           </h3>
           <div className="pie-chart-total">
-            <span className="pie-total-badge">{`${total} ${totalLabel}`}</span>
+            <span className="pie-total-badge">{isReceipt ? fmtNum(total, true) : total} {totalLabel}</span>
           </div>
         </div>
         {showWarning && (
@@ -637,11 +741,11 @@ const Home_Page = () => {
                   <text x={cx} y={cy + 10} textAnchor="middle" fontSize="9" fill="#9aa3b8" fontWeight="600">
                     {centerItem.name.length > 14 ? centerItem.name.slice(0, 14) + '…' : centerItem.name}
                   </text>
-                  <text x={cx} y={cy + 26} textAnchor="middle" fontSize="11" fill="#F36F21" fontWeight="700">{centerItem.value} {valueLabel}</text>
+                  <text x={cx} y={cy + 26} textAnchor="middle" fontSize="11" fill="#F36F21" fontWeight="700">{isReceipt ? fmtNum(centerItem.value, true) : `${centerItem.value} ${valueLabel}`}</text>
                 </>
               ) : (
                 <>
-                  <text x={cx} y={cy - 6} textAnchor="middle" fontSize="24" fontWeight="700" fill="#1a2340">{total}</text>
+                  <text x={cx} y={cy - 6} textAnchor="middle" fontSize="24" fontWeight="700" fill="#1a2340">{isReceipt ? fmtNum(total, true) : total}</text>
                   <text x={cx} y={cy + 14} textAnchor="middle" fontSize="11" fill="#9aa3b8" fontWeight="500">Total</text>
                 </>
               )}
@@ -663,17 +767,11 @@ const Home_Page = () => {
                 >
                   <div className="pie-legend-color" style={{ backgroundColor: item.color, flexShrink: 0 }}></div>
                   {rankEmoji && <span className="pie-rank-badge">{rankEmoji}</span>}
-                  <span style={{ flex: 1, fontSize: '13px' }}>{item.name}{isBeat ? ` (${item.value})` : ` (${item.value})`}</span>
+                  <span style={{ flex: 1, fontSize: '13px' }}>{item.name}{isBeat ? ` (${item.value})` : isReceipt ? ` (${fmtNum(item.value, true)})` : ` (${item.value})`}</span>
                   <span className="pie-legend-pct" style={{ backgroundColor: item.color + '22', color: item.color }}>{pct}%</span>
                 </div>
               );
             })}
-            {!isBeat && (
-              <div className="pie-legend-item">
-                <div className="pie-legend-color" style={{ backgroundColor: '#E8E8E8' }}></div>
-                <span style={{ flex: 1, fontSize: '13px' }}>5+ See More</span>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -684,8 +782,7 @@ const Home_Page = () => {
     <div className="dashboard-container">
       <Header />
       
-      <div className="dashboard-content">
-        {/* Overview Header with Action Buttons in same row */}
+      <div className="dashboard-content">        {/* Overview Header with Action Buttons in same row */}
         <div className="dashboard-header">
           <h1>Over View</h1>
           <div className="action-buttons">
@@ -759,6 +856,33 @@ const Home_Page = () => {
           </div>
         </div>
       </div>
+
+      {/* ── Metric value tooltip portal ── */}
+      {metricTooltip && ReactDOM.createPortal(
+        <div
+          className="metric-hover-tooltip"
+          style={{
+            position: 'fixed',
+            left: metricTooltip.x,
+            top: metricTooltip.y - 8,
+            transform: 'translate(-50%, -100%)',
+            pointerEvents: 'none',
+            zIndex: 99999,
+          }}
+        >
+          <div className="mht-period">{metricTooltip.period}</div>
+          <div className="mht-row">
+            <span className="mht-lbl">Value</span>
+            <span className="mht-val">₹{Number(metricTooltip.value).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
+          <div className="mht-row">
+            <span className="mht-lbl">Target</span>
+            <span className="mht-tgt">₹{Number(metricTooltip.target).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
+          <div className="mht-arrow" />
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

@@ -11,7 +11,6 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 20px 0px 10px;
   margin-top: 10px;
   gap: 30px;
 }
@@ -38,10 +37,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  background: white;
   border-radius: 8px;
   padding: 15px 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .header-right .file-display {
@@ -141,10 +138,11 @@
 
 /* Preview Section */
 .preview-section {
-  background: white;
+  background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   overflow: hidden;
+  border: 1px solid #e5e7eb;
 }
 
 .preview-header {
@@ -161,14 +159,28 @@
   text-align: left;
 }
 
-.table-wrapper {
-  position: relative;
-}
-
 .table-container {
   overflow-x: auto;
   max-height: 450px;
   overflow-y: auto;
+}
+
+.table-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #20409A;
 }
 
 .preview-table {
@@ -177,37 +189,46 @@
   font-size: 14px;
 }
 
-.preview-table th {
-  background: #f8f9fa;
-  color: #495057;
-  font-weight: 600;
-  padding: 12px 8px;
-  text-align: center;
-  border-bottom: 2px solid #dee2e6;
+.preview-table thead {
+  background: linear-gradient(135deg, #20409A, #1a3580);
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+.preview-table th {
+  padding: 10px 8px;
+  text-align: center;
+  font-weight: 600;
+  color: #fff;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   white-space: nowrap;
-  font-size: 13px;
 }
 
 .preview-table td {
   padding: 10px 8px;
-  border-bottom: 1px solid #e9ecef;
-  color: #495057;
-  font-size: 13px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+  font-size: 12px;
+  vertical-align: middle;
 }
 
-.preview-table tbody tr:hover {
-  background: #f8f9fa;
+.preview-table tbody tr:hover td {
+  background: #f8f9ff;
 }
 
-.preview-table tbody tr:nth-child(even) {
-  background: #fdfdfd;
+.preview-table tbody tr:nth-child(even) td {
+  background: #fafafa;
 }
 
-.preview-table tbody tr:nth-child(even):hover {
-  background: #f8f9fa;
+.preview-table tbody tr:nth-child(even):hover td {
+  background: #f8f9ff;
+}
+
+.preview-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 /* No Data State */
@@ -382,8 +403,8 @@
 }
 
 .header-right .download-template-btn {
-  background: #f7f7f7;
-  color: #fd7e14;
+  background: #019621;
+  color: #ffffff;
 }
 
 .header-right .download-template-btn:hover {

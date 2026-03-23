@@ -235,7 +235,11 @@ const ItemMaster = () => {
       <Header />
       <div className="masters-content">
         <div className="masters-header">
-          <Breadcrumb currentPage={getPageTitle()} />
+          <Breadcrumb crumbs={[
+            { label: 'Home', path: '/sales-home' },
+            { label: 'Masters', path: '/masters' },
+            { label: getPageTitle() },
+          ]} />
           <div className="masters-header-controls">
             <div className="header-search-control">
               <input

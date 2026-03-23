@@ -82,7 +82,11 @@ const PartnerMaster = () => {
         <div className="masters-content">
           {/* Header Section */}
           <div className="masters-header">
-            <Breadcrumb currentPage={config.title} />
+          <Breadcrumb crumbs={[
+            { label: 'Home', path: '/sales-home' },
+            { label: 'Masters', path: '/masters' },
+            { label: config.title },
+          ]} />
             <div className="masters-actions">
               <input
                 type="text"

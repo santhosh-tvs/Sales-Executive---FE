@@ -47,7 +47,11 @@ const ApplicationMaster = () => {
         <div className="masters-content">
           {/* Header Section */}
           <div className="masters-header">
-            <Breadcrumb currentPage="Application Master" />
+          <Breadcrumb crumbs={[
+            { label: 'Home', path: '/sales-home' },
+            { label: 'Masters', path: '/masters' },
+            { label: 'Application Master' },
+          ]} />
             <div className="masters-actions">
               <input
                 type="text"

@@ -12,7 +12,10 @@ const MyActions = () => {
   return (
     <div className="actions-dashboard">
       <Header />
-      <Breadcrumb currentPage="My Actions" />
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'My Actions' },
+      ]} />
       
       <main className="sections-container">
         <Visits />

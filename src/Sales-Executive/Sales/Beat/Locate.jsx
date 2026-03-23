@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../../header/Header';
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import '../../../styles/Sales/Beat/Locate.css';
 
 const Locate = () => {
@@ -67,7 +68,11 @@ const Locate = () => {
   return (
     <div className="locate-container">
       <Header />
-      
+      <Breadcrumb crumbs={[
+        { label: 'Home', path: '/sales-home' },
+        { label: 'Beat Plan', path: '/beatplan' },
+        { label: 'Locate Customer' },
+      ]} />
       <div className="locate-content">
         <div className="locate-form">
           <h2 className="section-title">Customer</h2>

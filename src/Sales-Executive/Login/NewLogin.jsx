@@ -77,6 +77,8 @@ function NewLogin() {
             if (profileData.success && profileData.data?.profile?.api_list) {
               console.log('✅ Initializing API configuration from profile response (sales executive)');
               apiConfigManager.initialize(profileData.data.profile.api_list);
+              const seCode = profileData.data.profile.sales_executive_code;
+              if (seCode) localStorage.setItem('sales_executive_code', seCode);
             }
           } catch (profileError) {
             console.error('❌ Failed to fetch profile for API configuration:', profileError);
@@ -90,7 +92,7 @@ function NewLogin() {
           setLoadingMessage("Loading Dashboard...");
           setTimeout(() => {
             navigate("/sales-home");
-          }, 100000); // Keep spinner visible for smooth transition
+          }, 1000); // Keep spinner visible for smooth transition
         }
       } else if (data.message?.includes("already logged in")) {
         // Session conflict - user is already logged in elsewhere
@@ -157,6 +159,8 @@ function NewLogin() {
             if (profileData.success && profileData.data?.profile?.api_list) {
               console.log('✅ Initializing API configuration from profile response (sales executive)');
               apiConfigManager.initialize(profileData.data.profile.api_list);
+              const seCode = profileData.data.profile.sales_executive_code;
+              if (seCode) localStorage.setItem('sales_executive_code', seCode);
             }
           } catch (profileError) {
             console.error('❌ Failed to fetch profile for API configuration:', profileError);

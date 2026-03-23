@@ -36,7 +36,11 @@ const MasterEditPage = () => {
       <div className="master-view-container">
         <Header />
         <div className="master-view-content">
-          <Breadcrumb currentPage="Masters" />
+          <Breadcrumb crumbs={[
+            { label: 'Home', path: '/sales-home' },
+            { label: 'Masters', path: '/masters' },
+            { label: 'Edit' },
+          ]} />
           <p>No data available</p>
         </div>
       </div>
@@ -50,7 +54,12 @@ const MasterEditPage = () => {
       <div className="master-view-content">
         {/* Header with Breadcrumb and Tabs */}
         <div className="view-header-section">
-          <Breadcrumb currentPage={`Masters / ${masterType} / Edit`} />
+          <Breadcrumb crumbs={[
+            { label: 'Home', path: '/sales-home' },
+            { label: 'Masters', path: '/masters' },
+            { label: masterType || 'Master', path: -1 },
+            { label: 'Edit' },
+          ]} />
 
           {/* Tabs Section - Aligned Right */}
           <div className="view-tabs-section">

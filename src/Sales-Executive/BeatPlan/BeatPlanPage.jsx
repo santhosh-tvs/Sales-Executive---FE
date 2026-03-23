@@ -964,7 +964,10 @@ const BeatPlanPage = () => {
       <Header />
       <div className="beat-plan-content">
         <div className="breadcrumb-actions-row">
-          <Breadcrumb currentPage="Beat Plan" />
+          <Breadcrumb crumbs={[
+            { label: 'Home', path: '/sales-home' },
+            { label: 'Beat Plan' },
+          ]} />
           <div className="top-action-buttons">
             <button className="create-beat-btn" onClick={handleCreateBeat}>
               <img src={DateIcon} alt="Create" className="btn-icon" />

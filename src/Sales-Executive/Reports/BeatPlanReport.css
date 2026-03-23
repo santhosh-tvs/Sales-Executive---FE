@@ -1,55 +1,66 @@
-/* Report Pages — Visit Report, Check In/Out Report */
+/* Beat Plan Report */
 
-.vr-container {
+.bpr-container {
   font-family: "Inter", sans-serif;
   background: #f8f9fa;
   min-height: 100vh;
 }
 
-.vr-content {
+.bpr-content {
   margin: 0 auto;
   padding: 16px;
 }
 
-/* Top Bar */
-.vr-top-bar {
+/* Filters bar */
+.bpr-filters {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 3px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
   margin-bottom: 14px;
-  gap: 12px;
 }
 
-/* Actions row — always single line */
-.vr-actions {
+.bpr-filter-group {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  flex-wrap: nowrap;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.vr-search-input {
+.bpr-filter-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.bpr-input {
   height: 34px;
   padding: 0 10px;
-  border: 1px solid #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 3px;
   font-size: 12px;
-  outline: none;
-  width: 220px;
+  color: #374151;
   background: #f9f9f9;
+  outline: none;
+  min-width: 150px;
   transition: border-color 0.2s;
 }
 
-.vr-search-input:focus {
-  border-color: #ffffff;
+.bpr-input:focus {
+  border-color: #20409A;
   background: #fff;
 }
 
-.vr-search-btn {
+.bpr-filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.bpr-view-btn {
   height: 34px;
-  padding: 0 16px;
+  padding: 0 18px;
   background: #20409A;
   color: #fff;
   border: none;
@@ -61,16 +72,16 @@
   transition: background 0.2s;
 }
 
-.vr-search-btn:hover:not(:disabled) {
+.bpr-view-btn:hover:not(:disabled) {
   background: #1a3580;
 }
 
-.vr-search-btn:disabled {
+.bpr-view-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.vr-export-btn {
+.bpr-export-btn {
   height: 34px;
   padding: 0 14px;
   background: #16a34a;
@@ -87,17 +98,17 @@
   transition: background 0.2s;
 }
 
-.vr-export-btn:hover:not(:disabled) {
+.bpr-export-btn:hover:not(:disabled) {
   background: #1e7e34;
 }
 
-.vr-export-btn:disabled {
+.bpr-export-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Error */
-.vr-error {
+.bpr-error {
   background: #fff5f5;
   color: #dc3545;
   border: 1px solid #ffe0e0;
@@ -107,8 +118,8 @@
   margin-bottom: 12px;
 }
 
-/* Table Wrapper — horizontal scroll only here */
-.vr-table-wrapper {
+/* Table */
+.bpr-table-wrapper {
   background: #fff;
   padding: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
@@ -117,19 +128,19 @@
   border: 1px solid #e5e7eb;
 }
 
-.vr-table {
+.bpr-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 1100px;
   border-collapse: collapse;
   table-layout: auto;
   font-size: 13px;
 }
 
-.vr-table thead {
+.bpr-table thead {
   background: linear-gradient(135deg, #20409A, #1a3580);
 }
 
-.vr-table th {
+.bpr-table th {
   padding: 10px 8px;
   text-align: left;
   font-size: 11px;
@@ -140,31 +151,44 @@
   white-space: nowrap;
 }
 
-.vr-table td {
+.bpr-table td {
   padding: 10px 8px;
   border-bottom: 1px solid #f3f4f6;
   color: #374151;
   vertical-align: middle;
   font-size: 12px;
+  white-space: nowrap;
 }
 
-.vr-table tbody tr:last-child td {
+.bpr-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.vr-table tbody tr:hover {
+.bpr-table tbody tr:hover {
   background: #f8f9ff;
 }
 
-.vr-empty {
+.bpr-empty {
   text-align: center;
   color: #999;
   padding: 32px 0;
   font-size: 13px;
 }
 
+/* Day plan badge */
+.bpr-badge {
+  display: inline-block;
+  background: #eff6ff;
+  color: #20409A;
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
 /* Pagination */
-.vr-pagination {
+.bpr-pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -177,19 +201,19 @@
   gap: 8px;
 }
 
-.vr-pagination-info {
+.bpr-pagination-info {
   font-size: 12px;
   color: #6b7280;
   font-weight: 500;
 }
 
-.vr-pagination-controls {
+.bpr-pagination-controls {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
 
-.vr-page-btn {
+.bpr-page-btn {
   height: 30px;
   min-width: 34px;
   padding: 0 8px;
@@ -203,42 +227,19 @@
   transition: all 0.2s;
 }
 
-.vr-page-btn:hover:not(:disabled) {
+.bpr-page-btn:hover:not(:disabled) {
   border-color: #20409A;
   background: #f8f9ff;
   color: #20409A;
 }
 
-.vr-page-btn.active {
+.bpr-page-btn.active {
   background: linear-gradient(135deg, #20409A, #1a3580);
   color: #fff;
   border-color: #20409A;
 }
 
-.vr-page-btn:disabled {
+.bpr-page-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
-
-/* ── Filter bar (added for from/to date + customer) ── */
-.vr-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  align-items: flex-end;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.04);
-}
-.vr-filter-group { display: flex; flex-direction: column; gap: 5px; }
-.vr-filter-group label { font-size: 12px; font-weight: 600; color: #555; }
-.vr-filter-input {
-  height: 38px; padding: 0 10px;
-  border: 1px solid #d0d5e8; border-radius: 6px;
-  font-size: 13px; color: #333; min-width: 160px; outline: none;
-}
-.vr-filter-input:focus { border-color: #20409A; }
-.vr-filter-actions { display: flex; gap: 10px; align-items: flex-end; }

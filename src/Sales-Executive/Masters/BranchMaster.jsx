@@ -163,7 +163,11 @@ const Masters = () => {
             <Header />
             <div className="masters-content">
                 <div className="masters-header">
-                    <Breadcrumb currentPage="Masters" />
+                    <Breadcrumb crumbs={[
+                      { label: 'Home', path: '/sales-home' },
+                      { label: 'Masters', path: '/masters' },
+                      { label: 'Branch Master' },
+                    ]} />
                     <div className="masters-header-controls">
                         <div className="header-search-control">
                             <input type="text" value={searchTerm} onChange={handleSearchChange} placeholder="Search..." className="header-search-input" />

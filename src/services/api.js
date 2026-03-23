@@ -553,11 +553,23 @@ export const viewCustomerAPI = async (customerId) => {
 /**
  * Create Order API
  * Submit order to external ERP system
+ * Uses JWT login token for auth
  */
 export const createOrderAPI = async (orderData) => {
   try {
     if (apiConfigManager.isInitialized()) {
-      return await apiService.callExternalApi('order create api', orderData);
+      const apiConfig = apiConfigManager.getApi('order create api');
+      if (!apiConfig) throw new Error('order create api config not found');
+
+      const token = localStorage.getItem('authToken');
+      const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
+      return await apiService.post('/catalog/proxy', {
+        url: apiConfig.api_url,
+        method: apiConfig.http_method,
+        data: orderData,
+        headers: authHeaders,
+      });
     }
   } catch (error) {
     console.error('Create order API error:', error);
@@ -572,6 +584,62 @@ export const customerDetails = async (orderData) => {
     }
   } catch (error) {
     console.error('Customer details API error:', error);
+  }
+  return null;
+};
+
+/**
+ * Get Order Details API
+ * Fetch details of a specific order from external ERP system
+ * Uses JWT login token for auth (no basic auth credentials in config)
+ * @param {Object} requestBody - Request payload
+ */
+export const getOrderDetailsAPI = async (requestBody) => {
+  try {
+    if (apiConfigManager.isInitialized()) {
+      const apiConfig = apiConfigManager.getApi('getorderdetails');
+      if (!apiConfig) throw new Error('getorderdetails API config not found');
+
+      const token = localStorage.getItem('authToken');
+      const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
+      return await apiService.post('/catalog/proxy', {
+        url: apiConfig.api_url,
+        method: apiConfig.http_method,
+        data: requestBody,
+        headers: authHeaders,
+      });
+    }
+  } catch (error) {
+    console.error('Get order details API error:', error);
+  }
+  return null;
+};
+
+/**
+ * Get Order List API
+ * Fetch list of orders from external ERP system
+ * Uses JWT login token for auth (no basic auth credentials in config)
+ * @param {Object} requestBody - Request payload
+ */
+export const getOrderListAPI = async (requestBody) => {
+  try {
+    if (apiConfigManager.isInitialized()) {
+      const apiConfig = apiConfigManager.getApi('getorderlist');
+      if (!apiConfig) throw new Error('getOrderList API config not found');
+
+      const token = localStorage.getItem('authToken');
+      const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
+      return await apiService.post('/catalog/proxy', {
+        url: apiConfig.api_url,
+        method: apiConfig.http_method,
+        data: requestBody,
+        headers: authHeaders,
+      });
+    }
+  } catch (error) {
+    console.error('Get order list API error:', error);
   }
   return null;
 };
@@ -612,4 +680,6 @@ export default {
   profileAPI,
   viewCustomerAPI,
   createOrderAPI,
+  getOrderDetailsAPI,
+  getOrderListAPI,
 };

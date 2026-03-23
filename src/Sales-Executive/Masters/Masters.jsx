@@ -327,7 +327,10 @@ const Masters = () => {
       <div className="masters-content">
         {/* Header Section with Navigation and Controls */}
         <div className="masters-header">
-          <Breadcrumb currentPage="Masters" />
+          <Breadcrumb crumbs={[
+            { label: 'Home', path: '/sales-home' },
+            { label: 'Masters' },
+          ]} />
           
           <div className="masters-header-controls">
             {/* Master Tabs */}

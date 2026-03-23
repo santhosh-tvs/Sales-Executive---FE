@@ -105,7 +105,7 @@
     padding: 8px 16px;
     height: 36px;
     border: none;
-    border-radius: 6px;
+    border-radius: 3px;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -134,7 +134,7 @@
 /* Enhanced Table Section */
 .table-container {
     background: #fff;
-    border-radius: 8px;
+    border-radius: 3px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     margin-bottom: 16px;
@@ -158,12 +158,12 @@
 
 .table-wrapper::-webkit-scrollbar-track {
     background: #f1f3f4;
-    border-radius: 10px;
+    border-radius: 3px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb {
     background: #c7d2fe;
-    border-radius: 10px;
+    border-radius: 3px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb:hover {
@@ -303,9 +303,9 @@
 }
 
 .pagination-btn.active {
-    background: linear-gradient(135deg, #20409A, #1a3580);
+    background: linear-gradient(135deg, #ff6b35, #ff6b35);
     color: #fff;
-    border-color: #20409A;
+    border-color: #ff6b35;
 }
 
 .pagination-btn:disabled {
@@ -526,11 +526,11 @@
     padding: 10px 20px;
     width: 180px;
     height: 40px;
-    background: linear-gradient(135deg, #20409A 0%, #1a3580 100%);
+    background: #20409A;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: 3px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;

@@ -4,6 +4,7 @@ import "./ForgotPassword.css";
 import Picture from "../../components/login/Assets/Login/picture.png";
 import Tvs from "../../components/login/Assets/Login/mytvs.png";
 import { apiService } from "../../services/apiservice";
+import Spinner from "../components/Spinner/Spinner";
 
 function ForgotPassword() {
   const navigate = useNavigate();
@@ -270,7 +271,7 @@ function ForgotPassword() {
                 className="gradient-login-btn"
                 disabled={loading}
               >
-                {loading ? "GENERATING OTP..." : "GENERATE OTP"}
+                {loading ? <><Spinner inline size="sm" /> Generating OTP</> : "GENERATE OTP"}
               </button>
 
               <div className="helper-links">

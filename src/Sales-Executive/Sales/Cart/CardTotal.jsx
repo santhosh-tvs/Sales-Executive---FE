@@ -15,14 +15,20 @@ function CardTotal() {
   const gst = basicPrice * 0.18;
   const total = basicPrice + gst;
 
+  // Compute split summary across all cart items
+  const splitSummary = cartItems.reduce((acc, item) => {
+    const ordered = item.quantity || 0;
+    const available = item.availableQty ?? ordered;
+    acc.saleQty += Math.min(ordered, available);
+    acc.backQty += Math.max(0, ordered - available);
+    return acc;
+  }, { saleQty: 0, backQty: 0 });
+
+  const hasBackOrder = splitSummary.backQty > 0;
+
   const handleCheckout = () => {
     navigate("/shipping", {
-      state: {
-        cartItems,
-        basicTotal: basicPrice,
-        gst,
-        total
-      }
+      state: { cartItems, basicTotal: basicPrice, gst, total }
     });
   };
 
@@ -50,6 +56,25 @@ function CardTotal() {
             <div className="label">Grand Total</div>
             <div className="value">₹{total.toFixed(2)}</div>
           </div>
+
+          {/* Split summary — only when back order items exist */}
+          {hasBackOrder && (
+            <div className="cardtotal-split-summary">
+              <div className="cardtotal-split-row">
+                <span className="cardtotal-split-dot cardtotal-dot-sale" />
+                <span className="cardtotal-split-label">Sale Order</span>
+                <span className="cardtotal-split-qty cardtotal-qty-sale">{splitSummary.saleQty} units</span>
+              </div>
+              <div className="cardtotal-split-row">
+                <span className="cardtotal-split-dot cardtotal-dot-bo" />
+                <span className="cardtotal-split-label">Back Order</span>
+                <span className="cardtotal-split-qty cardtotal-qty-bo">{splitSummary.backQty} units</span>
+              </div>
+              <p className="cardtotal-split-note">
+                Available stock → Sale Order. Remaining → Back Order.
+              </p>
+            </div>
+          )}
 
           <button className="cardtotal-cta" onClick={handleCheckout}>
             Proceed to Checkout

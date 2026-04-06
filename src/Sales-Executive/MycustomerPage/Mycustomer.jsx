@@ -5,6 +5,7 @@ import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import { viewCustomerAPI } from '../../services/api';
 import apiConfigManager from '../../services/apiConfig';
 import { apiService } from '../../services/apiservice';
+import Spinner from '../components/Spinner/Spinner';
 import "./Mycustomer.css";
 
 // SVG icons with controllable color
@@ -64,6 +65,8 @@ const MyCustomer = () => {
 
   const fetchAndSetCustomerConfig = async (customerCode) => {
     try {
+      // Clear stale warehouse cache so the new customer gets fresh warehouse data
+      localStorage.removeItem('customer_warehouses');
       const response = await viewCustomerAPI(customerCode);
       if (response && response.success) {
         apiConfigManager.updateFromCustomer(response);
@@ -137,7 +140,7 @@ const MyCustomer = () => {
 
       <div className="customer-table">
         {loadingCustomers ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>Loading customers...</div>
+          <Spinner text="Loading customers..." />
         ) : filteredCustomers.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>No customers found.</div>
         ) : filteredCustomers.map((c, i) => (

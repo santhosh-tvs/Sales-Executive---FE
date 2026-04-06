@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Header from "../header/Header";
 import Breadcrumb from "../components/Breadcrumb/Breadcrumb";
+import Spinner from "../components/Spinner/Spinner";
 import "./BeatPlanReport.css";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -141,14 +142,20 @@ const BeatPlanReport = () => {
       // customers are in that beat (single = Beat-1, import with 3 = Beat-3)
       const dayPlanLabel = `Beat-${plannedCount}`;
 
-      // Target with Unit: target is set at check-in (updateVisit).
-      // visitedBeatPlanList returns `target` field (target_type not in response).
-      // Collect unique target values from all plans in this day.
+      // Target with Unit: format as T-"value", U-"value"
+      // target field stores "value|unit" (e.g. "50000|Rs")
       const targetEntries = plans
         .filter((p) => p.target != null && p.target !== "")
-        .map((p) => String(p.target))
+        .map((p) => {
+          const raw = String(p.target);
+          if (raw.includes("|")) {
+            const [t, u] = raw.split("|");
+            return `T-"${t}", U-"${u}"`;
+          }
+          return `T-"${raw}"`;
+        })
         .filter((v, i, arr) => arr.indexOf(v) === i);
-      const targetWithUnit = targetEntries.length > 0 ? targetEntries.join(", ") : "-";
+      const targetWithUnit = targetEntries.length > 0 ? targetEntries.join(" | ") : "-";
 
       // Total Receipts: count receipts for customers in this date group
       const customerNames = [...new Set(plans.map((p) => (p.garage_name || "").trim()))];
@@ -279,7 +286,7 @@ const BeatPlanReport = () => {
             </div>
             <div className="bpr-filter-actions">
               <button className="bpr-view-btn" onClick={loadData} disabled={loading}>
-                {loading ? "Loading..." : "View"}
+                {loading ? <><Spinner inline size="sm" /> Loading</> : "View"}
               </button>
               <button className="bpr-export-btn" onClick={handleExport} disabled={reportRows.length === 0}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -315,7 +322,7 @@ const BeatPlanReport = () => {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={12} className="bpr-empty">Loading...</td></tr>
+                  <tr><td colSpan={12} className="bpr-empty"><Spinner size="sm" text="Loading..." /></td></tr>
                 ) : currentData.length === 0 ? (
                   <tr><td colSpan={12} className="bpr-empty">No records found</td></tr>
                 ) : (

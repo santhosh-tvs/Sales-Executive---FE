@@ -1,62 +1,118 @@
-/* Breadcrumb Navigation Styles */
+/* Breadcrumb Wrapper — holds back button + nav together */
+.breadcrumb-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-family: Inter, sans-serif;
+}
+
+/* Back Button */
+.breadcrumb-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid #d0d5dd;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  color: #4a4a4a;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.breadcrumb-back-btn:hover {
+  background: #f0f4ff;
+  border-color: #20409a;
+  color: #20409a;
+  box-shadow: 0 1px 4px rgba(32, 64, 154, 0.15);
+}
+
+.breadcrumb-back-btn:active {
+  background: #e0e8ff;
+}
+
+.breadcrumb-back-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Breadcrumb Nav */
 .breadcrumb-navigation {
-    display: flex;
-    align-items: center;
-    margin-bottom: 28px;
-    padding: 0;
-    font-family: Inter, sans-serif;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
 }
 
-.breadcrumb-home {
-    color: #4A4A4A;
-    font-size: 12px;
-    font-weight: 400;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    text-decoration: none;
+/* Clickable ancestor links */
+.breadcrumb-link {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  white-space: nowrap;
 }
 
-.breadcrumb-home:hover {
-    color: #20409A;
-    text-decoration: underline;
+.breadcrumb-link:hover {
+  color: #20409a;
+  text-decoration: underline;
 }
 
+/* Separator */
 .breadcrumb-separator {
-    color: #4A4A4A;
-    font-size: 16px;
-    margin: 0 8px;
-    font-weight: 400;
+  color: #d0d5dd;
+  font-size: 13px;
+  margin: 0 6px;
+  user-select: none;
 }
 
+/* Current (active) page */
 .breadcrumb-current {
-    color: #20409A;
-    font-size: 14px;
-    font-weight: 600;
+  color: #20409a;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
-    .breadcrumb-navigation {
-        font-size: 14px;
-        margin-bottom: 15px;
-    }
+  .breadcrumb-wrapper {
+    margin-bottom: 14px;
+    gap: 6px;
+  }
 
-    .breadcrumb-home,
-    .breadcrumb-separator,
-    .breadcrumb-current {
-        font-size: 14px;
-    }
+  .breadcrumb-back-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .breadcrumb-back-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .breadcrumb-link,
+  .breadcrumb-separator,
+  .breadcrumb-current {
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 480px) {
-    .breadcrumb-navigation {
-        font-size: 13px;
-        margin-bottom: 12px;
-    }
+  .breadcrumb-wrapper {
+    margin-bottom: 10px;
+  }
 
-    .breadcrumb-home,
-    .breadcrumb-separator,
-    .breadcrumb-current {
-        font-size: 13px;
-    }
+  .breadcrumb-link,
+  .breadcrumb-separator,
+  .breadcrumb-current {
+    font-size: 11px;
+  }
 }

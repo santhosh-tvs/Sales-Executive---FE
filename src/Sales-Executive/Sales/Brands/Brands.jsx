@@ -4,6 +4,7 @@ import Header from '../../header/Header';
 import PageNavigate from '../Cart/PageNavigate';
 import { masterListAPI } from '../../../services/api';
 import OciImage from '../../../components/OciImage';
+import Spinner from '../../components/Spinner/Spinner';
 import './Brands.css';
 
 const Brands = () => {
@@ -170,9 +171,7 @@ const Brands = () => {
           <h2 className="brands-heading">Select a Brand</h2>
           
           {loading ? (
-            <div className="loading-message">
-              <p>Loading brands...</p>
-            </div>
+            <Spinner text="Loading brands..." />
           ) : error ? (
             <div className="error-message">
               <p>{error}</p>

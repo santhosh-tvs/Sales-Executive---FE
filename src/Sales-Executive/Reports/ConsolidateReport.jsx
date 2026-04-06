@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Header from "../header/Header";
 import Breadcrumb from "../components/Breadcrumb/Breadcrumb";
+import Spinner from "../components/Spinner/Spinner";
 import "./BeatPlanReport.css";
 import "./ConsolidateReport.css";
 
@@ -161,7 +162,7 @@ const ConsolidateReport = () => {
             </div>
             <div className="cr-filter-actions">
               <button className="cr-view-btn" onClick={loadData} disabled={loading}>
-                {loading ? "Loading..." : "View"}
+                {loading ? <><Spinner inline size="sm" /> Loading</> : "View"}
               </button>
               <button className="cr-export-btn" onClick={handleExport} disabled={filtered.length === 0}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -203,7 +204,7 @@ const ConsolidateReport = () => {
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan={13} className="cr-empty">Loading...</td></tr>
+                    <tr><td colSpan={13} className="cr-empty"><Spinner size="sm" text="Loading..." /></td></tr>
                   ) : paged.length === 0 ? (
                     <tr><td colSpan={13} className="cr-empty">No records found</td></tr>
                   ) : paged.map((r, idx) => (

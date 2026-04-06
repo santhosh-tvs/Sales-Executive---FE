@@ -551,26 +551,28 @@ export const viewCustomerAPI = async (customerId) => {
 };
 
 /**
+ * Warehouse Mapping API
+ * Returns warehouses mapped to the customer (primary/secondary/tertiary)
+ * combined with warehouses mapped to the sales executive.
+ * The first 3 entries (if present) are always the customer's warehouses in order.
+ * @param {string} customerCode - Customer code
+ */
+export const warehouseMappingAPI = async (customerCode) => {
+  try {
+    return await apiService.get(`/profile/warehouse-mapping`, { customer_code: customerCode });
+  } catch (error) {
+    console.error('Warehouse mapping API error:', error);
+  }
+  return null;
+};
+
+/**
  * Create Order API
- * Submit order to external ERP system
- * Uses JWT login token for auth
+ * Submit order via backend proxy (handles order API auth internally)
  */
 export const createOrderAPI = async (orderData) => {
   try {
-    if (apiConfigManager.isInitialized()) {
-      const apiConfig = apiConfigManager.getApi('order create api');
-      if (!apiConfig) throw new Error('order create api config not found');
-
-      const token = localStorage.getItem('authToken');
-      const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
-
-      return await apiService.post('/catalog/proxy', {
-        url: apiConfig.api_url,
-        method: apiConfig.http_method,
-        data: orderData,
-        headers: authHeaders,
-      });
-    }
+    return await apiService.post('/order/create', orderData);
   } catch (error) {
     console.error('Create order API error:', error);
   }
@@ -590,26 +592,12 @@ export const customerDetails = async (orderData) => {
 
 /**
  * Get Order Details API
- * Fetch details of a specific order from external ERP system
- * Uses JWT login token for auth (no basic auth credentials in config)
+ * Fetch details of a specific order via backend proxy
  * @param {Object} requestBody - Request payload
  */
 export const getOrderDetailsAPI = async (requestBody) => {
   try {
-    if (apiConfigManager.isInitialized()) {
-      const apiConfig = apiConfigManager.getApi('getorderdetails');
-      if (!apiConfig) throw new Error('getorderdetails API config not found');
-
-      const token = localStorage.getItem('authToken');
-      const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
-
-      return await apiService.post('/catalog/proxy', {
-        url: apiConfig.api_url,
-        method: apiConfig.http_method,
-        data: requestBody,
-        headers: authHeaders,
-      });
-    }
+    return await apiService.post('/order/details', requestBody);
   } catch (error) {
     console.error('Get order details API error:', error);
   }
@@ -618,31 +606,401 @@ export const getOrderDetailsAPI = async (requestBody) => {
 
 /**
  * Get Order List API
- * Fetch list of orders from external ERP system
- * Uses JWT login token for auth (no basic auth credentials in config)
+ * Fetch list of orders via backend proxy
  * @param {Object} requestBody - Request payload
  */
 export const getOrderListAPI = async (requestBody) => {
   try {
-    if (apiConfigManager.isInitialized()) {
-      const apiConfig = apiConfigManager.getApi('getorderlist');
-      if (!apiConfig) throw new Error('getOrderList API config not found');
-
-      const token = localStorage.getItem('authToken');
-      const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
-
-      return await apiService.post('/catalog/proxy', {
-        url: apiConfig.api_url,
-        method: apiConfig.http_method,
-        data: requestBody,
-        headers: authHeaders,
-      });
-    }
+    return await apiService.post('/order/list', requestBody);
   } catch (error) {
     console.error('Get order list API error:', error);
   }
   return null;
 };
+
+/**
+ * Import Order API
+ * Upload an Excel file to import orders in bulk via the backend proxy.
+ * Request: multipart/form-data with fields:
+ *   - employee_code (text)
+ *   - attachment   (file — .xlsx)
+ * @param {File}   file         - The Excel file to upload
+ * @param {string} employeeCode - Sales executive employee code
+ */
+export const importOrderAPI = async (file, employeeCode) => {
+  try {
+    const formData = new FormData();
+    formData.append('employee_code', employeeCode);
+    formData.append('attachment', file, file.name);
+
+    return await apiService.post('/order/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  } catch (error) {
+    console.error('Import order API error:', error);
+  }
+  return null;
+};
+/**
+ * Outstanding Invoice API
+ * Fetch outstanding invoices for a customer from the Oracle external API.
+ * Routes through the catalog proxy (GET without Content-Type).
+ * @param {object} params - { Customer_Name, As_On_Date, Business_Unit, Customer_Acct_Num }
+ */
+export const outstandingInvoiceAPI = async (params = {}) => {
+  try {
+    const apiConfig = apiConfigManager.getApi('Outstanding Invoice');
+    if (!apiConfig) throw new Error('Outstanding Invoice API not configured');
+
+    const authHeaders = apiConfigManager.getAuthHeaders('Outstanding Invoice');
+
+    const queryString = new URLSearchParams({
+      Customer_Name: params.Customer_Name || '',
+      As_On_Date: params.As_On_Date || '',
+      Business_Unit: params.Business_Unit || '',
+      Customer_Acct_Num: params.Customer_Acct_Num || '',
+    }).toString();
+
+    const fullUrl = `${apiConfig.api_url}?${queryString}`;
+
+    return await apiService.post('/catalog/external', {
+      url: fullUrl,
+      method: 'GET',
+      headers: authHeaders,
+    });
+  } catch (error) {
+    console.error('Outstanding Invoice API error:', error);
+  }
+  return null;
+};
+
+/**
+ * ─── In-memory session caches (module-level, survive re-renders) ─────────────
+ * Cleared by calling clearStockCaches() at the start of each product listing session.
+ */
+const _itemMasterCache = new Map();  // key: partNumber → full API response
+const _stockCheckCache = new Map();  // key: inventoryItemId → parsed stock array
+
+export const clearStockCaches = () => {
+  _itemMasterCache.clear();
+  _stockCheckCache.clear();
+  console.log('Stock caches cleared');
+};
+
+/**
+ * normalizeStockData — handle both Oracle response formats
+ * Format A: [{ inventory_item_id, warehouse: ["KMS_SLW", "KMS_WHM"] }]  → each warehouse = qty 1
+ * Format B: [{ organization_code: "KMS_SLW", available_to_reserve: 5 }] → sum per org
+ */
+const normalizeStockData = (parsed) => {
+  if (!parsed) return null;
+  const raw = Array.isArray(parsed) ? parsed : (parsed.data ?? [parsed]);
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+
+  const result = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+
+    // Format A — warehouse list
+    if (Array.isArray(item.warehouse)) {
+      item.warehouse.forEach(code => {
+        result.push({ organization_code: String(code).trim(), available_to_reserve: 1 });
+      });
+    }
+    // Format B — lot records
+    else if (item.organization_code !== undefined || item.Organization_Code !== undefined) {
+      const orgCode = String(item.organization_code || item.Organization_Code || '').trim();
+      const qty = item.available_to_reserve !== undefined && item.available_to_reserve !== null
+        ? Number(item.available_to_reserve)
+        : (item.availableQty !== undefined ? Number(item.availableQty)
+          : (item.qty !== undefined ? Number(item.qty) : 0));
+      result.push({ organization_code: orgCode, available_to_reserve: qty });
+    }
+    // Format C — has inventoryItemId but no org code
+    else if (item.inventory_item_id !== undefined || item.inventoryItemId !== undefined) {
+      result.push({ organization_code: 'UNKNOWN', available_to_reserve: 1 });
+    }
+  }
+
+  if (result.length === 0 && raw.length > 0) {
+    result.push({ organization_code: 'UNKNOWN', available_to_reserve: 1 });
+  }
+
+  console.log('normalizeStockData:', result.length, 'records | orgs:',
+    [...new Set(result.map(r => r.organization_code))].join(', '));
+  return result;
+};
+
+/**
+ * parseStockResponse — bracket-depth scanner for Oracle multipart responses
+ * Extracts ALL JSON arrays from the raw text, merges and normalizes them.
+ */
+const parseStockResponse = (text) => {
+  if (!text || !text.trim()) return null;
+
+  // Oracle explicitly says no stock
+  if (/no available records/i.test(text) && !text.includes('[{')) {
+    console.log('Oracle: No available records');
+    return [];
+  }
+
+  // HTML/XML error
+  if (text.trimStart().startsWith('<')) return null;
+
+  // Bracket-depth scan — extract ALL JSON arrays
+  const allRecords = [];
+  let searchFrom = 0;
+
+  while (true) {
+    const startIdx = text.indexOf('[{', searchFrom);
+    if (startIdx === -1) break;
+
+    let depth = 0;
+    let endIdx = -1;
+    for (let i = startIdx; i < text.length; i++) {
+      if (text[i] === '[') depth++;
+      else if (text[i] === ']') {
+        depth--;
+        if (depth === 0) { endIdx = i; break; }
+      }
+    }
+    if (endIdx === -1) break;
+
+    const jsonStr = text.slice(startIdx, endIdx + 1);
+    try {
+      const parsed = JSON.parse(jsonStr);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const records = normalizeStockData(parsed);
+        if (records && records.length > 0) allRecords.push(...records);
+      }
+    } catch (e) {
+      console.warn('JSON parse failed at', startIdx, ':', e.message);
+    }
+    searchFrom = endIdx + 1;
+  }
+
+  if (allRecords.length > 0) {
+    console.log('parseStockResponse: total', allRecords.length, 'records');
+    return allRecords;
+  }
+
+  // Fallback: direct JSON parse
+  try {
+    const parsed = JSON.parse(text);
+    const records = normalizeStockData(parsed);
+    if (records && records.length > 0) return records;
+  } catch { /* not JSON */ }
+
+  if (/no available records/i.test(text)) return [];
+
+  console.log('parseStockResponse: no data extracted');
+  return null;
+};
+
+/**
+ * Item Master API (Itemmaster)
+ * Step 1 of stock check — translate partNumber → Oracle inventoryItemId.
+ * Tries multiple api_name variants. Results cached in _itemMasterCache.
+ */
+export const itemMasterAPI = async (partNumber, buName = '') => {
+  // Cache hit
+  if (_itemMasterCache.has(partNumber)) {
+    const cached = _itemMasterCache.get(partNumber);
+    if (cached !== null) {
+      console.log('ItemMaster cache hit:', partNumber);
+      return cached;
+    }
+    _itemMasterCache.delete(partNumber); // retry on cached null
+  }
+
+  // Try multiple api_name variants
+  const variants = ['itemmaster', 'item master', 'item_master', 'inventory item', 'inventoryitem'];
+  let apiConfig = null;
+  for (const v of variants) {
+    const cfg = apiConfigManager.getApi(v);
+    if (cfg) { apiConfig = cfg; break; }
+  }
+
+  if (!apiConfig) {
+    console.warn('ItemMaster: no API config found');
+    return null;
+  }
+
+  try {
+    const authHeaders = apiConfigManager.getAuthHeaders(apiConfig.api_name);
+    const baseUrl = (apiConfig.api_url || '').split('?')[0];
+    const dateFrom = '2020-12-09T00:00:00';
+    const dateTo   = '2026-12-22T10:00:00';
+
+    const fullUrl = `${baseUrl}?Date_From=${encodeURIComponent(dateFrom)}&Date_To=${encodeURIComponent(dateTo)}&Bu_Name=${encodeURIComponent(buName)}&Item_Code=${encodeURIComponent(partNumber)}`;
+
+    const res = await apiService.post('/catalog/external', {
+      url:     fullUrl,
+      method:  'GET',
+      headers: authHeaders,
+    });
+
+    let parsed = res;
+    if (typeof res === 'string') {
+      try { parsed = JSON.parse(res); } catch { parsed = {}; }
+    }
+
+    // Handle all response shapes
+    let data = null;
+    if (Array.isArray(parsed)) {
+      data = parsed;
+    } else if (parsed?.returnStatus === '200' && Array.isArray(parsed?.data)) {
+      data = parsed.data;
+    } else if (Array.isArray(parsed?.data)) {
+      data = parsed.data;
+    }
+
+    if (data && data.length > 0) {
+      _itemMasterCache.set(partNumber, data);
+      return data;
+    }
+
+    console.warn('ItemMaster: no data for', partNumber, '| response:', JSON.stringify(parsed)?.substring(0, 200));
+    _itemMasterCache.set(partNumber, null);
+    return null;
+  } catch (error) {
+    console.error('Itemmaster API error:', error);
+    return null;
+  }
+};
+
+/**
+ * Stock Check New API (StockCheckNew)
+ * Step 2 of stock check — get qty per warehouse for an inventoryItemId.
+ * Results cached in _stockCheckCache.
+ */
+export const stockCheckNewAPI = async (inventoryItemId, warehouses = []) => {
+  const cacheKey = String(inventoryItemId);
+
+  // Cache hit
+  if (_stockCheckCache.has(cacheKey)) {
+    console.log('StockCheckNew cache hit:', cacheKey);
+    return _stockCheckCache.get(cacheKey);
+  }
+
+  // Try multiple api_name variants
+  const variants = ['stockchecknew', 'stock check new', 'stock_check_new', 'stockcheck', 'stock check'];
+  let apiConfig = null;
+  for (const v of variants) {
+    const cfg = apiConfigManager.getApi(v);
+    if (cfg) { apiConfig = cfg; break; }
+  }
+
+  if (!apiConfig) {
+    console.warn('StockCheckNew: no API config found');
+    return [];
+  }
+
+  try {
+    const authHeaders = apiConfigManager.getAuthHeaders(apiConfig.api_name);
+    const baseUrl = (apiConfig.api_url || '').split('?')[0];
+
+    // Uppercase warehouse codes — Oracle is case-sensitive
+    const warehouseList = warehouses.length > 0
+      ? warehouses.map(w => String(w).trim().toUpperCase())
+      : [];
+
+    const requestBody = [{
+      inventory_item_id: String(inventoryItemId),
+      warehouse: warehouseList,
+    }];
+
+    console.log('📦 StockCheckNew request:', JSON.stringify(requestBody));
+
+    const res = await apiService.post('/catalog/stock-check', {
+      url:     baseUrl,
+      data:    requestBody,
+      headers: authHeaders,
+    });
+
+    console.log('📦 StockCheckNew raw response type:', typeof res);
+
+    let rawString;
+    if (typeof res === 'string') {
+      rawString = res;
+    } else if (res && typeof res === 'object') {
+      if (Array.isArray(res)) {
+        const records = normalizeStockData(res);
+        if (records && records.length > 0) _stockCheckCache.set(cacheKey, records);
+        return records ?? [];
+      }
+      if (res.data && Array.isArray(res.data)) {
+        const records = normalizeStockData(res.data);
+        if (records && records.length > 0) _stockCheckCache.set(cacheKey, records);
+        return records ?? [];
+      }
+      rawString = JSON.stringify(res);
+    } else {
+      rawString = String(res || '');
+    }
+
+    const result = parseStockResponse(rawString);
+    const records = result ?? [];
+
+    if (records.length > 0) _stockCheckCache.set(cacheKey, records);
+    console.log('StockCheckNew got', records.length, 'records');
+    return records;
+  } catch (error) {
+    console.error('StockCheckNew API error:', error);
+    return [];
+  }
+};
+
+/**
+ * Full Stock Check Flow
+ * Chains ItemMaster → StockCheckNew with caching.
+ * Uses warehouseMappingAPI warehouses from localStorage.
+ */
+export const checkStockByPartNumber = async (partNumber) => {
+  try {
+    const itemData = await itemMasterAPI(partNumber);
+    if (!itemData || itemData.length === 0) {
+      console.warn('No item found for part number:', partNumber);
+      return { itemData: [], stockData: [], inventoryItemId: null };
+    }
+
+    const first = itemData[0];
+    const inventoryItemId = String(
+      first.inventoryItemId || first.inventory_item_id || first.InventoryItemId ||
+      first.ItemId || first.item_id || first.INVENTORY_ITEM_ID || ''
+    );
+
+    if (!inventoryItemId) {
+      return { itemData, stockData: [], inventoryItemId: null };
+    }
+
+    // Resolve warehouses: apiConfigManager → localStorage → selected_customer fields
+    let warehouses = apiConfigManager.getCustomerWarehouses();
+    if (!warehouses || warehouses.length === 0) {
+      const stored = localStorage.getItem('customer_warehouses');
+      if (stored) {
+        try { warehouses = JSON.parse(stored); } catch { warehouses = []; }
+      }
+    }
+    if (!warehouses || warehouses.length === 0) {
+      const stored = localStorage.getItem('selected_customer');
+      if (stored) {
+        try {
+          const profile = JSON.parse(stored);
+          warehouses = [profile?.primary_ware_house, profile?.secondary_ware_house, profile?.teritary_ware_house].filter(Boolean);
+        } catch { warehouses = []; }
+      }
+    }
+
+    console.log(`🔍 Stock check: partNumber=${partNumber}, inventoryItemId=${inventoryItemId}, warehouses=`, warehouses);
+    const stockData = await stockCheckNewAPI(inventoryItemId, warehouses);
+    return { itemData, stockData, inventoryItemId };
+  } catch (error) {
+    console.error('checkStockByPartNumber error:', error);
+    return { itemData: [], stockData: [], inventoryItemId: null };
+  }
+};
+
 /* ============================
    EXPORT ALL
 ============================ */
@@ -679,7 +1037,14 @@ export default {
   uiAssetsAPI,
   profileAPI,
   viewCustomerAPI,
+  warehouseMappingAPI,
   createOrderAPI,
   getOrderDetailsAPI,
   getOrderListAPI,
+  importOrderAPI,
+  outstandingInvoiceAPI,
+  stockCheckNewAPI,
+  itemMasterAPI,
+  checkStockByPartNumber,
+  clearStockCaches,
 };

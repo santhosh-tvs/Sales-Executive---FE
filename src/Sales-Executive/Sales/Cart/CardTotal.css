@@ -121,3 +121,54 @@
     font-size: 18px;
   }
 }
+
+/* ── Stock split summary ── */
+.cardtotal-split-summary {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardtotal-split-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+}
+
+.cardtotal-split-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cardtotal-dot-sale { background: #22c55e; }
+.cardtotal-dot-bo   { background: #f97316; }
+
+.cardtotal-split-label {
+  flex: 1;
+  color: #374151;
+  font-weight: 500;
+}
+
+.cardtotal-split-qty {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.cardtotal-qty-sale { color: #16a34a; }
+.cardtotal-qty-bo   { color: #ea580c; }
+
+.cardtotal-split-note {
+  font-size: 10px;
+  color: #92400e;
+  margin: 0;
+  padding-top: 4px;
+  border-top: 1px solid #fde68a;
+  font-style: italic;
+}

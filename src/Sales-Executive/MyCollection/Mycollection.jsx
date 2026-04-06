@@ -2,12 +2,17 @@ import React, { useState, useEffect } from "react";
 import Header from '../header/Header';
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import { apiService } from "../../services/apiservice";
+import { outstandingInvoiceAPI } from "../../services/api";
 import "./Mycollection.css";
 
 const MyCollection = () => {
   const [activeTab, setActiveTab] = useState('due');
   const [totalCount, setTotalCount] = useState(null);
   const [totalValue, setTotalValue] = useState(null);
+  const [dueToday, setDueToday] = useState([]);
+  const [upcomingDues, setUpcomingDues] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -27,11 +32,65 @@ const MyCollection = () => {
     fetchStats();
   }, []);
 
-  const paymentData = [
-    { title: 'DBV Repair Kit (300006006)', id: '045MSP66', orderDate: '27/01/2025', dueDate: '18/02/2025', price: '1178.66' },
-    { title: 'DBV Repair Kit (300006006)', id: '045MSP66', orderDate: '27/01/2025', dueDate: '18/02/2025', price: '1178.66' },
-    { title: 'DBV Repair Kit (300006006)', id: '045MSP66', orderDate: '27/01/2025', dueDate: '18/02/2025', price: '1178.66' },
-  ];
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Get customer account_number from localStorage
+        const stored = localStorage.getItem('selected_customer');
+        const customer = stored ? JSON.parse(stored) : null;
+        const accountNumber = customer?.account_number || '';
+
+        const res = await outstandingInvoiceAPI({
+          Customer_Acct_Num: accountNumber,
+        });
+
+        const invoices = res?.data || [];
+
+        // Today's date at midnight for comparison
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const todayList = [];
+        const upcomingList = [];
+
+        invoices.forEach((inv) => {
+          const dueDate = new Date(inv.invoiceDueDate);
+          dueDate.setHours(0, 0, 0, 0);
+
+          if (dueDate.getTime() === today.getTime()) {
+            todayList.push(inv);
+          } else if (dueDate > today) {
+            upcomingList.push(inv);
+          }
+        });
+
+        setDueToday(todayList);
+        setUpcomingDues(upcomingList);
+      } catch (e) {
+        console.error('Outstanding invoices fetch error:', e);
+        setError('Failed to load invoices');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInvoices();
+  }, []);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '—';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  };
+
+  const formatAmount = (amount) => {
+    return `₹ ${Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  const currentList = activeTab === 'due' ? dueToday : upcomingDues;
 
   return (
     <div className="collections-container">
@@ -58,7 +117,7 @@ const MyCollection = () => {
           </div>
           <div className="stat-info">
             <h2 className="stat-value">
-              {totalValue === null ? '—' : `₹ ${Number(totalValue).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              {totalValue === null ? '—' : formatAmount(totalValue)}
             </h2>
             <p className="stat-label">Total Collections Values</p>
           </div>
@@ -66,27 +125,57 @@ const MyCollection = () => {
       </div>
 
       <div className="tab-bar">
-        <button className={`tab-item ${activeTab === 'due' ? 'active' : ''}`} onClick={() => setActiveTab('due')}>
-          Due Today
+        <button
+          className={`tab-item ${activeTab === 'due' ? 'active' : ''}`}
+          onClick={() => setActiveTab('due')}
+        >
+          Due Today {dueToday.length > 0 && <span className="tab-badge">{dueToday.length}</span>}
         </button>
-        <button className={`tab-item ${activeTab === 'upcoming' ? 'active' : ''}`} onClick={() => setActiveTab('upcoming')}>
-          Upcoming Dues
+        <button
+          className={`tab-item ${activeTab === 'upcoming' ? 'active' : ''}`}
+          onClick={() => setActiveTab('upcoming')}
+        >
+          Upcoming Dues {upcomingDues.length > 0 && <span className="tab-badge">{upcomingDues.length}</span>}
         </button>
       </div>
 
-      <div className="list-container">
-        {paymentData.map((item, index) => (
-          <div key={index} className="payment-item">
+      <div className="list-container" style={{ minHeight: '120px' }}>
+        {loading && (
+          <div className="empty-state">Loading invoices...</div>
+        )}
+        {!loading && error && (
+          <div className="empty-state" style={{ color: '#e53e3e' }}>{error}</div>
+        )}
+        {!loading && !error && currentList.length === 0 && (
+          <div className="empty-state-box">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <path d="M2 10h20"/>
+            </svg>
+            <p className="empty-state-title">
+              {activeTab === 'due' ? 'No dues for today' : 'No upcoming dues'}
+            </p>
+            <p className="empty-state-sub">
+              {activeTab === 'due'
+                ? 'You have no payments due today. Check upcoming dues.'
+                : 'No upcoming invoices found at this time.'}
+            </p>
+          </div>
+        )}
+        {!loading && !error && currentList.map((item, index) => (
+          <div key={item.invoiceId || index} className="payment-item">
             <div className="payment-details">
-              <h4>{item.title}</h4>
-              <p className="item-id">{item.id}</p>
-              <p className="meta-text">Order Date : {item.orderDate}</p>
-              <p className="meta-text">Due Date : {item.dueDate}</p>
+              <h4>{item.customerName}</h4>
+              <p className="item-id">{item.invoiceNumber}</p>
+              <p className="meta-text">Invoice Type : {item.invoiceType}</p>
+              <p className="meta-text">GL Date : {formatDate(item.glDate)}</p>
+              <p className="meta-text">Due Date : {formatDate(item.invoiceDueDate)}</p>
+              <p className="meta-text">Business Unit : {item.businessUnitName}</p>
             </div>
             <div className="payment-actions">
               <div className="price-info">
-                <span className="price-label">Total Price</span>
-                <h3 className="price-amount">₹ {item.price}</h3>
+                <span className="price-label">Balance Amount</span>
+                <h3 className="price-amount">{formatAmount(item.balanceAmount)}</h3>
               </div>
               <button className="make-payment-btn">
                 Make Payment

@@ -26,7 +26,6 @@ import Create_Order from "./Sales-Executive/Sales/Create_Order/Create_Order.jsx"
 import S_BulkOrder from "./Sales-Executive/S-orders/S-bulk-order.jsx";
 import S_ImportOrder from "./Sales-Executive/S-orders/S-Import.jsx";
 import S_OrderView from "./Sales-Executive/S-orders/S-order-view.jsx";
-import S_ImportStatus from "./Sales-Executive/S-orders/S-ImportStatus.jsx";
 
 // Sales Reports - Using Receipt module instead
 import ReceiptPage from "./Sales-Executive/Receipt/Components/receipt.jsx";
@@ -106,7 +105,6 @@ function App() {
           <Route path="/create-order" element={<Create_Order />} />
           <Route path="/s-bulk" element={<S_BulkOrder />} />
           <Route path="/s-import" element={<S_ImportOrder />} />
-          <Route path="/s-import-status" element={<S_ImportStatus />} />
           <Route path="/s-order-view" element={<S_OrderView />} />
 
           {/* Reports - Removed old Report module, using Receipt module */}

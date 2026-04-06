@@ -72,7 +72,6 @@
   display: inline-block;
 }
 
-/* Dropdown button should not have background on hover */
 .dropdown .nav-btn {
   background: none !important;
 }
@@ -583,9 +582,9 @@
 }
 
 .badge-count {
-  position: absolute;
-  top: -8px;
-  right: -8px;
+    position: absolute;
+    top: -3px;
+    right: -10px;
   background-color: #ff6b35;
   color: white;
   border-radius: 50%;

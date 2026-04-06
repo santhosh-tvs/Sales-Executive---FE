@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Header from "../header/Header";
 import Breadcrumb from "../components/Breadcrumb/Breadcrumb";
+import Spinner from "../components/Spinner/Spinner";
 import "./VisitReport.css";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
@@ -128,7 +129,7 @@ const VisitReport = () => {
             </div>
             <div className="vr-filter-actions">
               <button className="vr-search-btn" onClick={fetchData} disabled={loading}>
-                {loading ? "Loading..." : "View"}
+                {loading ? <><Spinner inline size="sm" /> Loading</> : "View"}
               </button>
               <button className="vr-export-btn" onClick={handleExport} disabled={filtered.length === 0}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -160,7 +161,7 @@ const VisitReport = () => {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={9} className="vr-empty">Loading...</td></tr>
+                  <tr><td colSpan={9} className="vr-empty"><Spinner size="sm" text="Loading..." /></td></tr>
                 ) : currentData.length === 0 ? (
                   <tr><td colSpan={9} className="vr-empty">No records found</td></tr>
                 ) : currentData.map((row, idx) => (

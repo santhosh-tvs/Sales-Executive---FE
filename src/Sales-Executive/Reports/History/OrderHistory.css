@@ -400,3 +400,54 @@
   font-size: 13px;
   margin-bottom: 16px;
 }
+
+/* ── Back Order specific ─────────────────────────── */
+.oh-badge-no-stock   { background:#fff7ed; color:#f97316; border:1px solid #fed7aa; }
+.oh-badge-cancelled  { background:#f1f5f9; color:#6b7280; border:1px solid #e2e8f0; }
+.oh-badge-expired    { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+
+.oh-row-expired td   { background:#fff5f5 !important; }
+.oh-expired-date     { color:#dc2626; font-weight:600; }
+.oh-mono             { font-family:monospace; font-size:11px; color:#64748b; }
+.oh-sub              { font-size:10px; color:#94a3b8; margin-top:2px; }
+
+/* ── Summary chips ───────────────────────────────── */
+.oh-summary-chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.oh-chip {
+  display:flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:20px; border:1.5px solid #e2e8f0;
+  background:#fff; font-size:12px; font-weight:600; color:#475569; cursor:pointer;
+}
+.oh-chip span { background:#f1f5f9; border-radius:10px; padding:1px 7px; font-size:11px; }
+.oh-chip.active { border-color:#20409A; background:#eff6ff; color:#20409A; }
+.oh-chip-no_stock.active   { border-color:#f97316; background:#fff7ed; color:#f97316; }
+.oh-chip-cancelled.active  { border-color:#6b7280; background:#f1f5f9; color:#6b7280; }
+.oh-chip-expired.active    { border-color:#dc2626; background:#fef2f2; color:#dc2626; }
+
+/* ── Expand button ───────────────────────────────── */
+.oh-expand-btn {
+  background:none; border:1px solid #e2e8f0; border-radius:5px;
+  padding:3px 10px; font-size:11px; color:#20409A; cursor:pointer; white-space:nowrap;
+}
+.oh-expand-btn:hover { background:#eff6ff; }
+
+/* ── Parts sub-table ─────────────────────────────── */
+.oh-parts-row td { padding:0 !important; background:#f8fafc !important; }
+.oh-parts-table-wrap { padding:10px 20px 14px; }
+.oh-parts-table { width:100%; border-collapse:collapse; font-size:12px; }
+.oh-parts-table th { background:#e2e8f0; padding:7px 10px; text-align:left; font-size:11px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:.4px; }
+.oh-parts-table td { padding:7px 10px; border-bottom:1px solid #f1f5f9; color:#334155; }
+.oh-parts-table tbody tr:last-child td { border-bottom:none; }
+.oh-parts-table tbody tr:hover td { background:#f0f4ff; }
+
+/* ── Order Status Badges ─────────────────────────── */
+.oh-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.oh-badge-pending     { background:#fef9c3; color:#ca8a04; border:1px solid #fde68a; }
+.oh-badge-in-progress { background:#eff6ff; color:#3b82f6; border:1px solid #bfdbfe; }
+.oh-badge-success     { background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0; }
+.oh-badge-error       { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+.oh-badge-no-stock    { background:#fff7ed; color:#f97316; border:1px solid #fed7aa; }
+.oh-badge-cancelled   { background:#f1f5f9; color:#6b7280; border:1px solid #e2e8f0; }
+.oh-badge-expired     { background:#fdf2f8; color:#9333ea; border:1px solid #e9d5ff; }
+.oh-badge-mobile-order{ background:#eff6ff; color:#3b82f6; border:1px solid #bfdbfe; }
+.oh-badge-bulk-order  { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }

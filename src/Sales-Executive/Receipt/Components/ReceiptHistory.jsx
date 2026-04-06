@@ -3,6 +3,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Header from '../../header/Header';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
+import Spinner from '../../components/Spinner/Spinner';
 import apiService from '../../../services/apiservice';
 import './ReceiptHistory.css';
 import myTVSLogo from '../../../assets/login/myTVS_Partart_logo.png';
@@ -471,7 +472,7 @@ const ReceiptHistory = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
               <button className="search-btn" onClick={handleSearch} disabled={loading}>
-                {loading ? 'Searching...' : 'Search'}
+                {loading ? <><Spinner inline size="sm" /> Searching</> : 'Search'}
               </button>
               <select className="filter-select" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
                 <option value="all">All Status</option>

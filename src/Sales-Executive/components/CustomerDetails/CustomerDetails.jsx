@@ -14,9 +14,18 @@ const CustomerDetails = ({
   const [showShipToDropdown, setShowShipToDropdown] = useState(false);
 
   useEffect(() => {
-    if (customer?.customer_code || customer?.code) {
-      fetchCustomerDetails(customer.customer_code || customer.code);
+    if (!customer) return;
+
+    // If the customer prop already has complete data (creditBalance, shipToOptions),
+    // use it directly — no need to fetch again
+    if (customer.creditBalance !== undefined || customer.shipToOptions) {
+      setCustomerDetails(customer);
+      return;
     }
+
+    // Otherwise fetch (fallback for other callers)
+    const code = customer.customer_code || customer.code;
+    if (code) fetchCustomerDetails(code);
   }, [customer]);
 
   const fetchCustomerDetails = async (customerCode) => {
@@ -87,7 +96,7 @@ const CustomerDetails = ({
     }
   };
 
-  if (loadingDetails) {
+  if (loadingDetails && !customerDetails && !customer) {
     return (
       <div className="customer-details-loading">
         <div className="loading-spinner"></div>

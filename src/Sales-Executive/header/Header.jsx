@@ -60,7 +60,6 @@ const Header = () => {
             <button className="nav-btn">Masters</button>
             <div className="mega-dropdown-content">
               <div className="mega-menu-main">
-                {/* Items Master - with submenu */}
                 <div className="mega-menu-item has-submenu">
                   <span className="mega-menu-main-link">Items</span>
                   <div className="mega-submenu">
@@ -71,8 +70,6 @@ const Header = () => {
                     <Link to="/masters/item?view=exclusiveBrand" className="mega-submenu-link">Exclusive Brand Configuration</Link>
                   </div>
                 </div>
-
-                {/* Employee Master - with submenu */}
                 <div className="mega-menu-item has-submenu">
                   <span className="mega-menu-main-link">Employees</span>
                   <div className="mega-submenu">
@@ -80,16 +77,12 @@ const Header = () => {
                     <Link to="/masters/employee?view=hierarchy" className="mega-submenu-link">Employee Hierarchy</Link>
                   </div>
                 </div>
-
-                {/* Customer Master - with submenu */}
                 <div className="mega-menu-item has-submenu">
                   <span className="mega-menu-main-link">Customers</span>
                   <div className="mega-submenu">
                     <Link to="/masters/customer" className="mega-submenu-link">Customer Master</Link>
                   </div>
                 </div>
-
-                {/* Branch Master - with submenu */}
                 <div className="mega-menu-item has-submenu">
                   <span className="mega-menu-main-link">Branches</span>
                   <div className="mega-submenu">
@@ -97,8 +90,6 @@ const Header = () => {
                     <Link to="/masters/branch?view=sites" className="mega-submenu-link">Sites</Link>
                   </div>
                 </div>
-
-                {/* Location Master - with submenu */}
                 <div className="mega-menu-item has-submenu">
                   <span className="mega-menu-main-link">Locations</span>
                   <div className="mega-submenu">
@@ -107,8 +98,6 @@ const Header = () => {
                     <Link to="/masters/location?view=cities" className="mega-submenu-link">Cities</Link>
                   </div>
                 </div>
-
-                {/* Partner Master - with submenu */}
                 <div className="mega-menu-item has-submenu">
                   <span className="mega-menu-main-link">Partners</span>
                   <div className="mega-submenu">
@@ -116,16 +105,12 @@ const Header = () => {
                     <Link to="/masters/partner?view=master" className="mega-submenu-link">Partner Master</Link>
                   </div>
                 </div>
-
-                {/* Application Master - with submenu (empty for now) */}
                 <div className="mega-menu-item has-submenu">
                   <span className="mega-menu-main-link">Application Master</span>
                   <div className="mega-submenu">
                     <Link to="/masters/application" className="mega-submenu-link">Application Master</Link>
                   </div>
                 </div>
-
-                {/* Pricing Master - with submenu (empty for now) */}
                 <div className="mega-menu-item has-submenu">
                   <span className="mega-menu-main-link">Pricing Master</span>
                   <div className="mega-submenu">

@@ -357,3 +357,124 @@
   .suc-items-thead > span:nth-child(5),
   .suc-items-row > span:nth-child(5) { display: none; }
 }
+
+/* ── Split alert banner ── */
+.suc-split-alert {
+  background: #fffbeb;
+  border-bottom: 1px solid #fde68a;
+  padding: 12px 24px;
+}
+.suc-split-alert-bo {
+  background: #fff7ed;
+  border-bottom-color: #fed7aa;
+}
+.suc-split-alert-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.6;
+}
+.suc-split-alert-inner svg { flex-shrink: 0; margin-top: 1px; color: #d97706; }
+.suc-split-sale-tag {
+  display: inline-block;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 20px;
+}
+.suc-split-bo-tag {
+  display: inline-block;
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 20px;
+  border: 1px solid #fed7aa;
+}
+
+/* ── Split card ── */
+.suc-split-card { border-top: 3px solid #7c3aed; }
+.suc-split-rows { display: flex; flex-direction: column; gap: 10px; }
+.suc-split-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 10px;
+  gap: 12px;
+}
+.suc-split-row-sale { background: #f0fdf4; border: 1px solid #bbf7d0; }
+.suc-split-row-bo   { background: #fff7ed; border: 1px solid #fed7aa; }
+.suc-split-row-left { display: flex; align-items: flex-start; gap: 10px; }
+.suc-split-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.suc-dot-sale { background: #22c55e; }
+.suc-dot-bo   { background: #f97316; }
+.suc-split-row-title { font-size: 13px; font-weight: 700; color: #1a2340; }
+.suc-split-row-sub   { font-size: 11px; color: #6b7280; margin-top: 2px; }
+.suc-split-qty {
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.suc-split-qty-sale { color: #16a34a; }
+.suc-split-qty-bo   { color: #ea580c; }
+
+/* ── Per-item type badges ── */
+.suc-type-mixed {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+.suc-type-sale, .suc-type-sale-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: #dcfce7;
+  color: #15803d;
+  padding: 1px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.suc-type-bo, .suc-type-bo-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: #fff7ed;
+  color: #c2410c;
+  padding: 1px 7px;
+  border-radius: 20px;
+  border: 1px solid #fed7aa;
+  white-space: nowrap;
+}
+
+/* ── Extra stat color ── */
+.suc-stat-orange { color: #fb923c; }
+
+/* ── Status badge variants ── */
+.suc-pay-badge-bo {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+.suc-pay-badge-partial {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+/* ── Items table with type column ── */
+.suc-items-thead.suc-has-type,
+.suc-items-row.suc-has-type {
+  grid-template-columns: 2fr 1.2fr 1fr 60px 90px 90px 80px;
+}

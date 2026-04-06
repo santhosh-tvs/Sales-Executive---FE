@@ -1,0 +1,127 @@
+.ssb-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.ssb-badges {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.ssb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.ssb-sale {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.ssb-bo {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.ssb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ssb-dot-sale { background: #22c55e; }
+.ssb-dot-bo   { background: #f97316; }
+
+/* Info icon */
+.ssb-info-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.ssb-info-icon {
+  color: #94a3b8;
+  transition: color 0.15s;
+}
+
+.ssb-info-wrap:hover .ssb-info-icon {
+  color: #20409A;
+}
+
+/* Tooltip */
+.ssb-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #f1f5f9;
+  border-radius: 10px;
+  padding: 12px 14px;
+  width: 260px;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ssb-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1e293b;
+}
+
+.ssb-tooltip-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.ssb-tooltip-row:last-of-type {
+  margin-bottom: 8px;
+}
+
+.ssb-tooltip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.ssb-tooltip-row strong {
+  display: block;
+  font-size: 12px;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.ssb-tooltip-row p {
+  margin: 0;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.ssb-tooltip-note {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 8px;
+  font-size: 10px;
+  color: #64748b;
+  font-style: italic;
+}

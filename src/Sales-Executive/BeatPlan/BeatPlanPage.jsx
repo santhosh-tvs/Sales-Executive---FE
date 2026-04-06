@@ -10,7 +10,6 @@ import ImportIcon from "../../assets/Icons/Import.png";
 import ExportIcon from "../../assets/Assets/Beat/export.png";
 import { apiService } from "../../services/apiservice";
 import "./beatplan.css";
-import "./customDateTimePicker.css";
 
 const BeatPlanPage = () => {
   const navigate = useNavigate();
@@ -113,16 +112,47 @@ const BeatPlanPage = () => {
     }
 
     const { value: formValues } = await Swal.fire({
-      title: '<div style="text-align: left; padding: 0; margin: 0;"><span style="color: #333; font-size: 20px; font-weight: 600;">Create Beat</span></div>',
+      title: '<div style="text-align:left;padding:0;margin:0"><span style="color:#1e293b;font-size:20px;font-weight:700">Create Beat</span></div>',
       html: `
-        <link rel="stylesheet" href="./customDateTimePicker.css">
-        <div style="text-align: left; padding: 15px 0;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+        <style>
+          .cb-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+          .cb-label{display:block;font-size:11px;font-weight:700;color:#6b7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+          .cb-input{width:100%;padding:10px 12px;height:42px;font-size:14px;border:1.5px solid #e5e7eb;border-radius:8px;background:#f9fafb;color:#111827;outline:none;cursor:pointer;transition:all .2s;box-sizing:border-box;font-family:Inter,sans-serif}
+          .cb-input:focus{border-color:#20409A;background:#fff;box-shadow:0 0 0 3px rgba(32,64,154,.08)}
+          .cb-textarea{width:100%;padding:10px 12px;font-size:14px;border:1.5px solid #e5e7eb;border-radius:8px;background:#f9fafb;color:#111827;outline:none;resize:vertical;transition:all .2s;font-family:Inter,sans-serif;line-height:1.5;box-sizing:border-box}
+          .cb-textarea:focus{border-color:#20409A;background:#fff;box-shadow:0 0 0 3px rgba(32,64,154,.08)}
+          .cb-cal{position:absolute;top:100%;left:0;z-index:9999;background:#fff;border:1.5px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);width:280px;padding:12px;display:none;margin-top:4px}
+          .cb-cal.open{display:block}
+          .cb-cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+          .cb-cal-nav{background:none;border:1.5px solid #e5e7eb;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;color:#374151}
+          .cb-cal-nav:hover{background:#f3f4f6}
+          .cb-cal-selects{display:flex;gap:6px}
+          .cb-cal-sel{padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;background:#f9fafb;color:#111827;outline:none;cursor:pointer}
+          .cb-cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+          .cb-cal-dh{text-align:center;font-size:10px;font-weight:700;color:#9ca3af;padding:4px 0}
+          .cb-cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+          .cb-cal-day{text-align:center;padding:6px 2px;font-size:12px;border-radius:6px;cursor:pointer;color:#111827;transition:all .15s}
+          .cb-cal-day:hover{background:#eff6ff;color:#20409A}
+          .cb-cal-day.other{color:#d1d5db;cursor:default;pointer-events:none}
+          .cb-cal-day.today{font-weight:700;color:#20409A}
+          .cb-cal-day.selected{background:#20409A;color:#fff;font-weight:700}
+          .cb-cal-day.selected:hover{background:#1a3580}
+          .cb-cal-today-btn{width:100%;margin-top:8px;padding:6px;background:#f0f4ff;border:1.5px solid #c7d2fe;border-radius:6px;color:#20409A;font-size:12px;font-weight:600;cursor:pointer}
+          .cb-time-wrap{display:flex;align-items:center;justify-content:center;gap:6px;background:#f0f4ff;border:1.5px solid #c7d2fe;border-radius:10px;padding:8px 14px;height:52px;box-sizing:border-box;transition:all .2s}
+          .cb-time-col{display:flex;flex-direction:column;align-items:center;gap:0}
+          .cb-time-btn{background:none;border:none;cursor:pointer;color:#94a3b8;font-size:8px;line-height:1;padding:2px 6px;border-radius:3px;display:block}
+          .cb-time-btn:hover{color:#20409A;background:#e0e7ff}
+          .cb-time-val{font-size:22px;font-weight:800;color:#20409A;min-width:28px;text-align:center;line-height:1.1;font-family:Inter,sans-serif}
+          .cb-time-sep{font-size:22px;font-weight:800;color:#20409A;margin:0 2px;padding-bottom:2px}
+          .cb-ampm-wrap{display:flex;flex-direction:row;gap:4px;margin-left:8px;background:#e0e7ff;border-radius:8px;padding:3px}
+          .cb-ampm-btn{padding:4px 10px;border-radius:6px;border:none;font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:#6b7280;transition:all .15s;line-height:1}
+          .cb-ampm-btn.active{background:#20409A;color:#fff;box-shadow:0 1px 4px rgba(32,64,154,.3)}
+        </style>
+        <div style="text-align:left;padding:10px 0">
+          <div class="cb-grid">
             <div>
-              <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-                Plan Type
-              </label>
-              <select id="beat-plan-type" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none; cursor: pointer; transition: all 0.2s ease;" onfocus="this.style.background='white'; this.style.borderColor='#2196F3'" onblur="this.style.background='#fafafa'; this.style.borderColor='#e0e0e0'">
+              <label class="cb-label">Plan Type</label>
+              <select id="beat-plan-type" class="cb-input">
                 <option value="">Select Plan Type</option>
                 <option value="Beat">Beat</option>
                 <option value="Event">Event</option>
@@ -133,52 +163,55 @@ const BeatPlanPage = () => {
                 <option value="New Lead Creates">New Lead Creates</option>
               </select>
             </div>
-            <div style="position: relative;">
-              <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-                Select Date
-              </label>
-              <input type="text" id="beat-date-display" readonly placeholder="Select date" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none; cursor: pointer; transition: all 0.2s ease;" />
+            <div style="position:relative">
+              <label class="cb-label">Select Date</label>
+              <input type="text" id="beat-date-display" readonly placeholder="Pick a date" class="cb-input" style="cursor:pointer" />
               <input type="hidden" id="beat-date" />
-              <div id="custom-calendar" class="custom-calendar"></div>
+              <div id="custom-calendar" class="cb-cal"></div>
             </div>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-            <div style="position: relative;">
-              <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-                Select Time
-              </label>
-              <input type="text" id="beat-time-display" readonly placeholder="Select time" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none; cursor: pointer; transition: all 0.2s ease;" />
-              <input type="hidden" id="beat-time" />
-              <div id="custom-time-picker" class="custom-time-picker"></div>
+          <div class="cb-grid">
+            <div>
+              <label class="cb-label">Select Time (IST · 12h)</label>
+              <div class="cb-time-wrap">
+                <div class="cb-time-col">
+                  <button class="cb-time-btn" id="cb-h-up">▲</button>
+                  <div class="cb-time-val" id="cb-h-val">09</div>
+                  <button class="cb-time-btn" id="cb-h-dn">▼</button>
+                </div>
+                <span class="cb-time-sep">:</span>
+                <div class="cb-time-col">
+                  <button class="cb-time-btn" id="cb-m-up">▲</button>
+                  <div class="cb-time-val" id="cb-m-val">00</div>
+                  <button class="cb-time-btn" id="cb-m-dn">▼</button>
+                </div>
+                <div class="cb-ampm-wrap">
+                  <button class="cb-ampm-btn active" id="cb-am">AM</button>
+                  <button class="cb-ampm-btn" id="cb-pm">PM</button>
+                </div>
+              </div>
+              <input type="hidden" id="beat-time" value="09:00" />
             </div>
             <div>
-              <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-                Select Customer
-              </label>
-              <select id="beat-employee" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none; cursor: pointer; transition: all 0.2s ease;" onfocus="this.style.background='white'; this.style.borderColor='#2196F3'" onblur="this.style.background='#fafafa'; this.style.borderColor='#e0e0e0'">
+              <label class="cb-label">Select Customer</label>
+              <select id="beat-employee" class="cb-input">
                 <option value="">Select Customer</option>
-                ${customersData.map(customer => `<option value="${customer.customer_code}" data-name="${customer.customer_name}" data-city="${customer.city}">${customer.customer_name}</option>`).join('')}
+                ${customersData.map(c => `<option value="${c.customer_code}" data-name="${c.customer_name}" data-city="${c.city || ''}">${c.customer_name}</option>`).join('')}
               </select>
             </div>
           </div>
-          
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+          <div class="cb-grid" style="margin-bottom:16px">
             <div>
-              <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-                Location
-              </label>
-              <select id="beat-location" style="width: 100%; padding: 10px 12px; height: 42px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none; cursor: pointer; transition: all 0.2s ease;" onfocus="this.style.background='white'; this.style.borderColor='#2196F3'" onblur="this.style.background='#fafafa'; this.style.borderColor='#e0e0e0'">
+              <label class="cb-label">Location</label>
+              <select id="beat-location" class="cb-input">
                 <option value="">Select Location</option>
                 ${citiesData.map(city => `<option value="${city}">${city}</option>`).join('')}
               </select>
             </div>
           </div>
-          
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 13px; font-weight: 400; color: #666; margin-bottom: 8px;">
-              Remarks
-            </label>
-            <textarea id="beat-remarks" rows="3" placeholder="Enter remarks..." style="width: 100%; padding: 10px 12px; font-size: 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #333; outline: none; resize: vertical; transition: all 0.2s ease; font-family: Inter, sans-serif; line-height: 1.5;" onfocus="this.style.background='white'; this.style.borderColor='#2196F3'" onblur="this.style.background='#fafafa'; this.style.borderColor='#e0e0e0'"></textarea>
+          <div style="margin-bottom:4px">
+            <label class="cb-label">Remarks</label>
+            <textarea id="beat-remarks" rows="3" placeholder="Enter remarks (optional)..." class="cb-textarea"></textarea>
           </div>
         </div>
       `,
@@ -186,9 +219,9 @@ const BeatPlanPage = () => {
       showCancelButton: false,
       focusConfirm: false,
       confirmButtonText: 'Add',
-      confirmButtonColor: '#2196F3',
-      width: '700px',
-      padding: '25px 35px',
+      confirmButtonColor: '#20409A',
+      width: '680px',
+      padding: '28px 32px',
       background: '#ffffff',
       customClass: {
         popup: 'clean-popup',
@@ -198,277 +231,113 @@ const BeatPlanPage = () => {
         closeButton: 'clean-close-btn'
       },
       didOpen: () => {
-        // Customer selection handler
+        // Customer → auto-fill location
         const employeeSelect = document.getElementById('beat-employee');
         const locationSelect = document.getElementById('beat-location');
-
         employeeSelect.addEventListener('change', (e) => {
-          const selectedOption = e.target.options[e.target.selectedIndex];
-          const city = selectedOption.dataset.city || '';
-
-          // Auto-fill location
-          if (city) {
-            locationSelect.value = city;
-            locationSelect.style.color = '#333';
-          } else {
-            locationSelect.value = '';
-          }
+          const city = e.target.options[e.target.selectedIndex]?.dataset?.city || '';
+          if (city) locationSelect.value = city;
         });
 
-        // Custom Calendar Implementation
+        // ── Calendar ──────────────────────────────────────────────────────
         const dateDisplay = document.getElementById('beat-date-display');
         const dateHidden = document.getElementById('beat-date');
         const calendar = document.getElementById('custom-calendar');
-
         let currentDate = new Date();
         let selectedDate = null;
 
         function renderCalendar(year, month) {
-          const firstDay = new Date(year, month, 1);
-          const lastDay = new Date(year, month + 1, 0);
-          const prevLastDay = new Date(year, month, 0);
-          const firstDayIndex = firstDay.getDay();
-          const lastDateNum = lastDay.getDate();
-          const prevLastDateNum = prevLastDay.getDate();
-
-          const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+          const firstDayIndex = new Date(year, month, 1).getDay();
+          const lastDateNum = new Date(year, month + 1, 0).getDate();
+          const prevLastDateNum = new Date(year, month, 0).getDate();
+          const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
           const today = new Date();
 
-          let calendarHTML = `
-            <div class="calendar-header">
-              <button class="calendar-nav-btn" id="prev-month">◀</button>
-              <div style="display: flex; gap: 10px;">
-                <select id="month-select" style="width: 110px;">
-                  ${months.map((m, i) => `<option value="${i}" ${i === month ? 'selected' : ''}>${m}</option>`).join('')}
-                </select>
-                <select id="year-select" style="width: 80px;">
-                  ${Array.from({ length: 10 }, (_, i) => year - 5 + i).map(y => `<option value="${y}" ${y === year ? 'selected' : ''}>${y}</option>`).join('')}
-                </select>
+          let html = `
+            <div class="cb-cal-header">
+              <button class="cb-cal-nav" id="prev-month">◀</button>
+              <div class="cb-cal-selects">
+                <select class="cb-cal-sel" id="month-select">${months.map((m,i)=>`<option value="${i}"${i===month?' selected':''}>${m}</option>`).join('')}</select>
+                <select class="cb-cal-sel" id="year-select">${Array.from({length:10},(_,i)=>year-5+i).map(y=>`<option value="${y}"${y===year?' selected':''}>${y}</option>`).join('')}</select>
               </div>
-              <button class="calendar-nav-btn" id="next-month">▶</button>
+              <button class="cb-cal-nav" id="next-month">▶</button>
             </div>
-            <div class="calendar-weekdays">
-              <div class="calendar-weekday">Sun</div>
-              <div class="calendar-weekday">Mon</div>
-              <div class="calendar-weekday">Tue</div>
-              <div class="calendar-weekday">Wed</div>
-              <div class="calendar-weekday">Thu</div>
-              <div class="calendar-weekday">Fri</div>
-              <div class="calendar-weekday">Sat</div>
+            <div class="cb-cal-days-header">
+              ${['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="cb-cal-dh">${d}</div>`).join('')}
             </div>
-            <div class="calendar-days">
+            <div class="cb-cal-days">
           `;
-
-          // Previous month days
-          for (let i = firstDayIndex; i > 0; i--) {
-            calendarHTML += `<div class="calendar-day other-month">${prevLastDateNum - i + 1}</div>`;
-          }
-
-          // Current month days
+          for (let i = firstDayIndex; i > 0; i--) html += `<div class="cb-cal-day other">${prevLastDateNum-i+1}</div>`;
           for (let i = 1; i <= lastDateNum; i++) {
-            const isToday = i === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-            const isSelected = selectedDate && i === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear();
-            const classes = ['calendar-day'];
-            if (isToday) classes.push('today');
-            if (isSelected) classes.push('selected');
-            calendarHTML += `<div class="${classes.join(' ')}" data-date="${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}">${i}</div>`;
+            const isToday = i===today.getDate()&&month===today.getMonth()&&year===today.getFullYear();
+            const isSel = selectedDate&&i===selectedDate.getDate()&&month===selectedDate.getMonth()&&year===selectedDate.getFullYear();
+            const cls = ['cb-cal-day',isToday?'today':'',isSel?'selected':''].filter(Boolean).join(' ');
+            html += `<div class="${cls}" data-date="${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}">${i}</div>`;
           }
+          const rem = 42-(firstDayIndex+lastDateNum);
+          for (let i = 1; i <= rem; i++) html += `<div class="cb-cal-day other">${i}</div>`;
+          html += `</div><button class="cb-cal-today-btn" id="select-today">Today</button>`;
+          calendar.innerHTML = html;
 
-          // Next month days
-          const remainingDays = 42 - (firstDayIndex + lastDateNum);
-          for (let i = 1; i <= remainingDays; i++) {
-            calendarHTML += `<div class="calendar-day other-month">${i}</div>`;
-          }
-
-          calendarHTML += `
-            </div>
-            <button class="calendar-today-btn" id="select-today">Today</button>
-          `;
-
-          calendar.innerHTML = calendarHTML;
-
-          // Event listeners
-          document.getElementById('prev-month').addEventListener('click', (e) => {
+          document.getElementById('prev-month').addEventListener('click', e => { e.stopPropagation(); currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(currentDate.getFullYear(),currentDate.getMonth()); });
+          document.getElementById('next-month').addEventListener('click', e => { e.stopPropagation(); currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(currentDate.getFullYear(),currentDate.getMonth()); });
+          document.getElementById('month-select').addEventListener('change', e => { e.stopPropagation(); currentDate.setMonth(parseInt(e.target.value)); renderCalendar(currentDate.getFullYear(),currentDate.getMonth()); });
+          document.getElementById('year-select').addEventListener('change', e => { e.stopPropagation(); currentDate.setFullYear(parseInt(e.target.value)); renderCalendar(currentDate.getFullYear(),currentDate.getMonth()); });
+          document.getElementById('select-today').addEventListener('click', e => {
             e.stopPropagation();
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            const t = new Date();
+            selectedDate = t;
+            dateHidden.value = t.toISOString().split('T')[0];
+            dateDisplay.value = t.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+            calendar.classList.remove('open');
           });
-
-          document.getElementById('next-month').addEventListener('click', (e) => {
-            e.stopPropagation();
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
-          });
-
-          document.getElementById('month-select').addEventListener('change', (e) => {
-            e.stopPropagation();
-            currentDate.setMonth(parseInt(e.target.value));
-            renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
-          });
-
-          document.getElementById('year-select').addEventListener('change', (e) => {
-            e.stopPropagation();
-            currentDate.setFullYear(parseInt(e.target.value));
-            renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
-          });
-
-          document.getElementById('select-today').addEventListener('click', (e) => {
-            e.stopPropagation();
-            const today = new Date();
-            selectedDate = today;
-            dateHidden.value = today.toISOString().split('T')[0];
-            dateDisplay.value = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            dateDisplay.style.color = '#333';
-            calendar.classList.remove('active');
-          });
-
-          document.querySelectorAll('.calendar-day:not(.other-month)').forEach(day => {
-            day.addEventListener('click', (e) => {
+          calendar.querySelectorAll('.cb-cal-day:not(.other)').forEach(day => {
+            day.addEventListener('click', e => {
               e.stopPropagation();
-              const dateStr = day.dataset.date;
-              if (dateStr) {
-                selectedDate = new Date(dateStr);
-                dateHidden.value = dateStr;
-                dateDisplay.value = selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                dateDisplay.style.color = '#333';
-                calendar.classList.remove('active');
+              const ds = day.dataset.date;
+              if (ds) {
+                selectedDate = new Date(ds);
+                dateHidden.value = ds;
+                dateDisplay.value = selectedDate.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+                calendar.classList.remove('open');
               }
             });
           });
         }
 
-        dateDisplay.addEventListener('click', (e) => {
+        dateDisplay.addEventListener('click', e => {
           e.stopPropagation();
-          calendar.classList.toggle('active');
-          timePicker.classList.remove('active');
-          if (calendar.classList.contains('active')) {
-            renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
-          }
+          calendar.classList.toggle('open');
+          if (calendar.classList.contains('open')) renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
         });
 
-        // Custom Time Picker Implementation
-        const timeDisplay = document.getElementById('beat-time-display');
-        const timeHidden = document.getElementById('beat-time');
-        const timePicker = document.getElementById('custom-time-picker');
+        // ── 12-hour IST Time Picker ───────────────────────────────────────
+        let tHour = 9, tMin = 0, tPeriod = 'AM';
 
-        let hours = 10;
-        let minutes = 0;
-        let period = 'AM';
-
-        function renderTimePicker() {
-          const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-          const displayMinutes = String(minutes).padStart(2, '0');
-
-          timePicker.innerHTML = `
-            <div class="time-picker-header">${String(displayHours).padStart(2, '0')}:${displayMinutes} ${period}</div>
-            <div class="time-controls">
-              <div class="time-control">
-                <div class="time-control-label">Hour</div>
-                <div class="time-control-value">
-                  <button class="time-btn" id="hour-up">▲</button>
-                  <div class="time-display">${String(displayHours).padStart(2, '0')}</div>
-                  <button class="time-btn" id="hour-down">▼</button>
-                </div>
-              </div>
-              <div class="time-control">
-                <div class="time-control-label">Minute</div>
-                <div class="time-control-value">
-                  <button class="time-btn" id="minute-up">▲</button>
-                  <div class="time-display">${displayMinutes}</div>
-                  <button class="time-btn" id="minute-down">▼</button>
-                </div>
-              </div>
-              <div class="time-control">
-                <div class="time-control-label">Period</div>
-                <div class="time-period-toggle">
-                  <button class="period-btn ${period === 'AM' ? 'active' : ''}" id="period-am">AM</button>
-                  <button class="period-btn ${period === 'PM' ? 'active' : ''}" id="period-pm">PM</button>
-                </div>
-              </div>
-            </div>
-            <button class="time-done-btn" id="time-done">Done</button>
-          `;
-
-          document.getElementById('hour-up').addEventListener('click', (e) => {
-            e.stopPropagation();
-            hours = hours === 23 ? 0 : hours + 1;
-            if (hours === 12 || hours === 0) period = period === 'AM' ? 'PM' : 'AM';
-            renderTimePicker();
-          });
-
-          document.getElementById('hour-down').addEventListener('click', (e) => {
-            e.stopPropagation();
-            hours = hours === 0 ? 23 : hours - 1;
-            if (hours === 11 || hours === 23) period = period === 'AM' ? 'PM' : 'AM';
-            renderTimePicker();
-          });
-
-          document.getElementById('minute-up').addEventListener('click', (e) => {
-            e.stopPropagation();
-            minutes = minutes === 59 ? 0 : minutes + 1;
-            renderTimePicker();
-          });
-
-          document.getElementById('minute-down').addEventListener('click', (e) => {
-            e.stopPropagation();
-            minutes = minutes === 0 ? 59 : minutes - 1;
-            renderTimePicker();
-          });
-
-          document.getElementById('period-am').addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (period === 'PM') {
-              hours = hours >= 12 ? hours - 12 : hours;
-              period = 'AM';
-              renderTimePicker();
-            }
-          });
-
-          document.getElementById('period-pm').addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (period === 'AM') {
-              hours = hours < 12 ? hours + 12 : hours;
-              period = 'PM';
-              renderTimePicker();
-            }
-          });
-
-          document.getElementById('time-done').addEventListener('click', (e) => {
-            e.stopPropagation();
-            const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-            timeHidden.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-            timeDisplay.value = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
-            timeDisplay.style.color = '#333';
-            timePicker.classList.remove('active');
-          });
+        function updateTimeDisplay() {
+          document.getElementById('cb-h-val').textContent = String(tHour).padStart(2,'0');
+          document.getElementById('cb-m-val').textContent = String(tMin).padStart(2,'0');
+          document.getElementById('cb-am').classList.toggle('active', tPeriod==='AM');
+          document.getElementById('cb-pm').classList.toggle('active', tPeriod==='PM');
+          // Store as 24h for backend
+          let h24 = tHour % 12;
+          if (tPeriod==='PM') h24 += 12;
+          document.getElementById('beat-time').value = `${String(h24).padStart(2,'0')}:${String(tMin).padStart(2,'0')}`;
         }
 
-        timeDisplay.addEventListener('click', (e) => {
-          e.stopPropagation();
-          timePicker.classList.toggle('active');
-          calendar.classList.remove('active');
-          if (timePicker.classList.contains('active')) {
-            renderTimePicker();
-          }
-        });
+        document.getElementById('cb-h-up').addEventListener('click', e => { e.stopPropagation(); tHour = tHour===12?1:tHour+1; updateTimeDisplay(); });
+        document.getElementById('cb-h-dn').addEventListener('click', e => { e.stopPropagation(); tHour = tHour===1?12:tHour-1; updateTimeDisplay(); });
+        document.getElementById('cb-m-up').addEventListener('click', e => { e.stopPropagation(); tMin = tMin===59?0:tMin+1; updateTimeDisplay(); });
+        document.getElementById('cb-m-dn').addEventListener('click', e => { e.stopPropagation(); tMin = tMin===0?59:tMin-1; updateTimeDisplay(); });
+        document.getElementById('cb-am').addEventListener('click', e => { e.stopPropagation(); tPeriod='AM'; updateTimeDisplay(); });
+        document.getElementById('cb-pm').addEventListener('click', e => { e.stopPropagation(); tPeriod='PM'; updateTimeDisplay(); });
+        updateTimeDisplay();
 
-        // Close pickers when clicking outside
+        // Close calendar on outside click
         const handleClickOutside = (e) => {
-          const isClickInsideCalendar = calendar.contains(e.target) || dateDisplay.contains(e.target);
-          const isClickInsideTimePicker = timePicker.contains(e.target) || timeDisplay.contains(e.target);
-
-          if (!isClickInsideCalendar) {
-            calendar.classList.remove('active');
-          }
-          if (!isClickInsideTimePicker) {
-            timePicker.classList.remove('active');
-          }
+          if (!calendar.contains(e.target) && !dateDisplay.contains(e.target)) calendar.classList.remove('open');
         };
-
-        // Use mousedown instead of click to prevent interference with picker interactions
-        setTimeout(() => {
-          document.addEventListener('mousedown', handleClickOutside);
-        }, 200);
+        setTimeout(() => document.addEventListener('mousedown', handleClickOutside), 200);
       },
       preConfirm: () => {
         const date = document.getElementById('beat-date').value;

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import Header from '../../header/Header';
+import Spinner from '../../components/Spinner/Spinner';
 import '../../../styles/Sales/Home1/Home_Page.css';
 import BellIcon from '../../../assets/Icons/Bell Pin.png';
 import CoinIcon from '../../../assets/Icons/coin.png';
@@ -215,6 +216,8 @@ const Home_Page = () => {
       return null;
     };
 
+    const isLoading = type === 'sales' ? salesLoading : type === 'receipt' ? collectionLoading : false;
+
     // ── Smart analytics badge ──────────────────────────────────────────────
     // Uses MTD achievement % + daily pace to give a meaningful signal
     const mtd = data.mtd || data.ctd;
@@ -273,6 +276,9 @@ const Home_Page = () => {
           </div>
           <div>{getWidgetIcon()}</div>
         </div>
+        {isLoading ? (
+          <Spinner size="sm" text="Loading..." />
+        ) : (
         <div className="widget-metrics">
           {Object.entries(data).map(([period, values]) => (
             <div key={period} className="metric-item">
@@ -303,6 +309,7 @@ const Home_Page = () => {
             </div>
           ))}
         </div>
+        )}
       </div>
     );
   };
@@ -356,7 +363,7 @@ const Home_Page = () => {
           </div>
         </div>
         {beatLoading ? (
-          <div style={{ padding: '12px 0', fontSize: '13px', color: '#9aa3b8' }}>Loading...</div>
+          <Spinner size="sm" text="Loading..." />
         ) : (
           <div className="widget-metrics">
             {Object.entries(data).map(([period, values]) => (
@@ -642,7 +649,7 @@ const Home_Page = () => {
     }
 
     if (isLoading) {
-      return <div className="pie-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>Loading...</div>;
+      return <div className="pie-chart-container" style={{ padding: '40px', textAlign: 'center' }}><Spinner text="Loading..." /></div>;
     }
     if (activeData.length === 0) {
       return <div className="pie-chart-container" style={{ padding: '40px', textAlign: 'center', color: '#9aa3b8' }}>{emptyMsg}</div>;

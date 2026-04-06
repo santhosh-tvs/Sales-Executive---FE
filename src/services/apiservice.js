@@ -120,6 +120,44 @@ const apiService = {
      * @param {object} options - Additional axios options
      * @returns {Promise} - API response
      */
+    /**
+     * Fetch outstanding invoices for a customer via the Oracle external API
+     * @param {object} params - { Customer_Name, As_On_Date, Business_Unit, Customer_Acct_Num }
+     */
+    getOutstandingInvoices: async (params = {}) => {
+        try {
+            const apiConfig = apiConfigManager.getApi('Outstanding Invoice');
+            if (!apiConfig) {
+                throw new Error('Outstanding Invoice API not configured');
+            }
+
+            const authHeaders = apiConfigManager.getAuthHeaders('Outstanding Invoice');
+
+            // Build URL with query params
+            const queryString = new URLSearchParams({
+                Customer_Name: params.Customer_Name || '',
+                As_On_Date: params.As_On_Date || '',
+                Business_Unit: params.Business_Unit || '',
+                Customer_Acct_Num: params.Customer_Acct_Num || '',
+            }).toString();
+
+            const fullUrl = `${apiConfig.api_url}?${queryString}`;
+
+            const client = createApiClient();
+            const response = await client.post('/catalog/external', {
+                url: fullUrl,
+                method: 'GET',
+                data: {},
+                headers: authHeaders,
+            });
+
+            return response.data;
+        } catch (error) {
+            console.error('getOutstandingInvoices error:', error);
+            throw error;
+        }
+    },
+
     callExternalApi: async (apiName, data = {}, options = {}) => {
         try {
             const apiConfig = apiConfigManager.getApi(apiName);
@@ -147,8 +185,8 @@ const apiService = {
             console.log(`🔑 Auth headers:`, authHeaders ? 'Present' : 'Missing');
             console.log(`🔑 Auth header keys:`, Object.keys(authHeaders));
 
-            // Use backend proxy to avoid CORS issues
-            const proxyUrl = '/catalog/proxy';
+            // Use backend external endpoint to avoid CORS issues
+            const proxyUrl = '/catalog/external';
             
             const proxyPayload = {
                 url: api_url,

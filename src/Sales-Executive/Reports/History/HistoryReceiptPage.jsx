@@ -3,6 +3,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Header from '../../header/Header';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
+import Spinner from '../../components/Spinner/Spinner';
 import apiService from '../../../services/apiservice';
 import './OrderHistory.css';
 
@@ -143,9 +144,7 @@ const HistoryReceiptPage = () => {
             </div>
             <div className="oh-filter-actions">
               <button className="oh-view-btn" onClick={fetchReceipts} disabled={loading}>
-                {loading
-                  ? <><span className="oh-spinner" style={{ width: 14, height: 14, borderWidth: 2 }} /> Loading...</>
-                  : 'View'}
+                {loading ? <><Spinner inline size="sm" /> Loading</> : 'View'}
               </button>
               <button className="oh-export-btn" onClick={handleExportAll} disabled={!receipts.length}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -267,7 +266,7 @@ const HistoryReceiptPage = () => {
             </div>
             <div className="oh-modal-body">
               {modalLoading ? (
-                <div className="oh-modal-loading"><div className="oh-spinner" /><span>Loading...</span></div>
+                <div className="oh-modal-loading"><Spinner size="sm" text="Loading..." /></div>
               ) : selectedReceipt ? (
                 <div className="oh-modal-info" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
                   <div className="oh-modal-info-item"><span>Receipt No</span><span>{selectedReceipt.receipt_ref_number || '-'}</span></div>

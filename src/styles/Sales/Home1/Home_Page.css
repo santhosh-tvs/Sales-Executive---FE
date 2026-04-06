@@ -65,14 +65,14 @@
 .widgets-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .widget-card {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 10px;
+  padding: 14px 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0e0e0;
 }
@@ -81,12 +81,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .widget-header h3 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   color: #333;
   margin: 0;
 }
@@ -96,15 +96,15 @@
 }
 
 .widget-icon {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
 
 .widget-metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
+  gap: 10px;
 }
 
 .metric-item {
@@ -113,31 +113,32 @@
 }
 
 .metric-label {
-  font-size: 12px;
-  color: #666;
-  font-weight: 500;
-  margin-bottom: 10px;
+  font-size: 10px;
+  color: #888;
+  font-weight: 400;
+  margin-bottom: 3px;
   text-align: left;
 }
 
 .metric-value {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
   color: #FF6B35;
-  margin-bottom: 10px;
+  margin-bottom: 3px;
   text-align: left;
   cursor: default;
 }
 
 .metric-target {
-  font-size: 12px;
-  color: #999;
-  margin-bottom: 8px;
+  font-size: 10px;
+  color: #aab0bc;
+  font-weight: 400;
+  margin-bottom: 3px;
   text-align: left;
 }
 
 .metric-progress {
-  height: 4px;
+  height: 3px;
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -152,9 +153,9 @@
 .chart-tab {
   border: none !important;
   border-radius: 0 !important;
-  padding: 16px 32px !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
+  padding: 14px 28px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
   color: #20409A !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
@@ -194,8 +195,8 @@
 }
 
 .chart-title {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 400;
   color: #1a2340;
 }
 
@@ -243,10 +244,10 @@
 .chart-growth {
   color: #28a745;
   background: #d4edda;
-  padding: 3px 8px;
+  padding: 2px 7px;
   border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 500;
 }
 
 .chart-growth.warn {
@@ -310,8 +311,8 @@
 }
 
 .pie-chart-header h3 {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
   color: #1a2340;
   margin: 0;
 }
@@ -324,9 +325,9 @@
 .pie-total-badge {
   background: #eef2ff;
   color: #20409A;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
   border-radius: 20px;
 }
 
@@ -548,7 +549,7 @@
   }
 
   .widget-card {
-    padding: 14px;
+    padding: 12px;
   }
 
   .chart-tab {
@@ -565,8 +566,8 @@
 /* ── Widget trend badge ── */
 .widget-trend {
   font-size: 10px;
-  font-weight: 600;
-  padding: 2px 7px;
+  font-weight: 500;
+  padding: 2px 6px;
   border-radius: 3px;
   display: inline-block;
   max-width: 220px;
@@ -614,7 +615,7 @@
 
 /* ── Progress track ── */
 .metric-progress-track {
-  height: 4px;
+  height: 3px;
   background: #f0f2f8;
   border-radius: 3px;
   overflow: hidden;

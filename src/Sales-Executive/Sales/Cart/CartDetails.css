@@ -141,6 +141,12 @@
     line-height: 1.4;
 }
 
+.cartdetails-product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
 /* Price Column */
 .cartdetails-price {
     text-align: center;
@@ -192,6 +198,32 @@
     font-weight: 600;
     font-size: 14px;
     color: #4A4A4A;
+}
+
+.cartdetails-qty-editable {
+    cursor: text;
+    border-radius: 4px;
+    padding: 2px 4px;
+    transition: background 0.15s;
+}
+
+.cartdetails-qty-editable:hover {
+    background: #eef2ff;
+    color: #20409A;
+}
+
+.cartdetails-qty-input {
+    width: 44px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: #20409A;
+    border: 2px solid #20409A;
+    border-radius: 4px;
+    padding: 2px 4px;
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(32, 64, 154, 0.12);
 }
 
 /* Subtotal Column */

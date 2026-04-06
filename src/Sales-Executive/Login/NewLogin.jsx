@@ -6,6 +6,7 @@ import Tvs from "../../components/login/Assets/Login/mytvs.png";
 import { apiService } from "../../services/apiservice";
 import apiConfigManager from "../../services/apiConfig";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import Spinner from "../components/Spinner/Spinner";
 
 function NewLogin() {
   const navigate = useNavigate();
@@ -328,14 +329,16 @@ function NewLogin() {
                 className="gradient-login-btn"
                 disabled={loading}
               >
-                {loading ? "LOGGING IN..." : "LOGIN"}
+                {loading ? <><Spinner inline size="sm" /> Logging in</> : "LOGIN"}
               </button>
             </form>
           </div>
         </div>
       </div>
 
-      {/* Session Conflict Modal */}
+      </div>
+
+      {/* Session Conflict Modal - outside login-wrapper to avoid backdrop-filter stacking context */}
       {showSessionModal && (
         <>
           <div className="modal-overlay" onClick={handleCancelLogin}></div>
@@ -364,14 +367,13 @@ function NewLogin() {
                   onClick={handleProceedLogin}
                   disabled={loading}
                 >
-                  {loading ? "Processing..." : "Proceed"}
+                  {loading ? <><Spinner inline size="sm" /> Processing</> : "Proceed"}
                 </button>
               </div>
             </div>
           </div>
         </>
       )}
-      </div>
     </>
   );
 }

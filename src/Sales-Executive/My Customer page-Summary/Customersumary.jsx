@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Header from '../header/Header';
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import { apiService } from "../../services/apiservice";
 import { getOrderListAPI, getOrderDetailsAPI } from "../../services/api";
+import Spinner from '../components/Spinner/Spinner';
 import "./CustomerSummary.css";
 
 // Inline SVG icons with controllable color
@@ -14,8 +15,7 @@ const ReceiptSVG = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="n
 const SalesSVG   = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#20409A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>;
 const OpenSVG    = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F36F21" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>;
 const ClosedSVG  = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#28a745" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
-const CreditSVG  = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#20409A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>;
-const OutstandingSVG = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc3545" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
+const CreditSVG  = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#20409A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>;const OutstandingSVG = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc3545" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
 
 const CustomerSummary = () => {
   const { state } = useLocation();
@@ -25,9 +25,11 @@ const CustomerSummary = () => {
   const [activeTab, setActiveTab] = useState("DashBoard");
 
   // Dashboard data
-  const [enquiryData, setEnquiryData] = useState(null);
-  const [visitData, setVisitData] = useState(null);
-  const [dashLoading, setDashLoading] = useState(true);
+  const [enquiryData, setEnquiryData]     = useState(null);
+  const [visitData, setVisitData]         = useState(null);
+  const [salesData, setSalesData]         = useState(null);
+  const [collectionData, setCollectionData] = useState(null);
+  const [dashLoading, setDashLoading]     = useState(true);
 
   // Orders tab data
   const [orders, setOrders] = useState([]);
@@ -45,7 +47,6 @@ const CustomerSummary = () => {
   const [visitsLoading, setVisitsLoading] = useState(false);
 
   const customerCode = customer?.code || customerDetails?.customer_code || "";
-  const customerId   = customerDetails?.customer_id || null;
   const customerName = customer?.name || customerDetails?.customer_name || "Customer";
   const address = [
     customerDetails?.address1,
@@ -67,6 +68,8 @@ const CustomerSummary = () => {
         if (res?.success) {
           setEnquiryData(res.enquiry);
           setVisitData(res.visits);
+          setSalesData(res.sales);
+          setCollectionData(res.collection);
         }
       } catch (e) {
         console.error("Dashboard fetch error:", e);
@@ -214,11 +217,6 @@ const CustomerSummary = () => {
         {address && <p className="cust-address">{address}</p>}
         {(customerDetails?.credit_limit || customerDetails?.outstanding_amount) && (
           <div style={{ display: "flex", gap: "24px", marginTop: "8px", fontSize: "13px" }}>
-            {customerDetails?.credit_limit && (
-              <span style={{ color: "#555" }}>
-                Credit Limit: <strong>₹{fmt(customerDetails.credit_limit)}</strong>
-              </span>
-            )}
             {customerDetails?.outstanding_amount && (
               <span style={{ color: "#c0392b" }}>
                 Outstanding: <strong>₹{fmt(customerDetails.outstanding_amount)}</strong>
@@ -246,15 +244,38 @@ const CustomerSummary = () => {
         {/* DASHBOARD TAB */}
         {activeTab === "DashBoard" && (
           dashLoading ? (
-            <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>Loading...</div>
+            <Spinner text="Loading dashboard..." />
           ) : (
             <>
+              {/* Sales */}
+              <div className="data-group">
+                <h3 className="group-heading">Sales</h3>
+                <div className="cards-row-4">
+                  <StatCard label="Actual Sales"        value={salesData?.actual             != null ? `₹${fmt(salesData.actual)}`                          : "—"} icon={<SalesSVG />} />
+                  <StatCard label="Primary Brand Value" value={salesData?.primary_brand_value != null ? `₹${fmt(salesData.primary_brand_value)}`             : "—"} icon={<TargetSVG />} />
+                  <StatCard label="Primary Brand %"     value={salesData?.primary_brand_percantage != null ? `${salesData.primary_brand_percantage}%`        : "—"} icon={<ClosedSVG />} />
+                </div>
+              </div>
+
+              {/* Collection */}
+              <div className="data-group">
+                <h3 className="group-heading">Collection</h3>
+                <div className="cards-row-4">
+                  <StatCard label="Target"    value={collectionData?.target    != null ? `₹${fmt(collectionData.target)}`    : "—"} icon={<ReceiptSVG />} />
+                  <StatCard label="Actual" value={collectionData?.actual    != null ? `₹${fmt(collectionData.actual)}`    : "—"} icon={<ReceiptSVG />} />
+                  <StatCard label="Total Due"  value={collectionData?.total_due != null ? `₹${fmt(collectionData.total_due)}` : "—"} icon={<OutstandingSVG />} />
+                </div>
+              </div>
+
               {/* Enquiry */}
               <div className="data-group">
                 <h3 className="group-heading">Enquiry</h3>
                 <div className="cards-row-4">
-                  <StatCard label="Total Enquiries" value={fmt(enquiryData?.target_count)} icon={<TargetSVG />} />
-                  <StatCard label="Closed Enquiries" value={fmt(enquiryData?.actual_count)} icon={<ClosedSVG />} />
+                  <StatCard label="Total Enquiries"    value={fmt(enquiryData?.target_count)}    icon={<TargetSVG />} />
+                  <StatCard label="Closed Enquiries"   value={fmt(enquiryData?.actual_count)}    icon={<ClosedSVG />} />
+                  <StatCard label="Confirmed Count"    value={fmt(enquiryData?.confirmed_count)} icon={<CartSVG />} />
+                  <StatCard label="Enquiry Value"      value={enquiryData?.enquiry_value   != null ? `₹${fmt(enquiryData.enquiry_value)}`   : "—"} icon={<SalesSVG />} />
+                  <StatCard label="Confirmed Value"    value={enquiryData?.confirmed_value != null ? `₹${fmt(enquiryData.confirmed_value)}` : "—"} icon={<OpenSVG />} />
                 </div>
               </div>
 
@@ -264,23 +285,6 @@ const CustomerSummary = () => {
                 <div className="cards-row-2">
                   <StatCard label="Total Planned" value={fmt(visitData?.target_count)} icon={<MapPinSVG />} />
                   <StatCard label="Total Visited" value={fmt(visitData?.actual_count)} icon={<MapPinSVG />} />
-                </div>
-              </div>
-
-              {/* Collections summary */}
-              <div className="data-group">
-                <h3 className="group-heading">Collections</h3>
-                <div className="cards-row-2">
-                  <StatCard
-                    label="Credit Limit"
-                    value={customerDetails?.credit_limit ? `₹${fmt(customerDetails.credit_limit)}` : "—"}
-                    icon={<CreditSVG />}
-                  />
-                  <StatCard
-                    label="Outstanding Amount"
-                    value={customerDetails?.outstanding_amount ? `₹${fmt(customerDetails.outstanding_amount)}` : "—"}
-                    icon={<OutstandingSVG />}
-                  />
                 </div>
               </div>
             </>
@@ -318,7 +322,7 @@ const CustomerSummary = () => {
             </div>
             <div className="orders-main-list">
               {ordersLoading ? (
-                <div style={{ textAlign: "center", padding: "30px", color: "#666" }}>Loading orders...</div>
+                <Spinner text="Loading orders..." />
               ) : orders.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "30px", color: "#999" }}>No orders found.</div>
               ) : orders.map((order, i) => {
@@ -362,7 +366,7 @@ const CustomerSummary = () => {
                     {isExpanded && (
                       <div className="order-detail-panel">
                         {detailLoading ? (
-                          <div className="order-detail-loading">Loading details...</div>
+                          <div className="order-detail-loading"><Spinner size="sm" /></div>
                         ) : !detail ? (
                           <div className="order-detail-loading" style={{ color: "#999" }}>No details available.</div>
                         ) : (
@@ -463,7 +467,7 @@ const CustomerSummary = () => {
             </div>
             <div className="orders-main-list">
               {collectionsLoading ? (
-                <div style={{ textAlign: "center", padding: "30px", color: "#666" }}>Loading collections...</div>
+                <Spinner text="Loading collections..." />
               ) : collections.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "30px", color: "#999" }}>No collections found.</div>
               ) : collections.map((r, i) => (
@@ -501,7 +505,7 @@ const CustomerSummary = () => {
             </div>
             <div className="orders-main-list">
               {visitsLoading ? (
-                <div style={{ textAlign: "center", padding: "30px", color: "#666" }}>Loading visits...</div>
+                <Spinner text="Loading visits..." />
               ) : visits.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "30px", color: "#999" }}>No visit history found.</div>
               ) : visits.map((v, i) => (

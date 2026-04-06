@@ -140,7 +140,7 @@
   font-size: 13px;
   margin: 0 0 3px 0;
   color: #333;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.3;
 }
 
@@ -148,7 +148,7 @@
   font-size: 11px;
   margin: 0;
   color: #666;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .receipt-icon-container {
@@ -201,8 +201,8 @@
 }
 
 .bold-text {
-  font-weight: bold;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 13px;
 }
 
 /* Payment Selection Card */
@@ -377,9 +377,9 @@
 }
 
 .section-title {
-  font-size: 16px;
-  margin-bottom: 30px;
-  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 20px;
+  font-weight: 600;
   color: #20409A;
   padding-bottom: 10px;
   display: inline-block;
@@ -566,8 +566,8 @@
 }
 
 .cust-title-text {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   margin: 0;
   color: #333;
   line-height: 1.3;
@@ -577,7 +577,7 @@
   font-size: 12px;
   color: #666;
   margin: 4px 0 0 0;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .customer-header-details {
@@ -641,10 +641,10 @@
 .section-count {
   background: #20409A;
   color: white;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 400;
+  padding: 2px 7px;
+  border-radius: 10px;
   min-width: 20px;
   text-align: center;
 }
@@ -799,8 +799,8 @@
 }
 
 .data-value-bold {
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: 500;
+  font-size: 12px;
   color: #333;
   line-height: 1.3;
 }
@@ -1037,15 +1037,15 @@
 .receipt-page-container .payment-section-enhanced {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .receipt-page-container .payment-amount-section-enhanced,
 .receipt-page-container .payment-method-section-enhanced {
   background: #fff;
   border-radius: 10px;
-  padding: 16px;
+  padding: 14px 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid #e8e8e8;
   transition: all 0.3s ease;
@@ -1062,7 +1062,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .receipt-page-container .icon-wrapper {
@@ -1079,6 +1079,15 @@
 
 .receipt-page-container .icon-wrapper svg {
   color: white;
+}
+
+/* Rupee text inside icon box */
+.rupee-icon-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  font-family: Arial, sans-serif;
 }
 
 .payment-heading-enhanced {
@@ -1099,39 +1108,57 @@
 
 /* Amount Input Wrapper */
 .amount-input-wrapper {
-  position: relative;
   display: flex;
+  flex-direction: row;
   align-items: center;
+  margin-top: 8px;
+  height: 44px;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.amount-input-wrapper:focus-within {
+  border-color: #20409A;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(32, 64, 154, 0.1);
 }
 
 .currency-symbol {
-  position: absolute;
-  left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 100%;
   font-size: 16px;
   font-weight: 700;
   color: #20409A;
   pointer-events: none;
-  z-index: 1;
+  user-select: none;
+  flex-shrink: 0;
+  border-right: 1.5px solid #e0e0e0;
+  background: #f0f4ff;
 }
 
 .pay-field-enhanced {
-  width: 100%;
-  height: 44px;
-  padding: 10px 16px 10px 36px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  flex: 1;
+  height: 100%;
+  padding: 0 12px;
+  border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  background: #f9f9f9;
-  transition: all 0.3s ease;
+  background: transparent;
   color: #333;
+  box-sizing: border-box;
 }
 
 .pay-field-enhanced:focus {
-  border-color: #20409A;
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(32, 64, 154, 0.1);
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 .pay-field-enhanced::placeholder {
@@ -1314,10 +1341,10 @@
 }
 
 .development-title {
-  font-size: 14px;
+  font-size: 13px;
   color: #20409A;
   margin: 0;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .development-subtitle {
@@ -1361,8 +1388,8 @@
 }
 
 .section-title-enhanced {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: #333;
   margin: 0;
 }
@@ -2053,4 +2080,172 @@
 .btn-close-enhanced:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+
+/* ── Modern Alert Modal ─────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: modal-fade-in 0.2s ease;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 32px 28px;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: modal-slide-up 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-slide-up {
+  from { transform: translateY(24px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0) scale(1);       opacity: 1; }
+}
+
+.modal-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.modal-icon-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.modal-icon-error {
+  background: #fdecea;
+  color: #c62828;
+}
+
+.modal-icon-info {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+  text-align: center;
+}
+
+.modal-message {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.modal-ok-btn {
+  margin-top: 8px;
+  padding: 12px 40px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #20409A 0%, #1a3380 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(32, 64, 154, 0.35);
+  min-width: 120px;
+}
+
+.modal-ok-btn:hover {
+  background: linear-gradient(135deg, #1a3380 0%, #142966 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(32, 64, 154, 0.45);
+}
+
+.modal-ok-btn:active {
+  transform: translateY(0);
+}
+
+
+/* ── Bottom Action Row (Change to Return + Buttons in one row) ── */
+.bottom-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 14px 20px;
+  background: #fffbea;
+  border: 1.5px solid #f0d060;
+  border-radius: 10px;
+}
+
+.change-to-return-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ctr-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f5a623;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.ctr-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #b8860b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 2px 0;
+}
+
+.ctr-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.ctr-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.upi-coming-soon-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #20409A;
 }

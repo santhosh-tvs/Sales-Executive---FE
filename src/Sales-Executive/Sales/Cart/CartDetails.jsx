@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import "./CartDetails.css";
 import { useCart } from "../../../Context/CartContext";
 import { useNavigate } from "react-router-dom";
+import StockSplitBadge from "./StockSplitBadge";
 
 function CartDetails() {
   const { cartItems, updateQuantity, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
+  // Track which item is being edited and its draft value
+  const [editingId, setEditingId] = useState(null);
+  const [draftQty, setDraftQty] = useState('');
 
   const handleIncrement = (id) => {
     const item = cartItems.find(item => item.id === id || item.partNumber === id);
-    if (item) {
-      updateQuantity(id, item.quantity + 1);
-    }
+    if (item) updateQuantity(id, item.quantity + 1);
   };
 
   const handleDecrement = (id) => {
@@ -23,9 +25,34 @@ function CartDetails() {
     }
   };
 
-  const handleRemove = (id) => {
-    removeFromCart(id);
+  const handleQtyClick = (id, currentQty) => {
+    setEditingId(id);
+    setDraftQty(String(currentQty));
   };
+
+  const handleQtyChange = (e) => {
+    // Allow only digits
+    const val = e.target.value.replace(/\D/g, '');
+    setDraftQty(val);
+  };
+
+  const commitQty = (id) => {
+    const parsed = parseInt(draftQty, 10);
+    if (!isNaN(parsed) && parsed > 0) {
+      updateQuantity(id, parsed);
+    } else if (!isNaN(parsed) && parsed === 0) {
+      removeFromCart(id);
+    }
+    setEditingId(null);
+    setDraftQty('');
+  };
+
+  const handleQtyKeyDown = (e, id) => {
+    if (e.key === 'Enter') commitQty(id);
+    if (e.key === 'Escape') { setEditingId(null); setDraftQty(''); }
+  };
+
+  const handleRemove = (id) => removeFromCart(id);
 
   return (
     <div className="cartdetails">
@@ -80,9 +107,12 @@ function CartDetails() {
                       alt={item.itemDescription}
                       className="cartdetails-product-image"
                     />
-                    <span className="cartdetails-product-name">
-                      {item.itemDescription}
-                    </span>
+                    <div className="cartdetails-product-info">
+                      <span className="cartdetails-product-name">
+                        {item.itemDescription}
+                      </span>
+                      <StockSplitBadge item={item} />
+                    </div>
                   </div>
 
                   {/* Price */}
@@ -100,9 +130,26 @@ function CartDetails() {
                         −
                       </button>
 
-                      <span className="cartdetails-qty-value">
-                        {item.quantity}
-                      </span>
+                      {editingId === item.partNumber ? (
+                        <input
+                          className="cartdetails-qty-input"
+                          type="text"
+                          inputMode="numeric"
+                          value={draftQty}
+                          autoFocus
+                          onChange={handleQtyChange}
+                          onBlur={() => commitQty(item.partNumber)}
+                          onKeyDown={(e) => handleQtyKeyDown(e, item.partNumber)}
+                        />
+                      ) : (
+                        <span
+                          className="cartdetails-qty-value cartdetails-qty-editable"
+                          title="Click to edit quantity"
+                          onClick={() => handleQtyClick(item.partNumber, item.quantity)}
+                        >
+                          {item.quantity}
+                        </span>
+                      )}
 
                       <button
                         className="cartdetails-qty-btn"

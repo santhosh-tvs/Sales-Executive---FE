@@ -395,3 +395,28 @@
     height: 32px;
   }
 }
+
+/* Brand filter label */
+.brand-filter-label {
+  font-size: 13px;
+  color: #667085;
+  margin-bottom: 12px;
+  padding: 6px 12px;
+  background: #f0f4ff;
+  border-radius: 6px;
+  border-left: 3px solid #20409A;
+  display: inline-block;
+}
+
+.brand-filter-label strong {
+  color: #20409A;
+}
+
+/* Placeholder text for empty states */
+.cat-placeholder {
+  padding: 40px;
+  text-align: center;
+  color: #9aa3b8;
+  font-size: 14px;
+  width: 100%;
+}

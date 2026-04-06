@@ -21,6 +21,7 @@ const ReceiptPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [modal, setModal] = useState({ open: false, type: 'info', title: '', message: '', onOk: null });
   
   // Form state
   const [formData, setFormData] = useState({
@@ -34,6 +35,16 @@ const ReceiptPage = () => {
     utrNumber: '',
     receiptRemarks: ''
   });
+
+  const showAlert = (message, type = 'info', title = '', onOk = null) => {
+    setModal({ open: true, type, title: title || (type === 'success' ? 'Success' : type === 'error' ? 'Error' : 'Notice'), message, onOk });
+  };
+
+  const closeModal = () => {
+    const cb = modal.onOk;
+    setModal({ open: false, type: 'info', title: '', message: '', onOk: null });
+    if (cb) cb();
+  };
 
   // Fetch customers on component mount
   useEffect(() => {
@@ -171,37 +182,35 @@ const ReceiptPage = () => {
 
   const calculateExcessAmount = () => {
     const amount = parseFloat(formData.receiptAmount) || 0;
-    // This would be calculated based on actual invoice amount
-    // For now, returning a sample calculation
-    return amount > 0 ? (amount * 0.1).toFixed(2) : '0.00';
+    return amount > 0 ? amount.toFixed(2) : '0.00';
   };
 
   const handleSubmitReceipt = async () => {
     try {
       // Validation
       if (!formData.receiptAmount || parseFloat(formData.receiptAmount) <= 0) {
-        alert('Please enter a valid amount');
+        showAlert('Please enter a valid amount', 'error');
         return;
       }
 
       // Validate mandatory fields
       if (!selectedCustomer?.customer_id) {
-        alert('Customer ID is missing. Please select customer again.');
+        showAlert('Customer ID is missing. Please select customer again.', 'error');
         return;
       }
 
       // Additional validation for specific payment methods
       if (['Cheque', 'DD', 'Challan'].includes(selectedMethod)) {
         if (!formData.chequeNumber) {
-          alert(`Please enter ${selectedMethod} number`);
+          showAlert(`Please enter ${selectedMethod} number`, 'error');
           return;
         }
         if (!formData.bankName) {
-          alert('Please enter bank name');
+          showAlert('Please enter bank name', 'error');
           return;
         }
         if (selectedMethod !== 'Challan' && !formData.place) {
-          alert('Please enter place');
+          showAlert('Please enter place', 'error');
           return;
         }
       }
@@ -264,30 +273,30 @@ const ReceiptPage = () => {
       const response = await apiService.post('/receipt/create-receipt', receiptData);
 
       if (response.success) {
-        alert('Receipt created successfully!');
-        // Reset form and go back to list
-        setFormData({
-          receiptAmount: '',
-          receiptDate: new Date().toISOString().split('T')[0],
-          chequeNumber: '',
-          bankName: '',
-          place: '',
-          challanDdChequeDate: new Date().toISOString().split('T')[0],
-          attachment: null,
-          utrNumber: '',
-          receiptRemarks: ''
+        showAlert('Receipt created successfully!', 'success', 'Receipt Created', () => {
+          setFormData({
+            receiptAmount: '',
+            receiptDate: new Date().toISOString().split('T')[0],
+            chequeNumber: '',
+            bankName: '',
+            place: '',
+            challanDdChequeDate: new Date().toISOString().split('T')[0],
+            attachment: null,
+            utrNumber: '',
+            receiptRemarks: ''
+          });
+          setSelectedMethod('Cash');
+          setView('list');
+          setSelectedCustomer(null);
+          fetchCustomers();
         });
-        setSelectedMethod('Cash');
-        setView('list');
-        setSelectedCustomer(null);
-        fetchCustomers(); // Refresh customer list
       } else {
-        alert(response.message || 'Failed to create receipt');
+        showAlert(response.message || 'Failed to create receipt', 'error');
       }
     } catch (error) {
       console.error('Error creating receipt:', error);
       const errorMessage = error.response?.data?.message || 'Failed to create receipt. Please try again.';
-      alert(errorMessage);
+      showAlert(errorMessage, 'error');
     } finally {
       setSubmitting(false);
     }
@@ -315,7 +324,7 @@ const ReceiptPage = () => {
       // Fetch all receipts
       const listRes = await apiService.get('/receipt/receipt-list', { page: 1, limit: 1000 });
       if (!listRes.success || !listRes.data) {
-        alert('No receipts found to export');
+        showAlert('No receipts found to export', 'info');
         return;
       }
 
@@ -325,7 +334,7 @@ const ReceiptPage = () => {
       });
 
       if (flat.length === 0) {
-        alert('No receipts found to export');
+        showAlert('No receipts found to export', 'info');
         return;
       }
 
@@ -379,7 +388,7 @@ const ReceiptPage = () => {
       );
     } catch (err) {
       console.error('Export error:', err);
-      alert('Failed to export receipts. Please try again.');
+      showAlert('Failed to export receipts. Please try again.', 'error');
     }
   };
 
@@ -457,6 +466,34 @@ const ReceiptPage = () => {
           />}
         </div>
       </div>
+
+      {/* Modern Alert Modal */}
+      {modal.open && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-box" onClick={e => e.stopPropagation()}>
+            <div className={`modal-icon-wrap modal-icon-${modal.type}`}>
+              {modal.type === 'success' && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+              {modal.type === 'error' && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              )}
+              {modal.type === 'info' && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none" />
+                </svg>
+              )}
+            </div>
+            <h3 className="modal-title">{modal.title}</h3>
+            <p className="modal-message">{modal.message}</p>
+            <button className="modal-ok-btn" onClick={closeModal}>OK</button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -556,7 +593,7 @@ const PaymentView = ({
         <div className="payment-amount-section-enhanced">
           <div className="section-header-enhanced">
             <div className="icon-wrapper">
-              <img src="your-image.png" width="24" height="24" />
+              <span className="rupee-icon-text">₹</span>
             </div>
             <div>
               <h3 className="payment-heading-enhanced">Enter Amount to Pay</h3>
@@ -615,30 +652,67 @@ const PaymentView = ({
       </div>
 
       {isCash && formData.receiptAmount && (
-        <div className="excess-amt-card-enhanced">
-          <div className="info-icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-              <line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <circle cx="12" cy="8" r="1" fill="currentColor"/>
-            </svg>
+        <div className="bottom-action-row">
+          {/* Left: Change to Return */}
+          <div className="change-to-return-inline">
+            <div className="ctr-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                <line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="12" cy="8" r="1" fill="currentColor"/>
+              </svg>
+            </div>
+            <div>
+              <p className="ctr-label">Change to Return</p>
+              <p className="ctr-amount">₹{excessAmount}</p>
+            </div>
           </div>
-          <div className="excess-content">
-            <p className="msg-text-enhanced">Change to Return</p>
-            <h2 className="amt-display-enhanced">₹{excessAmount}</h2>
-            <p className="msg-subtext">Please verify the amount before proceeding</p>
+
+          {/* Right: Buttons */}
+          <div className="ctr-actions">
+            <button className="btn-close-enhanced" onClick={() => setView('orders')} disabled={submitting}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              Cancel
+            </button>
+            <button className="btn-continue-enhanced" onClick={handleSubmitReceipt} disabled={submitting || !formData.receiptAmount}>
+              {submitting ? (
+                <><div className="button-spinner"></div>Processing...</>
+              ) : (
+                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Complete Payment</>
+              )}
+            </button>
           </div>
         </div>
       )}
 
-      {isUPI && (
-        <div className="development-msg-enhanced">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke="#20409A" strokeWidth="2"/>
-            <path d="M12 6v6l4 2" stroke="#20409A" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          <p className="development-title">UPI Payment Coming Soon</p>
-          <p className="development-subtitle">We're working on integrating UPI payment gateway</p>
+      {!isCash && (
+        <div className="bottom-action-row">
+          {isUPI && (
+            <div className="upi-coming-soon-inline">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#20409A" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span>UPI Payment Coming Soon</span>
+            </div>
+          )}
+          {!isUPI && <div />}
+          <div className="ctr-actions">
+            <button className="btn-close-enhanced" onClick={() => setView('orders')} disabled={submitting}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              Cancel
+            </button>
+            <button className="btn-continue-enhanced" onClick={handleSubmitReceipt} disabled={submitting || !formData.receiptAmount}>
+              {submitting ? (
+                <><div className="button-spinner"></div>Processing...</>
+              ) : showExtraDetails ? (
+                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Complete Payment</>
+              ) : (
+                <>Continue<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></>
+              )}
+            </button>
+          </div>
         </div>
       )}
 
@@ -753,46 +827,6 @@ const PaymentView = ({
         </div>
       )}
 
-      <div className="footer-actions-enhanced">
-        <button 
-          className="btn-close-enhanced" 
-          onClick={() => setView('orders')} 
-          disabled={submitting}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          Cancel
-        </button>
-        <button 
-          className="btn-continue-enhanced" 
-          onClick={handleSubmitReceipt}
-          disabled={submitting || !formData.receiptAmount}
-        >
-          {submitting ? (
-            <>
-              <div className="button-spinner"></div>
-              Processing...
-            </>
-          ) : (showExtraDetails || isCash) ? (
-            <>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <polyline points="20 6 9 17 4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              Complete Payment
-            </>
-          ) : (
-            <>
-              Continue
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <polyline points="12 5 19 12 12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </>
-          )}
-        </button>
-      </div>
     </div>
   );
 };

@@ -342,7 +342,9 @@ const CreateBeat = () => {
           location: beatInfo.location,
           customer_id: customer.id,
           remarks: beatInfo.remarks || '',
-          repeat_on: beatInfo.repeatType || 'custom'
+          repeat_on: beatInfo.repeatType || 'custom',
+          // Encode target and unit together since backend only has one target field
+          target: customer.target ? `${customer.target}|${customer.unit || 'Rs'}` : '',
         };
 
         // Add optional date for custom repeat type

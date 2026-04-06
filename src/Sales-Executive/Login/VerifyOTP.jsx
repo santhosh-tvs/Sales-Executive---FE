@@ -4,6 +4,7 @@ import "./VerifyOTP.css";
 import Picture from "../../components/login/Assets/Login/picture.png";
 import Tvs from "../../components/login/Assets/Login/mytvs.png";
 import { apiService } from "../../services/apiservice";
+import Spinner from "../components/Spinner/Spinner";
 
 function VerifyOTP() {
   const navigate = useNavigate();
@@ -199,7 +200,7 @@ function VerifyOTP() {
                 className="gradient-login-btn"
                 disabled={loading || success}
               >
-                {loading ? "VERIFYING..." : success ? "VERIFIED!" : "VERIFY OTP"}
+                {loading ? <><Spinner inline size="sm" /> Verifying</> : success ? "VERIFIED!" : "VERIFY OTP"}
               </button>
 
               <div className="helper-links">
@@ -209,7 +210,7 @@ function VerifyOTP() {
                   onClick={handleResendOTP}
                   disabled={loading || success || resendLoading}
                 >
-                  {resendLoading ? "Resending..." : "Didn't receive OTP? Resend"}
+                  {resendLoading ? <><Spinner inline size="sm" /> Resending</> : "Didn't receive OTP? Resend"}
                 </button>
               </div>
             </form>

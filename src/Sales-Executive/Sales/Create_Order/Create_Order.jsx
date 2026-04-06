@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../header/Header';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import CustomerDetails from '../../components/CustomerDetails/CustomerDetails';
+import Spinner from '../../components/Spinner/Spinner';
 import '../../../styles/Sales/Create_Order/Create_Order.css';
 import { apiService } from '../../../services/apiservice';
 import apiConfigManager from '../../../services/apiConfig';
@@ -85,7 +86,7 @@ const Create_Order = () => {
       if (searchTerm.length >= 3 || searchTerm.length === 0) {
         fetchCustomers(searchTerm);
       }
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -95,73 +96,38 @@ const Create_Order = () => {
     setSearchTerm(e.target.value);
   };
 
-  // Handle customer selection - fetch complete details from both APIs
   const handleCustomerSelect = async (customer) => {
     try {
-      console.log('🔍 Fetching details for customer:', customer.customer_code);
-      
-      // First, set the basic customer data
       setSelectedCustomer(customer);
       setShowCustomerDetail(true);
-      
-      // Fetch complete customer details from view-customer API
-      const viewCustomerResponse = await apiService.get(`/profile/view-customer/${customer.customer_code}`);
-      console.log('📋 View Customer Response:', viewCustomerResponse);
-      
+
+      // Fire view-customer and api module import in parallel
+      const [viewCustomerResponse, { customerDetails: customerDetailsAPI }] = await Promise.all([
+        apiService.get(`/profile/view-customer/${customer.customer_code}`),
+        import('../../../services/api'),
+      ]);
+
       if (viewCustomerResponse.success && viewCustomerResponse.user_detail) {
         const viewCustomerData = viewCustomerResponse.user_detail;
-        console.log('✅ View Customer Data:', viewCustomerData);
-        
-        // Store unit_code and API config from customer data
         apiConfigManager.updateFromCustomer(viewCustomerResponse);
-        console.log('✅ API config updated, unit_code:', apiConfigManager.getUnitCode());
-        
-        // Now fetch financial details using account number
-        let customerDetailsData = null;
-        if (viewCustomerData.account_number) {
-          console.log('🔢 Account Number:', viewCustomerData.account_number);
-          
-          const { customerDetails: customerDetailsAPI } = await import('../../../services/api');
-          const detailsResponse = await customerDetailsAPI({ 
-            accountNumber: viewCustomerData.account_number.toString() 
-          });
-          
-          console.log('💰 Customer Details Response:', detailsResponse);
-          
-          if (detailsResponse) {
-            customerDetailsData = detailsResponse;
-            console.log('✅ Customer Details Data:', customerDetailsData);
-          }
-        }
-        
-        // Merge all data into selectedCustomer
-        const completeCustomerData = {
+
+        // Show customer immediately with basic data — no waiting for financials
+        const basicData = {
           ...customer,
           ...viewCustomerData,
-          // Financial data from customer details API
-          creditBalance: customerDetailsData?.availablecreditlimit 
-            ? customerDetailsData.availablecreditlimit.toFixed(2) 
-            : '0.00',
-          creditLimit: customerDetailsData?.creditLimit 
-            ? customerDetailsData.creditLimit.toString()
-            : (viewCustomerData.credit_limit || '0.00'),
-          overDueInvoice: customerDetailsData?.noofoverdueinvoices?.toString() || '0',
-          overDueAmount: customerDetailsData?.overdueamount 
-            ? customerDetailsData.overdueamount.toFixed(2) 
-            : '0.00',
-          totalOutstanding: customerDetailsData?.outstandingamount 
-            ? customerDetailsData.outstandingamount.toFixed(2) 
-            : '0.00',
-          // Format address
+          creditBalance: '—',
+          creditLimit: viewCustomerData.credit_limit || '—',
+          overDueInvoice: '—',
+          overDueAmount: '—',
+          totalOutstanding: '—',
           fullAddress: [
             viewCustomerData.address1,
             viewCustomerData.address2,
             viewCustomerData.address3,
             viewCustomerData.city,
             viewCustomerData.state,
-            viewCustomerData.post_code
+            viewCustomerData.post_code,
           ].filter(Boolean).join(', '),
-          // Ship to options (can be multiple in future)
           shipToOptions: [{
             code: viewCustomerData.site_number || 'N/A',
             name: viewCustomerData.site_code || customer.customer_name,
@@ -170,19 +136,32 @@ const Create_Order = () => {
               viewCustomerData.address2,
               viewCustomerData.city,
               viewCustomerData.state,
-              viewCustomerData.post_code
-            ].filter(Boolean).join(', ')
-          }]
+              viewCustomerData.post_code,
+            ].filter(Boolean).join(', '),
+          }],
         };
-        
-        // Set default ship-to to null (user must select)
-        
-        setSelectedCustomer(completeCustomerData);
-        console.log('✅ Complete Customer Data:', completeCustomerData);
+        setSelectedCustomer(basicData);
+
+        // Load financials in background — update when ready
+        if (viewCustomerData.account_number) {
+          customerDetailsAPI({ accountNumber: viewCustomerData.account_number.toString() })
+            .then((fin) => {
+              if (fin) {
+                setSelectedCustomer((prev) => ({
+                  ...prev,
+                  creditBalance: fin.availablecreditlimit?.toFixed(2) ?? '0.00',
+                  creditLimit: fin.creditLimit?.toString() ?? (viewCustomerData.credit_limit || '0.00'),
+                  overDueInvoice: fin.noofoverdueinvoices?.toString() ?? '0',
+                  overDueAmount: fin.overdueamount?.toFixed(2) ?? '0.00',
+                  totalOutstanding: fin.outstandingamount?.toFixed(2) ?? '0.00',
+                }));
+              }
+            })
+            .catch(() => {});
+        }
       }
     } catch (error) {
-      console.error('❌ Error fetching customer details:', error);
-      // Still show the basic customer data even if API fails
+      console.error('Error fetching customer details:', error);
       setSelectedCustomer(customer);
       setShowCustomerDetail(true);
     }
@@ -251,7 +230,7 @@ const Create_Order = () => {
               <div className="customers-table-container">
                 <div className="customers-table-wrapper">
                   {loadingCustomers ? (
-                    <div className="loading-message">Loading customers...</div>
+                    <Spinner text="Loading customers..." />
                   ) : filteredCustomers.length === 0 ? (
                     <div className="no-customers-message">
                       {searchTerm ? 'No customers found matching your search.' : 'No customers available. Try searching with a customer code or name.'}

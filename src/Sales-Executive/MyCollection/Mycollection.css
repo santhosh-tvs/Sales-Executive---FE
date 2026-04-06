@@ -1,6 +1,6 @@
 /* --- Dashboard Container --- */
 .collections-container {
-  padding: 20px;
+  padding: 80px 20px 20px 20px;
   background-color: #fcfcfc;
   font-family: Inter, sans-serif;
   min-height: 100vh;
@@ -50,15 +50,16 @@
 
 .stat-info h2 {
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: var(--primary-color, #4A4A4A);
 }
 
 .stat-label {
-  margin: 4px 0 0 0;
-  font-size: 13px;
-  color: #666;
+  margin: 3px 0 0 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: #888;
 }
 
 /* --- Tabs Styling --- */
@@ -70,15 +71,15 @@
 }
 
 .tab-item {
-  padding: 14px 28px;
+  padding: 12px 24px;
   border: none;
   background: transparent;
   cursor: pointer;
-  font-weight: 600;
-  color: #666;
-  font-size: 14px;
+  font-weight: 500;
+  color: #888;
+  font-size: 13px;
   transition: all 0.3s ease;
-  border-bottom: 3px solid transparent;
+  border-bottom: 2px solid transparent;
   position: relative;
   bottom: -2px;
 }
@@ -133,21 +134,23 @@
 
 .payment-details h4 {
   margin: 0 0 4px 0;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--primary-color, #4A4A4A);
 }
 
 .item-id {
-  color: #666;
-  font-size: 13px;
+  color: #888;
+  font-size: 12px;
+  font-weight: 400;
   margin: 2px 0;
   line-height: 1.5;
 }
 
 .meta-text {
-  color: #666;
-  font-size: 13px;
+  color: #888;
+  font-size: 12px;
+  font-weight: 400;
   margin: 2px 0;
   line-height: 1.5;
 }
@@ -170,31 +173,32 @@
 }
 
 .price-label {
-  font-size: 12px;
-  color: #666;
+  font-size: 11px;
+  font-weight: 400;
+  color: #888;
   margin: 0;
 }
 
 .price-amount {
-  font-weight: 800;
-  font-size: 18px;
+  font-weight: 600;
+  font-size: 16px;
   margin: 0;
   color: var(--primary-color, #4A4A4A);
 }
 
 /* --- Make Payment Button --- */
 .make-payment-btn {
-  padding: 10px 20px;
-  border-radius: 6px;
+  padding: 8px 16px;
+  border-radius: 4px;
   border: none;
   cursor: pointer;
   color: white;
   background: var(--secondary-color, #20409A);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  font-size: 13px;
+  gap: 6px;
+  font-weight: 500;
+  font-size: 12px;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
@@ -232,4 +236,56 @@
     border-top: 1px dashed #eee;
     padding-top: 15px;
   }
+}
+
+/* --- Tab Badge --- */
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary-color, #20409A);
+  color: white;
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 1px 6px;
+  margin-left: 5px;
+}
+
+.tab-item.active .tab-badge {
+  background: white;
+  color: var(--secondary-color, #20409A);
+}
+
+/* --- Empty / Loading State --- */
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.empty-state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  gap: 10px;
+}
+
+.empty-state-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4A4A4A;
+  margin: 0;
+}
+
+.empty-state-sub {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.5;
 }

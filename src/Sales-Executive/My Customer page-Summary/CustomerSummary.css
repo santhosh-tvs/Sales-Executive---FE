@@ -29,8 +29,8 @@
 }
 
 .cust-name {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--primary-color, #4A4A4A);
 }
 
@@ -39,14 +39,15 @@
 }
 
 .cust-id {
-  font-size: 16px;
-  color: #666;
-  font-weight: 600;
+  font-size: 14px;
+  color: #888;
+  font-weight: 400;
 }
 
 .cust-address {
   font-size: 12px;
-  color: #666;
+  color: #888;
+  font-weight: 400;
   margin: 0;
   line-height: 1.6;
 }
@@ -64,8 +65,8 @@
   border: none;
   background: transparent;
   color: #666;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.3s ease;
   border-bottom: 3px solid transparent;
@@ -90,8 +91,8 @@
 }
 
 .group-heading {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   margin-bottom: 20px;
   color: var(--primary-color, #4A4A4A);
 }
@@ -137,14 +138,14 @@
 }
 
 .label-text {
-  font-size: 13px;
+  font-size: 12px;
   color: #666;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .value-text {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: var(--primary-color, #4A4A4A);
 }
 
@@ -218,8 +219,8 @@
   padding: 10px 20px;
   border-radius: 6px;
   border: none;
-  font-weight: 700;
-  font-size: 13px;
+  font-weight: 500;
+  font-size: 12px;
   cursor: pointer;
   min-width: 150px;
   transition: all 0.2s ease;
@@ -258,14 +259,14 @@
 .blue-submit-btn {
   background-color: var(--secondary-color, #20409A);
   color: white;
-  padding: 12px 25px;
+  padding: 10px 20px;
   border: none;
   border-radius: 6px;
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
-  height: 44px;
+  height: 40px;
 }
 
 .blue-submit-btn:hover {
@@ -366,20 +367,20 @@
 }
 
 .text-bold-id {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: #20409A;
 }
 
 .order-item-date {
-  font-size: 14px;
+  font-size: 13px;
   color: #555;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .text-bold-amt {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: #20409A;
 }
 
@@ -454,8 +455,8 @@
 }
 
 .meta-value {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 500;
   color: #1a2340;
 }
 
@@ -541,7 +542,7 @@
 }
 
 .grand-total-amt {
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 600;
   color: #20409A;
 }

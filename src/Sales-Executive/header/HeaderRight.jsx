@@ -74,6 +74,15 @@ const HeaderRight = () => {
     setShowProfilePopup(false);
   };
 
+  // Close popup on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setShowProfilePopup(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Close popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -163,8 +172,8 @@ const HeaderRight = () => {
               </div>
               
               <div className="profile-detail-row">
-                <span className="detail-label">Sales Manager Number</span>
-                <span className="detail-value">{profileData?.reporting_email || "N/A"}</span>
+                <span className="detail-label">Sales Manager Contact</span>
+                <span className="detail-value">{profileData?.reporting_mobile || profileData?.reporting_email || "N/A"}</span>
               </div>
             </div>
           </div>

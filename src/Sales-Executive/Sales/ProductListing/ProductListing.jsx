@@ -7,6 +7,7 @@ import Header from '../../header/Header';
 import PageNavigate from '../Cart/PageNavigate';
 import Spinner from '../../components/Spinner/Spinner';
 import './ProductListing.css';
+import WarehousePickerModal from '../../components/WarehousePickerModal/WarehousePickerModal';
 
 const ProductListing = () => {
   const location = useLocation();
@@ -972,72 +973,60 @@ const ProductListing = () => {
       </div>
 
       {/* ── Warehouse Popup ── */}
-      {showWarehousePopup && (
-        <div className="warehouse-popup-overlay" onClick={handleClosePopup}>
-          <div className="warehouse-popup" onClick={e => e.stopPropagation()}>
-            <div className="warehouse-popup-header">
-              <div>
-                <p className="wh-popup-product-name">{selectedProduct?.itemDescription}</p>
-                <p className="wh-popup-part">Part# {selectedProduct?.partNumber}</p>
-              </div>
-              <button className="close-btn" onClick={handleClosePopup}>×</button>
-            </div>
-
-            <div className="warehouse-popup-content">
-              {loadingStock ? (
-                <div className="loading-stock">
-                  <div className="spinner" />
-                  <span>Checking stock...</span>
-                </div>
-              ) : warehouseStock.length === 0 ? (
-                <div className="wh-empty">No warehouse data available</div>
-              ) : (
-                <div className="warehouse-list">
-                  {warehouseStock.map((wh, idx) => {
-                    const isSelected = selectedWarehouse?.inventoryName === wh.inventoryName;
-                    const isEmpty = parseInt(wh.qty) === 0;
-                    const whMeta = mappedWarehouses.find(m => m.name === wh.inventoryName);
-                    const tagLabels = ['primary', 'secondary', 'tertiary'];
-                    return (
-                      <div
-                        key={wh.inventoryName}
-                        className={`wh-row${isSelected ? ' wh-row-selected' : ''}${isEmpty ? ' wh-row-empty' : ''}`}
-                        onClick={() => handleWarehouseSelect(wh)}
-                      >
-                        <div className="wh-row-left">
-                          <span className="wh-row-name">{wh.inventoryName}</span>
-                          {whMeta?.label && (
-                            <span className={`wh-tag wh-tag-${tagLabels[idx] || 'tertiary'}`}>{whMeta.label}</span>
-                          )}
-                          {isEmpty && <span className="wh-backorder-tag">Back Order</span>}
-                        </div>
-                        <div className="wh-row-right">
-                          {wh.unitCost && <span className="wh-row-price">₹{parseFloat(wh.unitCost).toFixed(2)}</span>}
-                          <span className={`wh-row-qty${isEmpty ? ' wh-qty-zero' : ''}`}>
-                            {isEmpty ? '0' : wh.qty} units
-                          </span>
-                          {isSelected && <span className="wh-check">✓</span>}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <div className="warehouse-popup-footer">
-              <button className="cancel-btn" onClick={handleClosePopup}>Cancel</button>
-              <button
-                className="confirm-btn"
-                onClick={handleConfirmAddToCart}
-                disabled={!selectedWarehouse}
-              >
-                Add to Cart
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <WarehousePickerModal
+        open={showWarehousePopup}
+        onClose={handleClosePopup}
+        onConfirm={(wh) => {
+          setSelectedWarehouse({ inventoryName: wh.name, qty: wh.qty, unitCost: wh.unitCost, locator: wh.locator, entity: wh.entity, software: wh.software });
+          // Use a small timeout so state is set before confirm runs
+          setTimeout(() => {
+            if (!selectedProduct) return;
+            const partNumber = selectedProduct.partNumber;
+            const hasStock = parseInt(wh.qty) > 0;
+            const cartProduct = {
+              id: partNumber, partNumber,
+              itemDescription: selectedProduct.itemDescription,
+              brandName: selectedProduct.brandName,
+              price: parseFloat(selectedProduct.mrp) || 0,
+              mrp: selectedProduct.mrp,
+              listPrice: selectedProduct.listPrice || selectedProduct.mrp,
+              hsnCode: selectedProduct.hsnCode,
+              taxpercent: selectedProduct.taxpercent || 28,
+              aggregate: selectedProduct.aggregate,
+              subAggregate: selectedProduct.subAggregate,
+              imageUrl: null,
+              warehouse: wh.name,
+              availableQty: wh.qty,
+              unitCost: wh.unitCost,
+              locator: wh.locator,
+              entity: wh.entity,
+              software: wh.software,
+              isBackOrder: !hasStock,
+            };
+            addToCart(cartProduct);
+            setAddedToCart(prev => ({ ...prev, [partNumber]: true }));
+            setDefaultWarehouse({ inventoryName: wh.name, qty: wh.qty, unitCost: wh.unitCost, locator: wh.locator, entity: wh.entity, software: wh.software });
+            if (undoTimers[partNumber]) clearTimeout(undoTimers[partNumber]);
+            const timer = setTimeout(() => {
+              setAddedToCart(prev => ({ ...prev, [partNumber]: false }));
+              setUndoTimers(prev => { const n = { ...prev }; delete n[partNumber]; return n; });
+            }, 2000);
+            setUndoTimers(prev => ({ ...prev, [partNumber]: timer }));
+            handleClosePopup();
+          }, 0);
+        }}
+        loading={loadingStock}
+        warehouses={warehouseStock.map((wh, i) => ({
+          name: wh.inventoryName,
+          qty: wh.qty,
+          unitCost: wh.unitCost,
+          locator: wh.locator,
+          entity: wh.entity,
+          software: wh.software,
+          label: mappedWarehouses[i]?.label || null,
+        }))}
+        product={selectedProduct ? { itemDescription: selectedProduct.itemDescription, partNumber: selectedProduct.partNumber } : null}
+      />
     </div>
   );
 };

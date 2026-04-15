@@ -421,3 +421,163 @@
   .wl-topbar-right { width: 100%; }
   .wl-cart-all-btn, .wl-clear-btn { flex: 1; justify-content: center; }
 }
+
+/* ── Live stock badges ────────────────────────────────────── */
+.wl-badge.checking {
+  background: #f1f5f9;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.wl-badge.out-of-stock {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* ── Spinner (inline) ─────────────────────────────────────── */
+.wl-spin {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid #cbd5e1;
+  border-top-color: #64748b;
+  border-radius: 50%;
+  animation: wl-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.wl-spin--lg {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+  border-color: #e2e8f0;
+  border-top-color: #20409A;
+}
+
+/* ── Warehouse picker (new) ───────────────────────────────── */
+.wl-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wl-picker {
+  background: #fff;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.wl-picker-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.wl-picker-title { font-size: 15px; font-weight: 700; color: #1e293b; }
+.wl-picker-sub   { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+.wl-picker-close {
+  background: none; border: none; cursor: pointer;
+  color: #94a3b8; padding: 2px;
+}
+.wl-picker-close:hover { color: #475569; }
+
+.wl-picker-body { padding: 16px 18px; min-height: 80px; }
+.wl-picker-loading {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; padding: 20px 0; color: #94a3b8; font-size: 13px;
+}
+.wl-picker-empty { text-align: center; color: #94a3b8; font-size: 13px; padding: 20px 0; }
+
+.wl-wh-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.wl-wh-btn {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; padding: 10px 8px;
+  border: 1.5px solid #e2e8f0; border-radius: 10px;
+  background: #fafafa; cursor: pointer; transition: all .13s;
+}
+.wl-wh-btn:hover { border-color: #20409A; background: #f0f4ff; }
+.wl-wh-btn.active { border-color: #20409A; background: #eff6ff; box-shadow: 0 0 0 3px rgba(32,64,154,.1); }
+.wl-wh-btn.backorder { border-color: #fde68a; background: #fffbeb; }
+.wl-wh-btn.backorder.active { border-color: #f59e0b; }
+.wl-wh-code { font-size: 11px; font-weight: 700; color: #1e293b; text-align: center; }
+.wl-wh-qty  { font-size: 16px; font-weight: 800; color: #20409A; }
+.wl-wh-btn.backorder .wl-wh-qty { color: #d97706; }
+.wl-wh-bo   { font-size: 9px; font-weight: 700; color: #d97706; text-transform: uppercase; }
+
+.wl-picker-footer {
+  display: flex; gap: 10px;
+  padding: 12px 18px; border-top: 1px solid #f1f5f9;
+}
+.wl-picker-cancel {
+  flex: 1; padding: 9px; border: 1.5px solid #e2e8f0;
+  border-radius: 8px; background: #fff; color: #475569;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.wl-picker-cancel:hover { background: #f8fafc; }
+.wl-picker-confirm {
+  flex: 2; padding: 9px; border: none;
+  border-radius: 8px; background: linear-gradient(135deg, #20409A, #1a3580);
+  color: #fff; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.wl-picker-confirm:disabled { opacity: .45; cursor: not-allowed; }
+.wl-picker-confirm:hover:not(:disabled) { opacity: .9; }
+
+/* ── Card image ───────────────────────────────────────────── */
+.wl-card-img img {
+  width: 100%; height: 100%;
+  object-fit: contain; padding: 8px;
+}
+
+/* ── Loading state ────────────────────────────────────────── */
+.wl-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 80px 24px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* ── Card removing animation ──────────────────────────────── */
+.wl-card--removing {
+  opacity: 0.4;
+  pointer-events: none;
+  transform: scale(0.97);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+/* ── Badge dot ────────────────────────────────────────────── */
+.wl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Clear btn icon ───────────────────────────────────────── */
+.wl-clear-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── Part number icon ─────────────────────────────────────── */
+.wl-card-part {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

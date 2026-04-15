@@ -171,6 +171,7 @@
 .customer-details-footer {
     padding: 20px 30px;
     border-top: 1px solid #f0f0f0;
+    gap: 10px;
     display: flex;
     justify-content: flex-end;
 }
@@ -239,4 +240,13 @@
     .customer-details-continue-btn {
         width: 100%;
     }
+}
+
+.ship-to-required-msg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #dc2626;
+  margin: 0 0 8px;
 }

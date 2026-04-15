@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import Header from "../header/Header";
 import Breadcrumb from "../components/Breadcrumb/Breadcrumb";
 import Spinner from "../components/Spinner/Spinner";
+import OrderPlacingOverlay from "../../components/OrderPlacingOverlay";
 import "./S-bulk-order.css";
+import WarehousePickerModal from "../components/WarehousePickerModal/WarehousePickerModal";
 import { apiService } from "../../services/apiservice";
 import { partsListAPI, createOrderAPI, generalSearchAPI, customerDetails as customerDetailsAPI, warehouseMappingAPI, itemMasterAPI, stockCheckNewAPI } from "../../services/api";
 import apiConfigManager from "../../services/apiConfig";
@@ -92,12 +94,10 @@ const BulkOrder = () => {
 
         // Build ship-to options from warehouses
         const warehouses = [d.primary_ware_house, d.secondary_ware_house, d.teritary_ware_house].filter(Boolean);
-        const siteCode = d.site_code || d.site_number || customer.customer_code;
-        const addrParts = [d.address1, d.address2, d.city, d.state, d.post_code].filter(Boolean).join(", ");
 
         const options = warehouses.length > 0
-          ? warehouses.map(wh => `${wh} / ${siteCode} | ${customer.customer_name}`)
-          : [`${siteCode} | ${customer.customer_name}${addrParts ? " — " + addrParts : ""}`];
+          ? warehouses.map(wh => `${wh} | ${customer.customer_code} | ${customer.customer_name}`)
+          : [`${customer.customer_code} | ${customer.customer_name}`];
 
         setShipToList(options);
       }
@@ -138,7 +138,34 @@ const BulkOrder = () => {
       if (res?.success && res.data?.length > 0) {
         const part = res.data[0];
 
-        // Show modal immediately with loading state
+        // ── If billing warehouse already chosen — skip modal, auto-assign ──
+        if (billingWarehouse && billingWarehouse !== "--") {
+          const listPrice = parseFloat(part.listPrice || part.mrp || 0);
+          const qty = parseFloat(rows[index]?.quantity) || 0;
+          setRows(prev => {
+            const u = [...prev];
+            u[index] = {
+              ...u[index],
+              itemName:    part.itemDescription || "",
+              pkgQty:      part.salesUom || "",
+              listPrice:   part.listPrice || "",
+              gst:         part.taxpercent || "",
+              mrp:         part.mrp || "",
+              price:       part.listPrice || "",
+              lineCode:    part.lineCode || "",
+              brandName:   part.brandName || "",
+              hsnCode:     part.hsnCode || "",
+              warehouse:   billingWarehouse,
+              availableQty: 0,
+              total:       qty > 0 ? (qty * listPrice).toFixed(2) : "",
+              loading: false, error: "",
+            };
+            return u;
+          });
+          return;
+        }
+
+        // ── First part — show warehouse modal ──
         setRows(prev => { const u = [...prev]; u[index] = { ...u[index], loading: false, error: "" }; return u; });
         setSelectedWarehouse("");
         setLoadingWarehouseStock(true);
@@ -170,7 +197,7 @@ const BulkOrder = () => {
                 ? stockData.filter(r => {
                     const orgCode = (r.organization_code || r.inventoryName || r.warehouse || '').toLowerCase();
                     return orgCode === wh.toLowerCase() || orgCode.includes(wh.toLowerCase());
-                  }).filter(r => r.lot_age_date !== null && r.lot_age_date !== undefined && r.lot_age_date !== '')
+                  })
                 : [];
               const qty = records.reduce((s, r) => s + (parseInt(r.available_to_reserve || 0) || 0), 0);
               return { name: wh, qty };
@@ -191,7 +218,7 @@ const BulkOrder = () => {
     } catch {
       setRows(prev => { const u = [...prev]; u[index] = { ...u[index], loading: false, error: "Lookup failed" }; return u; });
     }
-  }, [selectedCustomer, selectedShipTo]);
+  }, [selectedCustomer, selectedShipTo, billingWarehouse, rows]);
 
   // ── Warehouse modal confirm ───────────────────────────────────────────────
   const handleWarehouseConfirm = () => {
@@ -321,7 +348,7 @@ const BulkOrder = () => {
         const wh = r.warehouse || billingWarehouse || customerDetails?.primary_ware_house || "";
         return {
           parts_no: r.partNumber, parts_name: r.itemName, quantity: String(qty), warehouse: wh,
-          item_price: price.toFixed(2), brand_name: r.brandName || "",
+          item_price: price.toFixed(2), brand_name: r.brandName || '-',
           sub_total: subTotal.toFixed(2), tax_price: taxAmount.toFixed(2),
           total_price: (subTotal + taxAmount).toFixed(2),
           cgst: (taxAmount / 2).toFixed(2),
@@ -379,6 +406,7 @@ const BulkOrder = () => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="bulk-order-page">
+      {submitting && <OrderPlacingOverlay />}
       <Header />
       <Breadcrumb crumbs={[{ label: "Home", path: "/sales-home" }, { label: "Bulk Orders" }]} />
 
@@ -538,47 +566,45 @@ const BulkOrder = () => {
       )}
 
       {/* Warehouse modal */}
-      {warehouseModal && (
-        <>
-          <div className="enhanced-modal-overlay" onClick={() => setWarehouseModal(null)} />
-          <div className="warehouse-modal">
-            <div className="modal-header">
-              <div className="wh-modal-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
-              </div>
-              <div>
-                <h2 className="modal-title">Choose Billing Warehouse</h2>
-                <p className="modal-subtitle">Select warehouse for this part</p>
-              </div>
-            </div>
-            <div className="modal-body">
-              <label className="wh-label">Select Warehouse <span style={{ color: "red" }}>*</span></label>
-              <div className="wh-list">
-                {loadingWarehouseStock ? (
-                  <div className="wh-loading"><span className="part-spinner" style={{ position: "static", display: "inline-block", marginRight: 8 }} />Fetching stock...</div>
-                ) : warehouseModal.warehouses.length === 0 ? (
-                  <div className="wh-empty">No warehouses available</div>
-                ) : warehouseModal.warehouses.map((wh, i) => (
-                  <div key={i} className={`wh-list-item ${selectedWarehouse === wh.name ? "wh-selected" : ""}`} onClick={() => setSelectedWarehouse(wh.name)}>
-                    <span className={`wh-radio ${selectedWarehouse === wh.name ? "wh-radio-active" : ""}`} />
-                    <span className="wh-name">{wh.name}</span>
-                    <span className={`wh-qty-badge ${wh.qty > 0 ? "wh-qty-in" : "wh-qty-out"}`}>
-                      {wh.qty > 0 ? `${wh.qty} in stock` : "Out of stock"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <p className="wh-note">Note : The Order will created against the selected warehouse. If you want to change the warehouse then clear the items and try again, or please create a new order.</p>
-            </div>
-            <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setWarehouseModal(null)}>Back</button>
-              <button className="submit-btn" onClick={handleWarehouseConfirm} disabled={!selectedWarehouse}>Continue</button>
-            </div>
-          </div>
-        </>
-      )}
+      <WarehousePickerModal
+        open={!!warehouseModal}
+        onClose={() => setWarehouseModal(null)}
+        onConfirm={(wh) => {
+          if (!warehouseModal) return;
+          const { index, partData } = warehouseModal;
+          const listPrice = parseFloat(partData.listPrice || partData.mrp || 0);
+          const qty = parseFloat(rows[index]?.quantity) || 0;
+          setRows(prev => {
+            const u = [...prev];
+            u[index] = {
+              ...u[index],
+              itemName:    partData.itemDescription || "",
+              pkgQty:      partData.salesUom || "",
+              listPrice:   partData.listPrice || "",
+              gst:         partData.taxpercent || "",
+              mrp:         partData.mrp || "",
+              price:       partData.listPrice || "",
+              lineCode:    partData.lineCode || "",
+              brandName:   partData.brandName || "",
+              hsnCode:     partData.hsnCode || "",
+              warehouse:   wh.name,
+              availableQty: wh.qty || 0,
+              total:       qty > 0 ? (qty * listPrice).toFixed(2) : "",
+              loading: false, error: "",
+            };
+            return u;
+          });
+          setBillingWarehouse(wh.name);
+          setWarehouseModal(null);
+          setSelectedWarehouse("");
+        }}
+        loading={loadingWarehouseStock}
+        warehouses={warehouseModal?.warehouses?.map(w => ({ name: w.name, qty: w.qty })) || []}
+        product={warehouseModal?.partData ? { itemDescription: warehouseModal.partData.itemDescription, partNumber: warehouseModal.partData.partNumber } : null}
+        title="Choose Billing Warehouse"
+        confirmLabel="Continue"
+        note="The order will be created against the selected warehouse. To change it, clear the items and try again."
+      />
     </div>
   );
 };

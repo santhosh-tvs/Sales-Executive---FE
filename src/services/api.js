@@ -611,7 +611,17 @@ export const getOrderDetailsAPI = async (requestBody) => {
  */
 export const getOrderListAPI = async (requestBody) => {
   try {
-    return await apiService.post('/order/list', requestBody);
+    // Ensure employee_code is never empty — PSM API requires it
+    const empCode = requestBody.employee_code
+      || localStorage.getItem('sales_executive_code')
+      || (() => { try { return JSON.parse(localStorage.getItem('user') || '{}').sales_executive_code || ''; } catch { return ''; } })();
+
+    return await apiService.post('/order/list', {
+      ...requestBody,
+      employee_code: empCode || null,
+      limit:  requestBody.limit  ?? 100,
+      offset: requestBody.offset ?? 0,
+    });
   } catch (error) {
     console.error('Get order list API error:', error);
   }
@@ -641,6 +651,61 @@ export const importOrderAPI = async (file, employeeCode) => {
   }
   return null;
 };
+
+/**
+ * Import Order Status API
+ * Fetch import job list with date range and pagination
+ * @param {Object} params - { from_date, to_date, limit, offset }
+ */
+export const importOrderStatusAPI = async (params = {}) => {
+  try {
+    return await apiService.post('/order/import-status', {
+      from_date: params.from_date || '',
+      to_date: params.to_date || '',
+      limit: params.limit ?? 10,
+      offset: params.offset ?? 0,
+    });
+  } catch (error) {
+    console.error('Import order status API error:', error);
+  }
+  return null;
+};
+
+/**
+ * Wishlist APIs
+ */
+export const getWishlistAPI = async (params = {}) => {
+  try {
+    const query = new URLSearchParams();
+    if (params.customer_id) query.append('customer_id', params.customer_id);
+    if (params.page)        query.append('page', params.page);
+    if (params.pageSize)    query.append('pageSize', params.pageSize);
+    const qs = query.toString();
+    return await apiService.get(`/wishlist/list${qs ? '?' + qs : ''}`);
+  } catch (error) {
+    console.error('Get wishlist API error:', error);
+  }
+  return null;
+};
+
+export const addToWishlistAPI = async (data) => {
+  try {
+    return await apiService.post('/wishlist/add', data);
+  } catch (error) {
+    console.error('Add to wishlist API error:', error);
+  }
+  return null;
+};
+
+export const deleteFromWishlistAPI = async (wishlist_ids) => {
+  try {
+    return await apiService.post('/wishlist/delete', { wishlist_id: wishlist_ids });
+  } catch (error) {
+    console.error('Delete from wishlist API error:', error);
+  }
+  return null;
+};
+
 /**
  * Outstanding Invoice API
  * Fetch outstanding invoices for a customer from the Oracle external API.
@@ -1039,9 +1104,14 @@ export default {
   viewCustomerAPI,
   warehouseMappingAPI,
   createOrderAPI,
+  customerDetails,
   getOrderDetailsAPI,
   getOrderListAPI,
   importOrderAPI,
+  importOrderStatusAPI,
+  getWishlistAPI,
+  addToWishlistAPI,
+  deleteFromWishlistAPI,
   outstandingInvoiceAPI,
   stockCheckNewAPI,
   itemMasterAPI,

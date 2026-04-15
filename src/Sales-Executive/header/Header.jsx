@@ -54,6 +54,7 @@ const Header = () => {
               <Link to="/s-bulk">Bulk Order</Link>
               <Link to="/s-import">Import Order</Link>
               <Link to="/create-order">Create Order</Link>
+              <Link to="/repeat-order">Repeat Order</Link>
             </div>
           </div>
           <div className="nav-item mega-dropdown">

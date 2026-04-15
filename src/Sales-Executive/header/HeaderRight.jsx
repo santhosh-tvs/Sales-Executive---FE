@@ -150,27 +150,22 @@ const HeaderRight = () => {
                 <span className="detail-label">Mobile</span>
                 <span className="detail-value">{profileData?.mobile_number || "N/A"}</span>
               </div>
-              
               <div className="profile-detail-row">
                 <span className="detail-label">Employee Code</span>
                 <span className="detail-value">{profileData?.sales_executive_code || "N/A"}</span>
               </div>
-              
               <div className="profile-detail-row">
                 <span className="detail-label">Reporting TO</span>
                 <span className="detail-value">{profileData?.reporting_manager || "N/A"}</span>
               </div>
-              
               <div className="profile-detail-row">
                 <span className="detail-label">Designation</span>
                 <span className="detail-value">{profileData?.department || "Employee"}</span>
               </div>
-              
               <div className="profile-detail-row">
                 <span className="detail-label">Sales Manager Name</span>
                 <span className="detail-value">{profileData?.reporting_manager || "N/A"}</span>
               </div>
-              
               <div className="profile-detail-row">
                 <span className="detail-label">Sales Manager Contact</span>
                 <span className="detail-value">{profileData?.reporting_mobile || profileData?.reporting_email || "N/A"}</span>

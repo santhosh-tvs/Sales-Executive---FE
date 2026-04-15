@@ -5,6 +5,7 @@ import PageNavigate from '../Cart/PageNavigate';
 import { useCart } from '../../../Context/CartContext';
 import { createOrderAPI } from '../../../services/api';
 import StockSplitBadge from '../Cart/StockSplitBadge';
+import OrderPlacingOverlay from '../../../components/OrderPlacingOverlay';
 import './Shipping.css';
 
 const defaultValidity = () => {
@@ -156,7 +157,7 @@ const Shipping = () => {
           quantity: String(qty),
           warehouse: item.warehouse || customerDetails?.primary_ware_house || customerDetails?.warehouse?.warehouse_name || customerDetails?.warehouse_name || '',
           item_price: price.toFixed(2),
-          brand_name: item.brandName || item.brand_name || '',
+          brand_name: item.brandName || item.brand_name || '-',
           sub_total: subTotal.toFixed(2),
           tax_price: taxAmount.toFixed(2),
           total_price: (subTotal + taxAmount).toFixed(2),  // sub_total + tax_price
@@ -232,6 +233,7 @@ const Shipping = () => {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <>
+      {isPlacingOrder && <OrderPlacingOverlay />}
       <Header />
       <div className="shipping-page">
         <div className="shipping-container">
